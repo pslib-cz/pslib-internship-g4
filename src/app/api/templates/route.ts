@@ -1,14 +1,13 @@
 import { type NextRequest } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/utils/db";
-import { Tag } from "@prisma/client";
+import { Template } from "@prisma/client";
 import { type ListResult } from "@/types/data";
 import { Role } from "@/types/auth";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const text = searchParams.get("text");
-  const type = searchParams.get("type");
+  const name = searchParams.get("name");
   const orderBy = searchParams.get("orderBy");
   const page: number | null =
     searchParams.get("page") !== null
@@ -26,47 +25,35 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  let summary = await prisma.tag.aggregate({
+  let summary = await prisma.template.aggregate({
     _count: true,
     where: {
-      text: {
-        contains: text !== null ? text : undefined,
-      },
-      type: {
-        equals: type !== null ? parseInt(type) : undefined,
+      name: {
+        contains: name !== null ? name : undefined,
       },
     },
   });
 
-  let tags = await prisma.tag.findMany({
+  let templates = await prisma.template.findMany({
     where: {
-      text: {
-        contains: text !== null ? text : undefined,
-      },
-      type: {
-        equals: type !== null ? parseInt(type) : undefined,
+      name: {
+        contains: name !== null ? name : undefined,
       },
     },
     orderBy: {
-      text:
-        orderBy === "text"
+      name:
+        orderBy === "name"
           ? "asc"
-          : orderBy === "text_desc"
-            ? "desc"
-            : undefined,
-      type:
-        orderBy === "type"
-          ? "asc"
-          : orderBy === "type_desc"
+          : orderBy === "name_desc"
             ? "desc"
             : undefined,
     },
     skip: page !== null && size !== null ? page * size : undefined,
     take: size !== null ? size : undefined,
   });
-  let result: ListResult<Tag> = {
-    data: tags,
-    count: tags.length,
+  let result: ListResult<Template> = {
+    data: templates,
+    count: templates.length,
     total: summary._count || 0,
     page: page,
     size: size,
@@ -89,13 +76,11 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const tag = await prisma.tag.create({
+  const template = await prisma.template.create({
     data: {
-      text: body.text,
-      type: Number(body.type),
-      color: body.color,
-      background: body.background,
+      name: body.name,
+      content: body.content,
     },
   });
-  return Response.json(tag, { status: 201 });
+  return Response.json(template, { status: 201 });
 }

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Role } from "../src/types/auth";
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
   let currentDate = new Date();
@@ -23,7 +23,7 @@ async function main() {
       accounts: {
         create: {
           type: "oauth",
-          provider: "azure-ad",
+          provider: "microsoft-entra-id",
           providerAccountId: "c8e7821e-aa80-4d56-9339-fea29ef3f81d",
         },
       },

@@ -1,5 +1,5 @@
 import { type NextRequest } from "next/server";
-import { Tag } from "@prisma/client";
+import { Template } from "@prisma/client";
 import { auth } from "@/auth";
 import prisma from "@/utils/db";
 import { Role } from "@/types/auth";
@@ -16,17 +16,17 @@ export async function GET(
       status: 401,
     });
   }
-  let tag = await prisma.tag.findFirst({
+  let template = await prisma.template.findFirst({
     where: {
       id: Number(id),
     },
   });
-  if (!tag) {
-    return new Response("Tag not Found", {
+  if (!template) {
+    return new Response("Template not Found", {
       status: 404,
     });
   }
-  return Response.json(tag);
+  return Response.json(template);
 }
 
 export async function DELETE(
@@ -47,13 +47,13 @@ export async function DELETE(
     });
   }
 
-  let tag = await prisma.tag.delete({
+  let template = await prisma.template.delete({
     where: {
       id: Number(id),
     },
   });
-  if (!tag) {
-    return new Response("Tag not Found", {
+  if (!template) {
+    return new Response("Template not Found", {
       status: 404,
     });
   }
@@ -79,16 +79,16 @@ export async function PUT(
     });
   }
   const body = await request.json();
-  let tag = await prisma.tag.update({
+  let template = await prisma.template.update({
     where: {
       id: Number(id),
     },
-    data: body as Tag,
+    data: body as Template,
   });
-  if (!tag) {
-    return new Response("Tag not Found", {
+  if (!template) {
+    return new Response("Template not Found", {
       status: 404,
     });
   }
-  return Response.json(tag);
+  return Response.json(template);
 }

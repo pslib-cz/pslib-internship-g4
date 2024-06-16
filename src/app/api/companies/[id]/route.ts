@@ -1,6 +1,7 @@
 import { type NextRequest } from "next/server";
-import { Tag } from "@prisma/client";
+import { Company } from "@prisma/client";
 import { auth } from "@/auth";
+import { CompanyWithLocationAndCreator } from "@/types/entities";
 import prisma from "@/utils/db";
 import { Role } from "@/types/auth";
 
@@ -11,22 +12,46 @@ export async function GET(
   const id = params.id;
 
   const session = await auth();
-  if (!session) {
-    return new Response("Unauthorized", {
-      status: 401,
+  let company: CompanyWithLocationAndCreator | null =
+    await prisma.company.findFirst({
+      select: {
+        id: true,
+        name: true,
+        companyIdentificationNumber: true,
+        description: true,
+        website: true,
+        active: true,
+        created: true,
+        creator: {
+          select: {
+            id: true,
+            givenName: true,
+            surname: true,
+            email: true,
+          },
+        },
+        location: {
+          select: {
+            id: true,
+            street: true,
+            municipality: true,
+            country: true,
+            postalCode: true,
+            descNo: true,
+            orientNo: true,
+            latitude: true,
+            longitude: true,
+          },
+        },
+      },
+      where: { id: id },
     });
-  }
-  let tag = await prisma.tag.findFirst({
-    where: {
-      id: Number(id),
-    },
-  });
-  if (!tag) {
-    return new Response("Tag not Found", {
+  if (!company) {
+    return new Response("Not found", {
       status: 404,
     });
   }
-  return Response.json(tag);
+  return Response.json(company);
 }
 
 export async function DELETE(
@@ -47,13 +72,13 @@ export async function DELETE(
     });
   }
 
-  let tag = await prisma.tag.delete({
+  let company = await prisma.company.delete({
     where: {
       id: Number(id),
     },
   });
-  if (!tag) {
-    return new Response("Tag not Found", {
+  if (!company) {
+    return new Response("Company not Found", {
       status: 404,
     });
   }
@@ -79,16 +104,16 @@ export async function PUT(
     });
   }
   const body = await request.json();
-  let tag = await prisma.tag.update({
+  let company = await prisma.company.update({
     where: {
       id: Number(id),
     },
-    data: body as Tag,
+    data: body as Company,
   });
-  if (!tag) {
-    return new Response("Tag not Found", {
+  if (!company) {
+    return new Response("Company not Found", {
       status: 404,
     });
   }
-  return Response.json(tag);
+  return Response.json(company);
 }

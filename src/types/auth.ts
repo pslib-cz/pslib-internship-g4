@@ -1,6 +1,6 @@
-//import NextAuth, { type DefaultSession } from "next-auth";
-//import { JWT } from "next-auth/jwt";
-//import { DateTime } from "next-auth/providers/kakao";
+import NextAuth, { type DefaultSession } from "next-auth";
+import { JWT } from "next-auth/jwt";
+import { DateTime } from "next-auth/providers/kakao";
 
 export enum Role {
   ADMIN = "admin",
@@ -9,7 +9,7 @@ export enum Role {
   GUEST = "guest",
   MANAGER = "manager",
 }
-/*
+
 declare module "next-auth" {
   export interface Session {
     user: {
@@ -45,4 +45,3 @@ declare module "next-auth/jwt" {
     department?: string;
   }
 }
-*/
