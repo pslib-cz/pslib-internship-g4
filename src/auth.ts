@@ -1,14 +1,12 @@
 import NextAuth from "next-auth";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
-import { Session, User, Profile, JWT, Role } from "@/types/auth";
+import { Role } from "@/types/auth";
 import PrismaSingleton from "@/utils/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
 
 const PROFILE_PHOTO_SIZE = 48;
 
 const prisma = PrismaSingleton;
-//const prisma = new PrismaClient()
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -25,7 +23,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
       },
       async profile(profile, tokens) {
-        console.info("PROFILE:", profile, "TOKENS:", tokens);
         const response = await fetch(
           "https://graph.microsoft.com/v1.0/me?$select=displayName,givenName,surname,department,jobTitle,mobilePhone",
           {
@@ -63,4 +60,48 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token, user }) {
+      if (token !== undefined) {
+        session.user.id = token.oid;
+        session.user.role = token.role || Role.GUEST;
+        session.user.department = token.department;
+      } else if (user !== undefined) {
+        session.user.id = user.id;
+        session.user.role = user.role;
+        session.user.department = user.department;
+      }
+      return session;
+    },
+    async jwt({ token, user, account, profile, trigger }) {
+      if (user) {
+        // user z databáze
+      }
+      if (profile !== undefined) {
+        const response = await fetch("https://graph.microsoft.com/v1.0/me", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${account!.access_token}`,
+          },
+        })
+          .then((response) => response.json())
+          .catch((error) => console.error("Chyba:", error));
+        let role = Role.GUEST;
+        if (response.department !== null) role = Role.STUDENT;
+        if (response.jobTitle === "učitel" || response.department === "PZAM")
+          role = Role.TEACHER;
+        if (role === Role.TEACHER) {
+          token.role = Role.TEACHER;
+          token.department = response.officeLocation;
+        } else if (role === Role.STUDENT) {
+          token.role = Role.STUDENT;
+          token.department = response.officeLocation;
+        } else {
+          token.role = Role.GUEST;
+          token.department = undefined;
+        }
+      }
+      return token;
+    },
+  },
 });
