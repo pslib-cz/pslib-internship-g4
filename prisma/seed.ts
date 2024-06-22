@@ -240,6 +240,28 @@ async function main() {
       color: "#333333",
     },
   });
+  const x14 = await prisma.tag.upsert({
+    where: { id: 19 },
+    update: {},
+    create: {
+      id: 18,
+      text: "Prodej",
+      type: 3,
+      background: "#dddddd",
+      color: "#333333",
+    },
+  });
+  const x15 = await prisma.tag.upsert({
+    where: { id: 20 },
+    update: {},
+    create: {
+      id: 18,
+      text: "Marketing",
+      type: 3,
+      background: "#dddddd",
+      color: "#333333",
+    },
+  });
 }
 main()
   .then(async () => {

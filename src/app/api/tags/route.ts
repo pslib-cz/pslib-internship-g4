@@ -8,7 +8,9 @@ import { Role } from "@/types/auth";
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const text = searchParams.get("text");
-  const type = searchParams.get("type");
+  const tagType: number | null = searchParams.get("type")
+    ? parseInt(searchParams.get("type") ?? "")
+    : null;
   const orderBy = searchParams.get("orderBy");
   const page: number | null =
     searchParams.get("page") !== null
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest) {
         contains: text !== null ? text : undefined,
       },
       type: {
-        equals: type !== null ? parseInt(type) : undefined,
+        equals: tagType !== null ? tagType : undefined,
       },
     },
   });
@@ -44,7 +46,7 @@ export async function GET(request: NextRequest) {
         contains: text !== null ? text : undefined,
       },
       type: {
-        equals: type !== null ? parseInt(type) : undefined,
+        equals: tagType !== null ? tagType : undefined,
       },
     },
     orderBy: {

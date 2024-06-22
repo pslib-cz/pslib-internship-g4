@@ -6,5 +6,6 @@ export {
   SignInButton,
   SignOutButton,
 } from "./SignButton/SignButton";
+export { RoleBadge } from "./RoleBadge/RoleBadge";
 export { MainLogo } from "./MainLogo/MainLogo";
 export { UserAvatar } from "./UserAvatar/UserAvatar";
