@@ -14,36 +14,67 @@ import {
   Modal,
   Group,
   Alert,
-  Pagination
+  Pagination,
 } from "@mantine/core";
-import { IconInfoSmall, IconTrash, IconEdit } from "@tabler/icons-react";
+import {
+  IconInfoSmall,
+  IconTrash,
+  IconEdit,
+  IconChevronDown,
+  IconChevronUp,
+} from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Tag } from "@prisma/client";
 import { tagTypes, getTagLabel } from "@/data/lists";
 import { type ListResult } from "@/types/data";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 
-const TagsTable: FC = ({}) => {
+type TTagsTableProps = {};
+type TTagsTableState = {
+  filterText: string;
+  filterType: string;
+  order: string;
+  page: number;
+  size: number;
+};
+
+const STORAGE_ID = "tags-table";
+
+const TagsTable: FC = (TTagsTableProps) => {
   const searchParams = useSearchParams();
+  const [loadTableState, storeTableState, removeTableState] =
+    useSessionStorage<TTagsTableState>(STORAGE_ID);
   const [data, setData] = useState<ListResult<Tag> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [filterName, setFilterName] = useState<string>();
-  const [filterType, setFilterType] = useState<string>();
-  const [orderBy, setOrderBy] = useState("text");
-  const [pageSize, setPageSize] = useState(10);
-  const [page, setPage] = useState(1);
+  const [state, setState] = useState<TTagsTableState>({
+    filterText: "",
+    filterType: "",
+    order: "text",
+    page: 1,
+    size: 10,
+  });
   const [deleteOpened, { open, close }] = useDisclosure(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const isMobile = useMediaQuery("(max-width: 50em)");
 
   const fetchData = useCallback(
-    (text: string | undefined, type: string | undefined, orderBy: string, page: number = 1, pageSize: number = 10) => {
-      fetch(`/api/tags?text=${text}&type=${type}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+    (
+      text: string | undefined,
+      type: string | undefined,
+      orderBy: string,
+      page: number = 1,
+      pageSize: number = 10,
+    ) => {
+      fetch(
+        `/api/tags?text=${text}&type=${type}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      })
+      )
         .then((response) => {
           if (!response.ok) {
             setData(null);
@@ -65,27 +96,46 @@ const TagsTable: FC = ({}) => {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    filterName !== undefined && params.set("name", filterName);
-    filterType !== undefined && params.set("type", filterType);
-    params.set("page", page.toString());
-    params.set("size", pageSize.toString());
-    params.set("orderBy", orderBy);
+    state.filterText !== undefined && params.set("text", state.filterText);
+    state.filterType !== undefined && params.set("type", state.filterType);
+    params.set("page", state.page.toString());
+    params.set("size", state.size.toString());
+    params.set("orderBy", state.order);
     window.history.replaceState(null, "", `?${params.toString()}`);
-  }, [filterName, filterType, orderBy, searchParams, page, pageSize]);
+  }, [searchParams, state]);
 
   useEffect(() => {
-    const searchedName = searchParams.get("name") ?? "";
+    const searchedText = searchParams.get("text") ?? "";
     const searchedType = searchParams.get("type") ?? "";
     const orderBy = searchParams.get("orderBy") ?? "text";
-    const paginationPage = searchParams.get("page") ? parseInt(searchParams.get("page") as string) : 1;
-    const paginationSize = searchParams.get("size") ? parseInt(searchParams.get("size") as string) : 10;
-    setFilterName(searchedName);
-    setFilterType(searchedType);
-    setOrderBy(orderBy);
-    setPage(paginationPage);
-    setPageSize(paginationSize);
-    fetchData(searchedName, searchedType, orderBy, paginationPage, paginationSize);
-  }, [searchParams, fetchData]);
+    const paginationPage = searchParams.get("page")
+      ? parseInt(searchParams.get("page") as string)
+      : 1;
+    const paginationSize = searchParams.get("size")
+      ? parseInt(searchParams.get("size") as string)
+      : 10;
+    setState({
+      filterText: searchedText,
+      filterType: searchedType,
+      order: orderBy,
+      page: paginationPage,
+      size: paginationSize,
+    });
+    storeTableState({
+      filterText: searchedText,
+      filterType: searchedType,
+      order: orderBy,
+      page: paginationPage,
+      size: paginationSize,
+    });
+    fetchData(
+      searchedText,
+      searchedType,
+      orderBy,
+      paginationPage,
+      paginationSize,
+    );
+  }, [searchParams, fetchData /*storeTableState*/]);
 
   return (
     <>
@@ -95,11 +145,18 @@ const TagsTable: FC = ({}) => {
             <Table.Th>
               <Text
                 fw={700}
-                onClick={() =>
-                  setOrderBy(orderBy === "text" ? "text_desc" : "text")
-                }
+                onClick={() => {
+                  let newOrder = state.order === "text" ? "text_desc" : "text";
+                  setState({ ...state, order: newOrder });
+                }}
+                style={{ cursor: "pointer" }}
               >
-                Text
+                Text{" "}
+                {state.order === "text" ? (
+                  <IconChevronDown size={12} />
+                ) : state.order === "text_desc" ? (
+                  <IconChevronUp size={12} />
+                ) : null}
               </Text>
             </Table.Th>
             <Table.Th>
@@ -114,15 +171,27 @@ const TagsTable: FC = ({}) => {
             <Table.Th>
               <TextInput
                 size="xs"
-                value={filterName}
-                onChange={(event) => {setFilterName(event.currentTarget.value); setPage(1)}}
+                value={state.filterText}
+                onChange={(event) => {
+                  setState({
+                    ...state,
+                    filterText: event.currentTarget.value,
+                    page: 1,
+                  });
+                }}
               />
             </Table.Th>
             <Table.Th>
               <NativeSelect
                 size="xs"
-                value={filterType}
-                onChange={(event) => {setFilterType(event.currentTarget.value); setPage(1)}}
+                value={state.filterType}
+                onChange={(event) => {
+                  setState({
+                    ...state,
+                    filterType: event.currentTarget.value,
+                    page: 1,
+                  });
+                }}
                 data={[{ label: "Vše", value: "" }, ...tagTypes]}
               />
             </Table.Th>
@@ -131,10 +200,13 @@ const TagsTable: FC = ({}) => {
               <Button
                 size="xs"
                 onClick={(event) => {
-                  setFilterName("");
-                  setFilterType("");
-                  setOrderBy("text");
-                  setPage(1);
+                  setState({
+                    ...state,
+                    filterText: "",
+                    filterType: "",
+                    order: "text",
+                    page: 1,
+                  });
                 }}
               >
                 Vše
@@ -202,11 +274,14 @@ const TagsTable: FC = ({}) => {
         </Table.Tbody>
         <Table.Tfoot>
           <Table.Tr>
-            <Table.Td colSpan={100}>
+            <Table.Td colSpan={100} ta="center">
               <Pagination
                 total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
                 value={(data?.page ?? 1) + 1}
-                onChange={(page) => setPage(page)} />
+                onChange={(page) =>
+                  /*setPage(page)*/ setState({ ...state, page: page })
+                }
+              />
             </Table.Td>
           </Table.Tr>
         </Table.Tfoot>
@@ -238,7 +313,13 @@ const TagsTable: FC = ({}) => {
                       message: "Značka byla odstraněna.",
                       color: "lime",
                     });
-                    fetchData(filterName, filterType, orderBy);
+                    fetchData(
+                      state.filterText,
+                      state.filterType,
+                      state.order,
+                      state.page,
+                      state.size,
+                    );
                   })
                   .catch((error) => {
                     notifications.show({

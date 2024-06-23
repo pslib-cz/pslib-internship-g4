@@ -29,7 +29,7 @@ const Page = () => {
           variant="default"
           leftSection={<IconPlus />}
         >
-          Nový
+          Nové
         </Button>
       </Box>
       <ScrollArea type="auto"></ScrollArea>
