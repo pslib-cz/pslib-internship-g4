@@ -94,17 +94,8 @@ const TagsTable: FC = (TTagsTableProps) => {
     [],
   );
 
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    state.filterText !== undefined && params.set("text", state.filterText);
-    state.filterType !== undefined && params.set("type", state.filterType);
-    params.set("page", state.page.toString());
-    params.set("size", state.size.toString());
-    params.set("orderBy", state.order);
-    window.history.replaceState(null, "", `?${params.toString()}`);
-  }, [searchParams, state]);
-
-  useEffect(() => {
+  useEffect(()=>{
+    let storedState = loadTableState();
     const searchedText = searchParams.get("text") ?? "";
     const searchedType = searchParams.get("type") ?? "";
     const orderBy = searchParams.get("orderBy") ?? "text";
@@ -114,31 +105,39 @@ const TagsTable: FC = (TTagsTableProps) => {
     const paginationSize = searchParams.get("size")
       ? parseInt(searchParams.get("size") as string)
       : 10;
-    setState({
+    let URLState: TTagsTableState = {
       filterText: searchedText,
       filterType: searchedType,
       order: orderBy,
       page: paginationPage,
       size: paginationSize,
-    });
-    storeTableState({
-      filterText: searchedText,
-      filterType: searchedType,
-      order: orderBy,
-      page: paginationPage,
-      size: paginationSize,
-    });
+    };
+    setState({...URLState});
+  },[searchParams, loadTableState]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    state.filterText !== undefined && params.set("text", state.filterText);
+    state.filterType !== undefined && params.set("type", state.filterType);
+    params.set("page", state.page.toString());
+    params.set("size", state.size.toString());
+    params.set("orderBy", state.order);
+    window.history.replaceState(null, "", `?${params.toString()}`);
+    storeTableState(state);
     fetchData(
-      searchedText,
-      searchedType,
-      orderBy,
-      paginationPage,
-      paginationSize,
+      state.filterText,
+      state.filterType,
+      state.order,
+      state.page,
+      state.size,
     );
-  }, [searchParams, fetchData /*storeTableState*/]);
+  }, [state, fetchData, searchParams, storeTableState]);
 
   return (
     <>
+      <pre>
+        {JSON.stringify(state, null, 2)}
+      </pre>
       <Table>
         <Table.Thead>
           <Table.Tr>
