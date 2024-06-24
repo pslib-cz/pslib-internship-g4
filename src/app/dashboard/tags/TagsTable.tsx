@@ -94,7 +94,7 @@ const TagsTable: FC = (TTagsTableProps) => {
     [],
   );
 
-  useEffect(()=>{
+  useEffect(() => {
     let storedState = loadTableState();
     const searchedText = searchParams.get("text") ?? "";
     const searchedType = searchParams.get("type") ?? "";
@@ -112,8 +112,8 @@ const TagsTable: FC = (TTagsTableProps) => {
       page: paginationPage,
       size: paginationSize,
     };
-    setState({...URLState});
-  },[searchParams, loadTableState]);
+    setState({ ...URLState });
+  }, [searchParams, loadTableState]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -135,9 +135,6 @@ const TagsTable: FC = (TTagsTableProps) => {
 
   return (
     <>
-      <pre>
-        {JSON.stringify(state, null, 2)}
-      </pre>
       <Table>
         <Table.Thead>
           <Table.Tr>

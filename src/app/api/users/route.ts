@@ -149,13 +149,13 @@ export async function GET(request: NextRequest) {
         givenName:
           orderBy === "surname"
             ? "asc"
-            : orderBy === "givenName_desc"
+            : orderBy === "surname_desc"
               ? "desc"
               : undefined,
         surname:
           orderBy === "givenName"
             ? "asc"
-            : orderBy === "surname_desc"
+            : orderBy === "givenName_desc"
               ? "desc"
               : undefined,
       },
