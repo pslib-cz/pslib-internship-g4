@@ -11,6 +11,7 @@ import {
   Text,
 } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
+import LocationsTable from "./LocationsTable";
 
 const Page = () => {
   return (
@@ -32,7 +33,7 @@ const Page = () => {
           Nové
         </Button>
       </Box>
-      <ScrollArea type="auto"></ScrollArea>
+      <LocationsTable />
     </>
   );
 };
