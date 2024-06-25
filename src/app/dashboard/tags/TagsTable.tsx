@@ -15,6 +15,7 @@ import {
   Group,
   Alert,
   Pagination,
+  Flex,
 } from "@mantine/core";
 import {
   IconInfoSmall,
@@ -268,20 +269,16 @@ const TagsTable: FC = (TTagsTableProps) => {
               </Table.Tr>
             ))}
         </Table.Tbody>
-        <Table.Tfoot>
-          <Table.Tr>
-            <Table.Td colSpan={100} ta="center">
-              <Pagination
-                total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
-                value={(data?.page ?? 1) + 1}
-                onChange={(page) =>
-                  /*setPage(page)*/ setState({ ...state, page: page })
-                }
-              />
-            </Table.Td>
-          </Table.Tr>
-        </Table.Tfoot>
       </Table>
+      <Flex justify="center">
+        <Pagination
+          total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
+          value={(data?.page ?? 1) + 1}
+          onChange={(page) =>
+            /*setPage(page)*/ setState({ ...state, page: page })
+          }
+        />
+      </Flex>
       <Modal
         opened={deleteOpened}
         centered

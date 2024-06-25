@@ -24,7 +24,7 @@ import { Role } from "@/types/auth";
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const router = useRouter();
   const form = useForm({
     initialValues: {
@@ -95,7 +95,7 @@ const Page = ({ params }: { params: { id: string } }) => {
   if (error) {
     return (
       <Alert color="red" title="Chyba při načítání nebo ukládání uživatele">
-        {error}
+        {error.message}
       </Alert>
     );
   }
@@ -130,9 +130,6 @@ const Page = ({ params }: { params: { id: string } }) => {
               role: Role;
             }) => {
               console.log(values);
-              values.birthDate = values.birthDate
-                ? new Date(values.birthDate)
-                : undefined;
               setLoading(true);
               fetch(`/api/users/${id}`, {
                 method: "PUT",

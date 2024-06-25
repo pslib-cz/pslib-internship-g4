@@ -12,7 +12,7 @@ import {
   Breadcrumbs,
   Anchor,
 } from "@mantine/core";
-import { RoleBadge } from "@/components";
+import { RoleBadge, DateTime } from "@/components";
 import { User } from "@prisma/client";
 import Link from "next/link";
 
@@ -78,9 +78,7 @@ const Page = ({ params }: { params: { id: string } }) => {
               </Text>
               <Text fw={700}>Datum narození</Text>
               <Text>
-                {user.birthDate === null
-                  ? "?"
-                  : new Date(user.birthDate).toLocaleDateString("cz")}
+                <DateTime date={user.birthDate} locale="cs-CZ" />
               </Text>
               <Text fw={700}>Role</Text>
               <RoleBadge role={user.role} />

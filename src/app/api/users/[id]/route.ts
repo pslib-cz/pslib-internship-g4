@@ -32,15 +32,15 @@ export async function GET(
       image: true,
       department: true,
       role: true,
-      birthDate: censored,
-      phone: censored,
+      birthDate: !censored,
+      phone: !censored,
       surname: true,
       givenName: true,
-      street: censored,
-      descNo: censored,
-      orientNo: censored,
-      municipality: censored,
-      postalCode: censored,
+      street: !censored,
+      descNo: !censored,
+      orientNo: !censored,
+      municipality: !censored,
+      postalCode: !censored,
     },
   });
   if (!user) {
@@ -103,6 +103,10 @@ export async function PUT(
   }
 
   const body = await request.json();
+  console.log(body);
+  if (body.birthDate) {
+    body.birthDate = new Date(body.birthDate);
+  }
   let user = await prisma.user.update({
     where: {
       id: id,

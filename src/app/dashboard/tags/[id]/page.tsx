@@ -31,7 +31,7 @@ const DataDisplay = ({ id }: { id: number }) => {
         if (!response.ok) {
           setData(null);
           setError("Došlo k chybě při získávání dat.");
-          throw new Error("Network response was not ok");
+          throw new Error("Došlo k chybě při získávání dat.");
         }
         return response.json();
       })

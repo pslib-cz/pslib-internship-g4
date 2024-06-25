@@ -33,9 +33,7 @@ const Page = () => {
           Nový
         </Button>
       </Box>
-      <ScrollArea type="auto">
-        <UsersTable />
-      </ScrollArea>
+      <UsersTable />
     </>
   );
 };

@@ -10,12 +10,13 @@ import {
   NativeSelect,
   Text,
   TextInput,
-  Badge,
   Avatar,
   Modal,
   Group,
   Alert,
   Pagination,
+  ScrollArea,
+  Flex,
 } from "@mantine/core";
 import {
   IconInfoSmall,
@@ -161,280 +162,278 @@ const UsersTable: FC = (TUsersTableProps) => {
 
   return (
     <>
-      <pre>{JSON.stringify(state, null, 2)}</pre>
-      <Table>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th></Table.Th>
-            <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "givenName"
-                      ? "givenName_desc"
-                      : "givenName";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Jméno{" "}
-                {state.order === "givenName" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "givenName_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-            </Table.Th>
-            <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "surname" ? "surname_desc" : "surname";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Příjmení{" "}
-                {state.order === "surname" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "surname_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-            </Table.Th>
-            <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "email" ? "email_desc" : "email";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Email{" "}
-                {state.order === "email" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "email_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-            </Table.Th>
-            <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder = state.order === "role" ? "role_desc" : "role";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Role{" "}
-                {state.order === "role" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "role_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-            </Table.Th>
-            <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "department"
-                      ? "department_desc"
-                      : "department";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Třída{" "}
-                {state.order === "department" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "department_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-            </Table.Th>
-            <Table.Th>Možnosti</Table.Th>
-          </Table.Tr>
-          <Table.Tr>
-            <Table.Th></Table.Th>
-            <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterGivenName}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterGivenName: event.currentTarget.value,
-                    page: 1,
-                  });
-                }}
-              />
-            </Table.Th>
-            <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterSurname}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterSurname: event.currentTarget.value,
-                    page: 1,
-                  });
-                }}
-              />
-            </Table.Th>
-            <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterEmail}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterEmail: event.currentTarget.value,
-                    page: 1,
-                  });
-                }}
-              />
-            </Table.Th>
-            <Table.Th>
-              <NativeSelect
-                size="xs"
-                value={state.filterRole}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterRole: event.currentTarget.value,
-                    page: 1,
-                  });
-                }}
-                data={[{ label: "Vše", value: "" }, ...roleTypes]}
-              />
-            </Table.Th>
-            <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterDepartment}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterDepartment: event.currentTarget.value,
-                    page: 1,
-                  });
-                }}
-              />
-            </Table.Th>
-            <Table.Th>
-              <Button
-                size="xs"
-                onClick={(event) => {
-                  setState({
-                    ...state,
-                    filterGivenName: "",
-                    filterSurname: "",
-                    filterRole: "",
-                    filterEmail: "",
-                    filterDepartment: "",
-                    order: "surname",
-                    page: 1,
-                  });
-                }}
-              >
-                Vše
-              </Button>
-            </Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {error && (
+      <ScrollArea type="auto">
+        <Table>
+          <Table.Thead>
             <Table.Tr>
-              <Table.Td colSpan={100}>
-                <Alert color="red">{error}</Alert>
-              </Table.Td>
+              <Table.Th></Table.Th>
+              <Table.Th>
+                <Text
+                  fw={700}
+                  onClick={() => {
+                    let newOrder =
+                      state.order === "givenName"
+                        ? "givenName_desc"
+                        : "givenName";
+                    setState({ ...state, order: newOrder });
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Jméno{" "}
+                  {state.order === "givenName" ? (
+                    <IconChevronDown size={12} />
+                  ) : state.order === "givenName_desc" ? (
+                    <IconChevronUp size={12} />
+                  ) : null}
+                </Text>
+              </Table.Th>
+              <Table.Th>
+                <Text
+                  fw={700}
+                  onClick={() => {
+                    let newOrder =
+                      state.order === "surname" ? "surname_desc" : "surname";
+                    setState({ ...state, order: newOrder });
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Příjmení{" "}
+                  {state.order === "surname" ? (
+                    <IconChevronDown size={12} />
+                  ) : state.order === "surname_desc" ? (
+                    <IconChevronUp size={12} />
+                  ) : null}
+                </Text>
+              </Table.Th>
+              <Table.Th>
+                <Text
+                  fw={700}
+                  onClick={() => {
+                    let newOrder =
+                      state.order === "email" ? "email_desc" : "email";
+                    setState({ ...state, order: newOrder });
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Email{" "}
+                  {state.order === "email" ? (
+                    <IconChevronDown size={12} />
+                  ) : state.order === "email_desc" ? (
+                    <IconChevronUp size={12} />
+                  ) : null}
+                </Text>
+              </Table.Th>
+              <Table.Th>
+                <Text
+                  fw={700}
+                  onClick={() => {
+                    let newOrder =
+                      state.order === "role" ? "role_desc" : "role";
+                    setState({ ...state, order: newOrder });
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Role{" "}
+                  {state.order === "role" ? (
+                    <IconChevronDown size={12} />
+                  ) : state.order === "role_desc" ? (
+                    <IconChevronUp size={12} />
+                  ) : null}
+                </Text>
+              </Table.Th>
+              <Table.Th>
+                <Text
+                  fw={700}
+                  onClick={() => {
+                    let newOrder =
+                      state.order === "department"
+                        ? "department_desc"
+                        : "department";
+                    setState({ ...state, order: newOrder });
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Třída{" "}
+                  {state.order === "department" ? (
+                    <IconChevronDown size={12} />
+                  ) : state.order === "department_desc" ? (
+                    <IconChevronUp size={12} />
+                  ) : null}
+                </Text>
+              </Table.Th>
+              <Table.Th>Možnosti</Table.Th>
             </Table.Tr>
-          )}
-          {data && data.total === 0 && (
             <Table.Tr>
-              <Table.Td colSpan={100}>
-                Žádný uživatel nevyhovuje podmínkám.
-              </Table.Td>
+              <Table.Th></Table.Th>
+              <Table.Th>
+                <TextInput
+                  size="xs"
+                  value={state.filterGivenName}
+                  onChange={(event) => {
+                    setState({
+                      ...state,
+                      filterGivenName: event.currentTarget.value,
+                      page: 1,
+                    });
+                  }}
+                />
+              </Table.Th>
+              <Table.Th>
+                <TextInput
+                  size="xs"
+                  value={state.filterSurname}
+                  onChange={(event) => {
+                    setState({
+                      ...state,
+                      filterSurname: event.currentTarget.value,
+                      page: 1,
+                    });
+                  }}
+                />
+              </Table.Th>
+              <Table.Th>
+                <TextInput
+                  size="xs"
+                  value={state.filterEmail}
+                  onChange={(event) => {
+                    setState({
+                      ...state,
+                      filterEmail: event.currentTarget.value,
+                      page: 1,
+                    });
+                  }}
+                />
+              </Table.Th>
+              <Table.Th>
+                <NativeSelect
+                  size="xs"
+                  value={state.filterRole}
+                  onChange={(event) => {
+                    setState({
+                      ...state,
+                      filterRole: event.currentTarget.value,
+                      page: 1,
+                    });
+                  }}
+                  data={[{ label: "Vše", value: "" }, ...roleTypes]}
+                />
+              </Table.Th>
+              <Table.Th>
+                <TextInput
+                  size="xs"
+                  value={state.filterDepartment}
+                  onChange={(event) => {
+                    setState({
+                      ...state,
+                      filterDepartment: event.currentTarget.value,
+                      page: 1,
+                    });
+                  }}
+                />
+              </Table.Th>
+              <Table.Th>
+                <Button
+                  size="xs"
+                  onClick={(event) => {
+                    setState({
+                      ...state,
+                      filterGivenName: "",
+                      filterSurname: "",
+                      filterRole: "",
+                      filterEmail: "",
+                      filterDepartment: "",
+                      order: "surname",
+                      page: 1,
+                    });
+                  }}
+                >
+                  Vše
+                </Button>
+              </Table.Th>
             </Table.Tr>
-          )}
-          {data &&
-            data.data.map((user) => (
-              <Table.Tr key={user.id}>
-                <Table.Td>
-                  <Avatar
-                    src={
-                      user.image !== undefined && user.image !== null
-                        ? "data:image/jpeg;base64, " + user.image
-                        : null
-                    }
-                    radius="40"
-                    size={40}
-                  />
-                </Table.Td>
-                <Table.Td>
-                  <Text>{user.givenName}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{user.surname}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{user.email}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <RoleBadge role={user?.role} />
-                </Table.Td>
-                <Table.Td>
-                  <Text>{user.department}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <ActionIcon
-                    variant="light"
-                    component={Link}
-                    href={"/dashboard/users/" + user.id}
-                  >
-                    <IconInfoSmall />
-                  </ActionIcon>{" "}
-                  <ActionIcon
-                    variant="light"
-                    color="red"
-                    onClick={() => {
-                      setDeleteId(user.id);
-                      open();
-                    }}
-                  >
-                    <IconTrash />
-                  </ActionIcon>{" "}
-                  <ActionIcon
-                    variant="light"
-                    component={Link}
-                    href={"/dashboard/tags/" + user.id + "/edit"}
-                  >
-                    <IconEdit />
-                  </ActionIcon>
+          </Table.Thead>
+          <Table.Tbody>
+            {error && (
+              <Table.Tr>
+                <Table.Td colSpan={100}>
+                  <Alert color="red">{error}</Alert>
                 </Table.Td>
               </Table.Tr>
-            ))}
-        </Table.Tbody>
-        <Table.Tfoot>
-          <Table.Tr>
-            <Table.Td colSpan={100} ta="center">
-              <Pagination
-                total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
-                value={(data?.page ?? 1) + 1}
-                onChange={(page) => setState({ ...state, page: page })}
-              />
-            </Table.Td>
-          </Table.Tr>
-        </Table.Tfoot>
-      </Table>
+            )}
+            {data && data.total === 0 && (
+              <Table.Tr>
+                <Table.Td colSpan={100}>
+                  Žádný uživatel nevyhovuje podmínkám.
+                </Table.Td>
+              </Table.Tr>
+            )}
+            {data &&
+              data.data.map((user) => (
+                <Table.Tr key={user.id}>
+                  <Table.Td>
+                    <Avatar
+                      src={
+                        user.image !== undefined && user.image !== null
+                          ? "data:image/jpeg;base64, " + user.image
+                          : null
+                      }
+                      radius="40"
+                      size={40}
+                    />
+                  </Table.Td>
+                  <Table.Td>
+                    <Text>{user.givenName}</Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text>{user.surname}</Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text>{user.email}</Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <RoleBadge role={user?.role} />
+                  </Table.Td>
+                  <Table.Td>
+                    <Text>{user.department}</Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <ActionIcon
+                      variant="light"
+                      component={Link}
+                      href={"/dashboard/users/" + user.id}
+                    >
+                      <IconInfoSmall />
+                    </ActionIcon>{" "}
+                    <ActionIcon
+                      variant="light"
+                      color="red"
+                      onClick={() => {
+                        setDeleteId(user.id);
+                        open();
+                      }}
+                    >
+                      <IconTrash />
+                    </ActionIcon>{" "}
+                    <ActionIcon
+                      variant="light"
+                      component={Link}
+                      href={"/dashboard/users/" + user.id + "/edit"}
+                    >
+                      <IconEdit />
+                    </ActionIcon>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+          </Table.Tbody>
+        </Table>
+      </ScrollArea>
+      <Flex justify="center">
+        <Pagination
+          total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
+          value={(data?.page ?? 1) + 1}
+          onChange={(page) => setState({ ...state, page: page })}
+        />
+      </Flex>
       <Modal
         opened={deleteOpened}
         centered

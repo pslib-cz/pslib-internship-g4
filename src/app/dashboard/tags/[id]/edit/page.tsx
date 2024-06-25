@@ -24,7 +24,7 @@ import { tagTypes } from "@/data/lists";
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const router = useRouter();
   const form = useForm({
     initialValues: {
@@ -38,7 +38,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       color: (value) => (value.trim() !== "" ? null : "Značka musí mít barvu"),
       background: (value) =>
         value.trim() !== "" ? null : "Značka musí mít pozadí",
-      type: (value) => (value.trim() !== "" ? null : "Značka musí mít typ"),
+      type: (value) => (value !== "" ? null : "Značka musí mít typ"),
     },
   });
   useEffect(() => {
@@ -73,7 +73,7 @@ const Page = ({ params }: { params: { id: string } }) => {
   if (error) {
     return (
       <Alert color="red" title="Chyba při načítání nebo ukládání značky">
-        {error}
+        {error.message}
       </Alert>
     );
   }
