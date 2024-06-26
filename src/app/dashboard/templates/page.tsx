@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {
-  ScrollArea,
   Title,
   Box,
   Button,
@@ -11,6 +10,7 @@ import {
   Text,
 } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
+import TemplatesTable from "./TemplatesTable";
 
 const Page = () => {
   return (
@@ -32,7 +32,7 @@ const Page = () => {
           Nová
         </Button>
       </Box>
-      <ScrollArea type="auto"></ScrollArea>
+      <TemplatesTable />
     </>
   );
 };

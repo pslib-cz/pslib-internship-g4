@@ -24,15 +24,13 @@ import {
 } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { Location } from "@prisma/client";
+import { Template } from "@prisma/client";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 
-type TLocationsTableProps = {};
-type TLocationsTableState = {
-  filterCountry: string;
-  filterMunicipality: string;
-  filterStreet: string;
+type TTemplatesTableProps = {};
+type TTemplatesTableState = {
+  filterName: string;
   order: string;
   page: number;
   size: number;
@@ -40,17 +38,15 @@ type TLocationsTableState = {
 
 const STORAGE_ID = "locations-table";
 
-const LocationsTable: FC = (TLocationsTableProps) => {
+const TemplatesTable: FC = (TTemplatesTableProps) => {
   const searchParams = useSearchParams();
   const [loadTableState, storeTableState, removeTableState] =
-    useSessionStorage<TLocationsTableState>(STORAGE_ID);
-  const [data, setData] = useState<ListResult<Location> | null>(null);
+    useSessionStorage<TTemplatesTableState>(STORAGE_ID);
+  const [data, setData] = useState<ListResult<Template> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [state, setState] = useState<TLocationsTableState>({
-    filterMunicipality: "",
-    filterCountry: "",
-    filterStreet: "",
-    order: "municipality",
+  const [state, setState] = useState<TTemplatesTableState>({
+    filterName: "",
+    order: "name",
     page: 1,
     size: 10,
   });
@@ -60,15 +56,13 @@ const LocationsTable: FC = (TLocationsTableProps) => {
 
   const fetchData = useCallback(
     (
-      country: string | undefined,
-      municipality: string | undefined,
-      street: string | undefined,
+      name: string | undefined,
       orderBy: string,
       page: number = 1,
       pageSize: number = 10,
     ) => {
       fetch(
-        `/api/locations?country=${country}&municipality=${municipality}&street=${street}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
+        `/api/templates?name=${name}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
         {
           method: "GET",
           headers: {
@@ -97,20 +91,16 @@ const LocationsTable: FC = (TLocationsTableProps) => {
 
   useEffect(() => {
     let storedState = loadTableState();
-    const searchedCountry = searchParams.get("country") ?? "";
-    const searchedMunicipality = searchParams.get("municipality") ?? "";
-    const searchedStreet = searchParams.get("street") ?? "";
-    const orderBy = searchParams.get("orderBy") ?? "municipality";
+    const searchedName = searchParams.get("name") ?? "";
+    const orderBy = searchParams.get("orderBy") ?? "name";
     const paginationPage = searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
       : 1;
     const paginationSize = searchParams.get("size")
       ? parseInt(searchParams.get("size") as string)
       : 10;
-    let URLState: TLocationsTableState = {
-      filterCountry: searchedCountry,
-      filterMunicipality: searchedMunicipality,
-      filterStreet: searchedStreet,
+    let URLState: TTemplatesTableState = {
+      filterName: searchedName,
       order: orderBy,
       page: paginationPage,
       size: paginationSize,
@@ -120,18 +110,14 @@ const LocationsTable: FC = (TLocationsTableProps) => {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    state.filterCountry !== undefined && params.set("country", state.filterCountry);
-    state.filterMunicipality !== undefined && params.set("municipality", state.filterMunicipality);
-    state.filterStreet !== undefined && params.set("street", state.filterStreet);
+    state.filterName !== undefined && params.set("name", state.filterName);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
     window.history.replaceState(null, "", `?${params.toString()}`);
     storeTableState(state);
     fetchData(
-      state.filterCountry,
-      state.filterMunicipality,
-      state.filterStreet,
+      state.filterName,
       state.order,
       state.page,
       state.size,
@@ -147,94 +133,30 @@ const LocationsTable: FC = (TLocationsTableProps) => {
               <Text
                 fw={700}
                 onClick={() => {
-                  let newOrder = state.order === "street" ? "street_desc" : "street";
+                  let newOrder = state.order === "name" ? "name_desc" : "name";
                   setState({ ...state, order: newOrder });
                 }}
                 style={{ cursor: "pointer" }}
               >
-                Ulice{" "}
-                {state.order === "street" ? (
+                Název{" "}
+                {state.order === "name" ? (
                   <IconChevronDown size={12} />
-                ) : state.order === "street_desc" ? (
+                ) : state.order === "name_desc" ? (
                   <IconChevronUp size={12} />
                 ) : null}
               </Text>
             </Table.Th>
-            <Table.Th>
-              <Text fw={700}>Č.p.</Text>
-            </Table.Th>
-            <Table.Th>
-            <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder = state.order === "municipality" ? "municipality_desc" : "municipality";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Obec{" "}
-                {state.order === "municipality" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "municipality_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-              </Table.Th>
-              <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder = state.order === "country" ? "country_desc" : "country";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Stát{" "}
-                {state.order === "country" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "country_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-              </Table.Th>
             <Table.Th>Možnosti</Table.Th>
           </Table.Tr>
           <Table.Tr>
             <Table.Th>
               <TextInput
                 size="xs"
-                value={state.filterStreet}
+                value={state.filterName}
                 onChange={(event) => {
                   setState({
                     ...state,
-                    filterStreet: event.currentTarget.value,
-                    page: 1,
-                  });
-                }}
-              />
-            </Table.Th>
-            <Table.Th></Table.Th>
-            <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterMunicipality}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterMunicipality: event.currentTarget.value,
-                    page: 1,
-                  });
-                }}
-              />
-            </Table.Th>
-            <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterCountry}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterCountry: event.currentTarget.value,
+                    filterName: event.currentTarget.value,
                     page: 1,
                   });
                 }}
@@ -246,10 +168,8 @@ const LocationsTable: FC = (TLocationsTableProps) => {
                 onClick={(event) => {
                   setState({
                     ...state,
-                    filterStreet: "",
-                    filterMunicipality: "",
-                    filterCountry: "",
-                    order: "text",
+                    filterName: "",
+                    order: "name",
                     page: 1,
                   });
                 }}
@@ -270,30 +190,21 @@ const LocationsTable: FC = (TLocationsTableProps) => {
           {data && data.total === 0 && (
             <Table.Tr>
               <Table.Td colSpan={100}>
-                Žádné místo nevyhovuje podmínkám.
+                Žádná šablona nevyhovuje podmínkám.
               </Table.Td>
             </Table.Tr>
           )}
           {data &&
-            data.data.map((location) => (
-              <Table.Tr key={location.id}>
+            data.data.map((template) => (
+              <Table.Tr key={template.id}>
                 <Table.Td>
-                  <Text>{location.street}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{location.descNo}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{location.municipality}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{location.country}</Text>
+                  <Text>{template.name}</Text>
                 </Table.Td>
                 <Table.Td>
                   <ActionIcon
                     variant="light"
                     component={Link}
-                    href={"/dashboard/locations/" + location.id}
+                    href={"/dashboard/templates/" + template.id}
                   >
                     <IconInfoSmall />
                   </ActionIcon>{" "}
@@ -301,7 +212,7 @@ const LocationsTable: FC = (TLocationsTableProps) => {
                     variant="light"
                     color="red"
                     onClick={() => {
-                      setDeleteId(location.id);
+                      setDeleteId(template.id);
                       open();
                     }}
                   >
@@ -310,7 +221,7 @@ const LocationsTable: FC = (TLocationsTableProps) => {
                   <ActionIcon
                     variant="light"
                     component={Link}
-                    href={"/dashboard/locations/" + location.id + "/edit"}
+                    href={"/dashboard/templates/" + template.id + "/edit"}
                   >
                     <IconEdit />
                   </ActionIcon>
@@ -333,17 +244,17 @@ const LocationsTable: FC = (TLocationsTableProps) => {
         centered
         onClose={close}
         size="auto"
-        title="Odstranění místa"
+        title="Odstranění šablony"
         fullScreen={isMobile}
         transitionProps={{ transition: "fade", duration: 200 }}
       >
-        <Text>Opravdu si přejete toto místo odstranit?</Text>
+        <Text>Opravdu si přejete tuto šablonu odstranit?</Text>
         <Text fw={700}>Data pak už nebude možné obnovit.</Text>
         <Group mt="xl">
           <Button
             onClick={() => {
               if (deleteId !== null) {
-                fetch("/api/locations/" + deleteId, {
+                fetch("/api/templates/" + deleteId, {
                   method: "DELETE",
                 })
                   .then((response) => {
@@ -352,13 +263,11 @@ const LocationsTable: FC = (TLocationsTableProps) => {
                     }
                     notifications.show({
                       title: "Povedlo se!",
-                      message: "Místo bylo odstraněno.",
+                      message: "Šablona byla odstraněna.",
                       color: "lime",
                     });
                     fetchData(
-                      state.filterCountry,
-                      state.filterMunicipality,
-                      state.filterStreet,
+                      state.filterName,
                       state.order,
                       state.page,
                       state.size,
@@ -367,7 +276,7 @@ const LocationsTable: FC = (TLocationsTableProps) => {
                   .catch((error) => {
                     notifications.show({
                       title: "Chyba!",
-                      message: "Smazání místa nebylo úspěšné.",
+                      message: "Smazání šablony nebylo úspěšné.",
                       color: "red",
                     });
                   })
@@ -390,4 +299,4 @@ const LocationsTable: FC = (TLocationsTableProps) => {
   );
 };
 
-export default LocationsTable;
+export default TemplatesTable;
