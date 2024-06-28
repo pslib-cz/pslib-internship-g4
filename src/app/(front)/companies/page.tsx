@@ -17,10 +17,13 @@ import { IconHomePlus } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { FilterContext } from "@/providers/CompanyFilterProvider"
+import { CompaniesTable} from "./CompaniesTable"
 
 const Page = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { opened, open, close, filterName, setFilterName, filterTaxNum, setFilterTaxNum, filterActive, setFilterActive, filterMunicipality, setFilterMunicipality, orderBy, setOrderBy } = useContext(FilterContext);
   return (
     <>
       <Breadcrumbs separatorMargin="md" mt="xs">
@@ -62,9 +65,9 @@ const Page = () => {
         </Button>
       </Flex>
       <Box pos="relative"></Box>
-      <ScrollArea>
-        <Suspense fallback={<Loader />}></Suspense>
-      </ScrollArea>
+        <Suspense fallback={<Loader />}>
+          <CompaniesTable />
+        </Suspense>
     </>
   );
 };
