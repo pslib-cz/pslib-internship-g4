@@ -20,10 +20,6 @@ export async function GET(request: NextRequest) {
   const country = searchParams.get("country");
   const municipality = searchParams.get("municipality");
   const street = searchParams.get("street");
-  const latWest = Number(searchParams.get("latWest"));
-  const latEast = Number(searchParams.get("latEast"));
-  const longNorth = Number(searchParams.get("longNorth"));
-  const longSouth = Number(searchParams.get("longSouth"));
   const orderBy = searchParams.get("orderBy");
   const page: number | null =
     searchParams.get("page") !== null
@@ -53,14 +49,6 @@ export async function GET(request: NextRequest) {
       street: {
         contains: street !== null ? street : undefined,
       },
-      latitude: {
-        gte: latWest !== null ? latWest : undefined,
-        lte: latEast !== null ? latEast : undefined,
-      },
-      longitude: {
-        gte: longSouth !== null ? longSouth : undefined,
-        lte: longNorth !== null ? longNorth : undefined,
-      },
     },
   });
 
@@ -73,6 +61,8 @@ export async function GET(request: NextRequest) {
       postalCode: true,
       latitude: true,
       longitude: true,
+      descNo: true,
+      orientNo: true,
     },
     where: {
       country: {
@@ -83,18 +73,27 @@ export async function GET(request: NextRequest) {
       },
       street: {
         contains: street !== null ? street : undefined,
-      },
-      latitude: {
-        gte: latWest !== null ? latWest : undefined,
-        lte: latEast !== null ? latEast : undefined,
-      },
-      longitude: {
-        gte: longSouth !== null ? longSouth : undefined,
-        lte: longNorth !== null ? longNorth : undefined,
-      },
+      },      
     },
     orderBy: {
-      [orderBy || "id"]: "asc",
+      municipality:
+        orderBy === "municipality"
+          ? "asc"
+          : orderBy === "municipality_desc"
+            ? "desc"
+            : undefined,
+      street:
+        orderBy === "street"
+          ? "asc"
+          : orderBy === "street_desc"
+            ? "desc"
+            : undefined,
+      country:
+        orderBy === "country"
+          ? "asc"
+          : orderBy === "country_desc"
+            ? "desc"
+            : undefined,
     },
     skip: page !== null && size !== null ? page * size : undefined,
     take: size !== null ? size : undefined,
@@ -123,7 +122,17 @@ export async function POST(request: NextRequest) {
       status: 403,
     });
   }
-
+  const loc = await prisma.location.findFirst({
+    where: {
+      country: body.country,
+      municipality: body.municipality,
+      street: body.street,
+      descNo: body.descNo
+    }
+  });
+  if(loc) {
+    return new Response(JSON.stringify(loc), {status: 200});
+  }
   const location = await prisma.location.create({
     data: {
       country: body.country === "" ? undefined : body.country,
@@ -134,6 +143,7 @@ export async function POST(request: NextRequest) {
       longitude: body.longitude === "" ? undefined : Number(body.longitude),
       descNo: body.descNo === "" ? undefined : Number(body.descNo),
       orientNo: body.orientNo === "" ? undefined : String(body.orientNo),
+      text: body.text === "" ? undefined : body.text,
       created: new Date(),
     },
   });

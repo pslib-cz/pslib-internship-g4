@@ -21,7 +21,7 @@ export const Coordinates: React.FC<CoordinatesProps> = ({
         <Text>
           {String(latitude)} s.š., {String(longitude)} v.d.
         </Text>
-        <IconMapPin size="1em" color="cyan" />
+        <IconMapPin size="1em" color="orange" />
       </Flex>
     </Link>
   );

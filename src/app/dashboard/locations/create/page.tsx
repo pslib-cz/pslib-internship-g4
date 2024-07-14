@@ -31,7 +31,7 @@ const Page = () => {
     longitude: number | undefined;
   }>({
     initialValues: {
-      country: "Česká republika",
+      country: "Česko",
       municipality: "",
       postalCode: undefined,
       street: "",
@@ -75,6 +75,7 @@ const Page = () => {
               latitude: number | undefined;
               longitude: number | undefined;
             }) => {
+              console.log(values);
               fetch(`/api/locations`, {
                 method: "POST",
                 headers: {
@@ -89,7 +90,7 @@ const Page = () => {
                   postalCode: values.postalCode ?? null,
                   latitude: values.latitude ?? null,
                   longitude: values.longitude ?? null,
-                  name:
+                  text:
                     values.country +
                     ", " +
                     values.municipality +
@@ -182,7 +183,7 @@ const Page = () => {
                     return response.json();
                   })
                   .then((result) => {
-                    console.log(result);
+                    //console.log(result);
                     notifications.show({
                       title: "Povedlo se!",
                       message:

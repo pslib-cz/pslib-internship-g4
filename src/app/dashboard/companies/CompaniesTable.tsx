@@ -14,6 +14,7 @@ import {
   Alert,
   Pagination,
   Flex,
+  NativeSelect
 } from "@mantine/core";
 import {
   IconInfoSmall,
@@ -21,6 +22,8 @@ import {
   IconEdit,
   IconChevronDown,
   IconChevronUp,
+  IconCheck,
+  IconX,
 } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -34,6 +37,7 @@ type TCompaniesTableState = {
   filterTax: string;
   filterActive: boolean | undefined;
   filterMunicipality: string;
+  filterCountry: string;
   order: string;
   page: number;
   size: number;
@@ -48,13 +52,14 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
   const [data, setData] = useState<ListResult<CompanyWithLocation> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [state, setState] = useState<TCompaniesTableState>({
-    filterMunicipality: "",
-    filterTax: "",
-    filterName: "",
-    filterActive: undefined,
-    order: "name",
-    page: 1,
-    size: 10,
+    filterMunicipality: searchParams.get("municipality") ?? "",
+    filterTax: searchParams.get("tax") ?? "",
+    filterName: searchParams.get("name") ?? "",
+    filterActive: (searchParams.has("active") && searchParams.get("active") !== "") ? (searchParams.get("active") === "true" ? true : false) : undefined,
+    filterCountry: searchParams.get("country") ?? "",
+    order: searchParams.get("orderBy") ?? "name",
+    page: searchParams.get("page") ? parseInt(searchParams.get("page") as string) : 1,
+    size: searchParams.get("size") ? parseInt(searchParams.get("size") as string) : 10,
   });
   const [deleteOpened, { open, close }] = useDisclosure(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -66,12 +71,13 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
       tax: string | undefined,
       active: boolean | undefined,
       municipality: string | undefined,
+      country: string | undefined,  
       orderBy: string,
       page: number = 1,
       pageSize: number = 10,
     ) => {
       fetch(
-        `/api/companies?name=${name}&taxNum=${tax}&active=${active}&municipality=${municipality}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
+        `/api/companies?name=${name}&taxNum=${tax}&active=${active}&municipality=${municipality}&country=${country}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
         {
           method: "GET",
           headers: {
@@ -102,9 +108,10 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
     let storedState = loadTableState();
     const searchedName = searchParams.get("name") ?? "";
     const searchedTax = searchParams.get("tax") ?? "";
-    const searchedActive = searchParams.get("active") ?? "";
+    const searchedActive = (searchParams.has("active") && searchParams.get("active") !== "") ? (searchParams.get("active") === "true" ? true : false) : undefined;
     const searchedMunicipality = searchParams.get("municipality") ?? "";
-    const orderBy = searchParams.get("orderBy") ?? "municipality";
+    const searchedCountry = searchParams.get("country") ?? "";
+    const orderBy = searchParams.get("orderBy") ?? "name";
     const paginationPage = searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
       : 1;
@@ -115,7 +122,8 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
       filterName: searchedName,
       filterTax: searchedTax,
       filterMunicipality: searchedMunicipality,
-      filterActive: searchedActive === "true" ? true : searchedActive === "false" ? false : undefined,
+      filterActive: searchedActive,
+      filterCountry: searchedCountry,
       order: orderBy,
       page: paginationPage,
       size: paginationSize,
@@ -127,7 +135,9 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
     const params = new URLSearchParams(searchParams.toString());
     state.filterName !== undefined && params.set("name", state.filterName);
     state.filterMunicipality !== undefined && params.set("municipality", state.filterMunicipality);
-    state.filterActive !== undefined && params.set("active", state.filterActive ? "true" : "false");
+    state.filterActive === undefined ? params.set("active", "") : params.set("active", state.filterActive === true ? "true" : "false");
+    state.filterTax !== undefined && params.set("tax", state.filterTax);
+    state.filterCountry !== undefined && params.set("country", state.filterCountry);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
@@ -138,6 +148,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
       state.filterTax,
       state.filterActive,
       state.filterMunicipality,
+      state.filterCountry,
       state.order,
       state.page,
       state.size,
@@ -167,8 +178,9 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
               </Text>
             </Table.Th>
             <Table.Th>
-              <Text fw={700}>Č.p.</Text>
+              <Text fw={700}>IČO</Text>
             </Table.Th>
+            <Table.Th><Text fw={700}>Aktivní</Text></Table.Th>
             <Table.Th>
             <Text
                 fw={700}
@@ -219,7 +231,6 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                 }}
               />
             </Table.Th>
-            <Table.Th></Table.Th>
             <Table.Th>
               <TextInput
                 size="xs"
@@ -234,13 +245,33 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
               />
             </Table.Th>
             <Table.Th>
+            <NativeSelect size="xs" value={state.filterActive === undefined ? "" : (state.filterActive === true ? "true" : "false")} onChange={(event) => setState({...state, filterActive: (event.currentTarget.value === "" ? undefined : (event.currentTarget.value === "true" ? true : false)), page: 1})} data={[
+                                { label: 'Vše', value: '' },
+                                { label: 'Aktivní', value: "true" },
+                                { label: 'Zrušená', value: 'false' }
+                            ]}/>
+            </Table.Th>
+            <Table.Th>
               <TextInput
                 size="xs"
-                value={state.filterActive}
+                value={state.filterMunicipality}
                 onChange={(event) => {
                   setState({
                     ...state,
-                    filterActive: event.currentTarget.value,
+                    filterMunicipality: event.currentTarget.value,
+                    page: 1,
+                  });
+                }}
+              />
+            </Table.Th>
+            <Table.Th>
+              <TextInput
+                size="xs"
+                value={state.filterCountry}
+                onChange={(event) => {
+                  setState({
+                    ...state,
+                    filterCountry: event.currentTarget.value,
                     page: 1,
                   });
                 }}
@@ -287,14 +318,15 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                 <Table.Td>
                   <Text>{company.name}</Text>
                 </Table.Td>
+                  <Table.Td><Text>{company.companyIdentificationNumber ? String(company.companyIdentificationNumber).padStart(8, "0") : ""}</Text></Table.Td>
+                  <Table.Td>
+                    <Text>{company.active ? <IconCheck /> : <IconX />}</Text>
+                  </Table.Td>  
                 <Table.Td>
-                  <Text>{company.descNo}</Text>
+                  <Text>{company.location.municipality}</Text>
                 </Table.Td>
                 <Table.Td>
-                  <Text>{company.municipality}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{company.country}</Text>
+                  <Text>{company.location.country}</Text>
                 </Table.Td>
                 <Table.Td>
                   <ActionIcon
@@ -363,9 +395,11 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                       color: "lime",
                     });
                     fetchData(
-                      state.filterCountry,
+                      state.filterName,
+                      state.filterTax,
+                      state.filterActive,
                       state.filterMunicipality,
-                      state.filterStreet,
+                      state.filterCountry,
                       state.order,
                       state.page,
                       state.size,

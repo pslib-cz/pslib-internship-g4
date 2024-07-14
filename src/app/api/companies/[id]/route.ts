@@ -9,7 +9,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: number } },
 ) {
-  const id = params.id;
+  const id = Number(params.id);
 
   const session = await auth();
   let company: CompanyWithLocationAndCreator | null =

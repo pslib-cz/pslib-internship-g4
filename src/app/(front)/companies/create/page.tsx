@@ -5,11 +5,11 @@ import { Breadcrumbs, Anchor, Text, Title, TextInput, Button, Group, Container, 
 import { notifications } from '@mantine/notifications'
 import { useForm } from '@mantine/form'
 import { useRouter } from 'next/navigation'
-import { RichTextEditor, Link as TipLink } from '@mantine/tiptap';
-import { useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
+import { RichTextEditor, Link as TipLink } from '@mantine/tiptap'
+import { useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
-import '@mantine/tiptap/styles.css';
+import '@mantine/tiptap/styles.css'
 
 const Page = () => {
     const router = useRouter()

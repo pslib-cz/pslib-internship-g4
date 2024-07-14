@@ -1,11 +1,17 @@
 "use client"
 
 import React, { Suspense, useEffect, useRef, useState, useCallback } from 'react'
-import { Box, Text, Anchor, Breadcrumbs, TextInput, Title, LoadingOverlay, ActionIcon, Paper, Alert, Button, useComputedColorScheme, Container } from '@mantine/core'
+import { Box, Text, Anchor, Breadcrumbs, TextInput, Title, LoadingOverlay, ActionIcon, Paper, Alert, Button, useComputedColorScheme, Container, Group } from '@mantine/core'
 import Link from 'next/link'
 import { IconArrowRight } from '@tabler/icons-react'
 import { notifications } from '@mantine/notifications'
 import { useRouter } from 'next/navigation'
+import { useForm } from '@mantine/form'
+import { RichTextEditor, Link as TipLink } from '@mantine/tiptap'
+import { useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder'
+import '@mantine/tiptap/styles.css'
 import { PlaceCoordinates } from '../../../api/locations/geo/route'
 
 type CompanyData = {
@@ -47,114 +53,6 @@ const CompanyDisplay = ({id}: {id: string}) => {
     const colorScheme = useComputedColorScheme();
     const router = useRouter();
 
-    const handleAddCompany = useCallback(async () => {
-        let coords: PlaceCoordinates = {lat: null, lon: null}
-        await fetch(`/api/locations/geo`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                country: compData?.sidlo.nazevStatu ?? "",
-                municipality: compData?.sidlo.nazevObce ?? "",
-                street: compData?.sidlo.nazevUlice ?? compData?.sidlo.nazevCastiObce ?? "",
-                descNumber: compData?.sidlo.cisloDomovni ?? "",
-                orientNumber: compData?.sidlo.cisloOrientacni ?? ""
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Chyba při geokódování adresy firmy.');
-            }
-            return response.json();
-        })
-        .then((data: PlaceCoordinates) => {
-            notifications.show({
-                title: 'Úspěch!',
-                message: `Geokódování bylo úspěšné: ${data.lat}, ${data.lon}.`,
-                color: "green"
-            });
-            if (data !== null) coords = data;
-        })
-        .catch(error => {
-            notifications.show({
-                title: 'Chyba!',
-                message: 'Při geokódování adresy firmy došlo k chybě.',
-                color: "red"
-            });
-        });
-        fetch (`/api/locations`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                country: compData?.sidlo.nazevStatu ?? "",
-                municipality: compData?.sidlo.nazevObce ?? "",
-                postalCode: compData?.sidlo.psc ?? "",
-                street: compData?.sidlo.nazevUlice ?? "",
-                orientNo: compData?.sidlo.cisloOrientacni ?? "",
-                descNo: compData?.sidlo.cisloDomovni ?? "",
-                latitude: coords.lat === null ? null : coords.lat.toString(),
-                longitude: coords.lon === null ? null : coords.lon.toString()
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Chyba při přidávání adresy firmy do databáze.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            let locationId = data.id;
-            notifications.show({
-                title: 'Úspěch!',
-                message: 'Místo bylo vytvořeno.',
-                color: "green"
-            });
-            fetch(`/api/companies`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    companyIdentificationNumber: Number(compData?.ico),
-                    name: compData?.obchodniJmeno,
-                    locationId: locationId
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Chyba při přidávání firmy do databáze.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                notifications.show({
-                    title: 'Úspěch!',
-                    message: `Záznam firmy byl úspěšně vytvořen.`,
-                    color: "green"
-                });
-                router.push(`/companies/${data.id}`);
-            })
-            .catch(error => {
-                notifications.show({
-                    title: 'Chyba!',
-                    message: 'Při přidávání firmy do databáze došlo k chybě.',
-                    color: "red"
-                })
-            })
-            
-        })
-        .catch(error => {
-            notifications.show({
-                title: 'Chyba!',
-                message: 'Při přidávání adresy firmy došlo k chybě.',
-                color: "red"
-            })
-        });
-    }, [compData]);
-
     useEffect(() => {
         setError(null);
         fetch(`${process.env.NEXT_PUBLIC_ARES_URL}${id.padStart(8,"0")}`, {})
@@ -191,6 +89,25 @@ const CompanyDisplay = ({id}: {id: string}) => {
             }
         })
     }, [id]);
+    const form = useForm({
+        initialValues: {
+          description: "Popis" || undefined,
+          website: "" || undefined,
+        },
+        validate: {
+        },
+    });
+    const editor = useEditor({
+        extensions: [
+          StarterKit,
+          Placeholder.configure({ placeholder: 'Jedna z největších megakorporací světa.' }),
+          TipLink,
+        ],
+        content: '',
+        onUpdate({ editor }) {
+          form.setValues({ description: editor.getHTML()}); 
+        },
+    });
     if (error) {
         return <Alert color="red">{error.message}</Alert>
     }
@@ -218,7 +135,142 @@ const CompanyDisplay = ({id}: {id: string}) => {
             <Box mt="md">
             {companyStatus === "exists" ? <Alert color="green">Firma s tímto IČO již existuje v databázi.</Alert> : null}
             {companyStatus === "error" ? <Alert color="red">Chyba při ověřování existence firmy.</Alert> : null}
-            {companyStatus === "missing" ? <Button onClick={e => handleAddCompany()}>Přidat firmu do databáze</Button> : null}
+            {companyStatus === "missing" ? (
+                <form onSubmit={form.onSubmit(
+                    // Geocoding
+                    async (values) => {
+                        let coords: PlaceCoordinates = {lat: null, lon: null}
+                        await fetch(`/api/locations/geo`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                country: compData?.sidlo.nazevStatu ?? "",
+                                municipality: compData?.sidlo.nazevObce ?? "",
+                                street: compData?.sidlo.nazevUlice ?? compData?.sidlo.nazevCastiObce ?? "",
+                                descNumber: compData?.sidlo.cisloDomovni ?? "",
+                                orientNumber: compData?.sidlo.cisloOrientacni ?? ""
+                            })
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Chyba při geokódování adresy firmy.');
+                            }
+                            return response.json();
+                        })
+                        .then((data: PlaceCoordinates) => {
+                            notifications.show({
+                                title: 'Úspěch!',
+                                message: `Geokódování bylo úspěšné: ${data.lat}, ${data.lon}.`,
+                                color: "green"
+                            });
+                            if (data !== null) coords = data;
+                        })
+                        .catch(error => {
+                            notifications.show({
+                                title: 'Chyba!',
+                                message: 'Při geokódování adresy firmy došlo k chybě.',
+                                color: "red"
+                            });
+                        });
+                        fetch (`/api/locations`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                country: compData?.sidlo.nazevStatu ?? "",
+                                municipality: compData?.sidlo.nazevObce ?? "",
+                                postalCode: compData?.sidlo.psc ?? "",
+                                street: compData?.sidlo.nazevUlice ?? "",
+                                orientNo: compData?.sidlo.cisloOrientacni ?? "",
+                                descNo: compData?.sidlo.cisloDomovni ?? "",
+                                latitude: coords.lat === null ? null : coords.lat.toString(),
+                                longitude: coords.lon === null ? null : coords.lon.toString(),
+                                description: values.description ?? "",
+                                website: values.website ?? ""
+                            })
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Chyba při přidávání adresy firmy do databáze.');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            let locationId = data.id;
+                            notifications.show({
+                                title: 'Úspěch!',
+                                message: 'Místo bylo vytvořeno.',
+                                color: "green"
+                            });
+                            fetch(`/api/companies`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    companyIdentificationNumber: Number(compData?.ico),
+                                    name: compData?.obchodniJmeno,
+                                    locationId: locationId
+                                })
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Chyba při přidávání firmy do databáze.');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                notifications.show({
+                                    title: 'Úspěch!',
+                                    message: `Záznam firmy byl úspěšně vytvořen.`,
+                                    color: "green"
+                                });
+                                router.push(`/companies/${data.id}`);
+                            })
+                            .catch(error => {
+                                notifications.show({
+                                    title: 'Chyba!',
+                                    message: 'Při přidávání firmy do databáze došlo k chybě.',
+                                    color: "red"
+                                })
+                            })
+                            
+                        })
+                        .catch(error => {
+                            notifications.show({
+                                title: 'Chyba!',
+                                message: 'Při přidávání adresy firmy došlo k chybě.',
+                                color: "red"
+                            })
+                        });
+                    })}>
+                    <Text>K přidávané firmě můžete (ale nemusíte) přidat krátký textový popis historie firmy, činnosti a zaměření firmy. Obecně informace, které by mohly Vaším spolužákum pomoci s výběrem firmy na praxi.</Text>
+                    <Text>Tyto dodatečné informace už pak nebudete mít možnost upravit. Případné úpravy mohou provést pouze správci aplikace.</Text>
+                    <Text>Popis</Text>
+                    <RichTextEditor editor={editor} {...form.getInputProps('description')}>
+                        <RichTextEditor.Toolbar>
+                            <RichTextEditor.Bold />
+                            <RichTextEditor.Italic />
+                            <RichTextEditor.Underline />
+                            <RichTextEditor.Strikethrough />
+                            <RichTextEditor.Link />
+                        </RichTextEditor.Toolbar>
+                    <RichTextEditor.Content />
+                </RichTextEditor>
+                <TextInput  
+                label="Webová stránka" 
+                placeholder="https://arasaka.cz" 
+                {...form.getInputProps('website')} 
+                />
+                <Group justify="flex-start" mt="md">
+                    <Button type="submit">Přidat firmu do databáze</Button>
+                    <Button component={Link} href="/companies" variant="default">Storno</Button>
+                </Group>
+                </form>              
+            ) : null}
             </Box>
         </Paper>
     );
