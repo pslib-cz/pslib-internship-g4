@@ -17,13 +17,13 @@ import { IconHomePlus } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { FilterContext } from "@/providers/CompanyFilterProvider"
-import { CompaniesTable} from "./CompaniesTable"
+import { FilterContext } from "@/providers/CompanyFilterProvider";
+import { CompaniesTable } from "./CompaniesTable";
 
 const Page = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { opened, open, close, filterName, setFilterName, filterTaxNum, setFilterTaxNum, filterActive, setFilterActive, filterMunicipality, setFilterMunicipality, orderBy, setOrderBy } = useContext(FilterContext);
+  const [state, dispatch] = useContext(FilterContext);
   return (
     <>
       <Breadcrumbs separatorMargin="md" mt="xs">
@@ -57,7 +57,10 @@ const Page = () => {
               </Button>
             </>
           )}
-        <Button onClick={(e) => open()} variant="default">
+        <Button
+          onClick={(e) => dispatch({ type: "SET_OPENED", opened: true })}
+          variant="default"
+        >
           Rozšířený filtr
         </Button>
         <Button component={Link} href="/companies/map" variant="default">
@@ -65,9 +68,9 @@ const Page = () => {
         </Button>
       </Flex>
       <Box pos="relative"></Box>
-        <Suspense fallback={<Loader />}>
-          <CompaniesTable />
-        </Suspense>
+      <Suspense fallback={<Loader />}>
+        <CompaniesTable />
+      </Suspense>
     </>
   );
 };

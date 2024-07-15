@@ -1,14 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Title,
-  Box,
-  Button,
-  Breadcrumbs,
-  Anchor,
-  Text,
-} from "@mantine/core";
+import { Title, Box, Button, Breadcrumbs, Anchor, Text } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import TemplatesTable from "./TemplatesTable";
 

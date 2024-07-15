@@ -116,12 +116,7 @@ const TemplatesTable: FC = (TTemplatesTableProps) => {
     params.set("orderBy", state.order);
     window.history.replaceState(null, "", `?${params.toString()}`);
     storeTableState(state);
-    fetchData(
-      state.filterName,
-      state.order,
-      state.page,
-      state.size,
-    );
+    fetchData(state.filterName, state.order, state.page, state.size);
   }, [state, fetchData, searchParams, storeTableState]);
 
   return (

@@ -11,8 +11,8 @@ import {
   TextInput,
   NumberInput,
 } from "@mantine/core";
-import { useSession } from "next-auth/react";
-import FilterProvider, {
+import {
+  FilterProvider,
   FilterContext,
 } from "@/providers/CompanyFilterProvider";
 import { useMediaQuery } from "@mantine/hooks";
@@ -24,23 +24,11 @@ type Props = {
 const FilterDrawer = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(max-width: 992px)");
-  const {
-    opened,
-    close,
-    filterName,
-    setFilterName,
-    filterTaxNum,
-    setFilterTaxNum,
-    filterActive,
-    setFilterActive,
-    filterMunicipality,
-    setFilterMunicipality,
-    orderBy,
-  } = useContext(FilterContext);
+  const [state, dispatch] = useContext(FilterContext);
   return (
     <Drawer
-      opened={opened}
-      onClose={close}
+      opened={state.opened}
+      onClose={() => dispatch({ type: "SET_OPENED", opened: false })}
       padding="md"
       title="Filtrování firem"
       zIndex={1000}
@@ -50,25 +38,36 @@ const FilterDrawer = () => {
         <Grid.Col span={isMobile ? 12 : isTablet ? 6 : 4}>
           <TextInput
             label="Název"
-            value={filterName}
-            onChange={(event) => setFilterName(event.currentTarget.value)}
+            value={state.filterName}
+            onChange={(event) =>
+              dispatch({
+                type: "SET_NAME_FILTER",
+                text: event.currentTarget.value,
+              })
+            }
           />
         </Grid.Col>
         <Grid.Col span={isMobile ? 12 : isTablet ? 6 : 4}>
           <NumberInput
             label="IČO"
-            value={filterTaxNum}
-            onChange={(value) =>
-              setFilterTaxNum(value === "" ? undefined : Number(value))
+            value={state.filterTaxNum}
+            onChange={(val) =>
+              dispatch({
+                type: "SET_TAX_FILTER",
+                number: val === "" ? undefined : Number(val),
+              })
             }
           />
         </Grid.Col>
         <Grid.Col span={isMobile ? 12 : isTablet ? 6 : 4}>
           <TextInput
             label="Sídlo firmy (obec)"
-            value={filterMunicipality}
+            value={state.filterMunicipality}
             onChange={(event) =>
-              setFilterMunicipality(event.currentTarget.value)
+              dispatch({
+                type: "SET_MUNICIPALITY_FILTER",
+                text: event.currentTarget.value,
+              })
             }
           />
         </Grid.Col>
@@ -76,20 +75,26 @@ const FilterDrawer = () => {
           <Text size="sm">Aktivní</Text>
           <Button.Group>
             <Button
-              onClick={() => setFilterActive(true)}
-              color={filterActive === true ? "blue" : "gray"}
+              onClick={() =>
+                dispatch({ type: "SET_ACTIVE_FILTER", activity: true })
+              }
+              color={state.filterActive === true ? "blue" : "gray"}
             >
               Ano
             </Button>
             <Button
-              onClick={() => setFilterActive(false)}
-              color={filterActive === false ? "blue" : "gray"}
+              onClick={() =>
+                dispatch({ type: "SET_ACTIVE_FILTER", activity: false })
+              }
+              color={state.filterActive === false ? "blue" : "gray"}
             >
               Ne
             </Button>
             <Button
-              onClick={() => setFilterActive(undefined)}
-              color={filterActive === undefined ? "blue" : "gray"}
+              onClick={() =>
+                dispatch({ type: "SET_ACTIVE_FILTER", activity: undefined })
+              }
+              color={state.filterActive === undefined ? "blue" : "gray"}
             >
               Vše
             </Button>
@@ -104,7 +109,6 @@ const FilterDrawer = () => {
 };
 
 const FrontLayout = ({ children }: Props) => {
-  const { data: session, status } = useSession();
   return (
     <FilterProvider>
       {children}

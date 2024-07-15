@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       },
       street: {
         contains: street !== null ? street : undefined,
-      },      
+      },
     },
     orderBy: {
       municipality:
@@ -127,11 +127,11 @@ export async function POST(request: NextRequest) {
       country: body.country,
       municipality: body.municipality,
       street: body.street,
-      descNo: body.descNo
-    }
+      descNo: body.descNo,
+    },
   });
-  if(loc) {
-    return new Response(JSON.stringify(loc), {status: 200});
+  if (loc) {
+    return new Response(JSON.stringify(loc), { status: 200 });
   }
   const location = await prisma.location.create({
     data: {

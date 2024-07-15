@@ -120,9 +120,12 @@ const LocationsTable: FC = (TLocationsTableProps) => {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    state.filterCountry !== undefined && params.set("country", state.filterCountry);
-    state.filterMunicipality !== undefined && params.set("municipality", state.filterMunicipality);
-    state.filterStreet !== undefined && params.set("street", state.filterStreet);
+    state.filterCountry !== undefined &&
+      params.set("country", state.filterCountry);
+    state.filterMunicipality !== undefined &&
+      params.set("municipality", state.filterMunicipality);
+    state.filterStreet !== undefined &&
+      params.set("street", state.filterStreet);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
@@ -147,7 +150,8 @@ const LocationsTable: FC = (TLocationsTableProps) => {
               <Text
                 fw={700}
                 onClick={() => {
-                  let newOrder = state.order === "street" ? "street_desc" : "street";
+                  let newOrder =
+                    state.order === "street" ? "street_desc" : "street";
                   setState({ ...state, order: newOrder });
                 }}
                 style={{ cursor: "pointer" }}
@@ -164,10 +168,13 @@ const LocationsTable: FC = (TLocationsTableProps) => {
               <Text fw={700}>Č.p.</Text>
             </Table.Th>
             <Table.Th>
-            <Text
+              <Text
                 fw={700}
                 onClick={() => {
-                  let newOrder = state.order === "municipality" ? "municipality_desc" : "municipality";
+                  let newOrder =
+                    state.order === "municipality"
+                      ? "municipality_desc"
+                      : "municipality";
                   setState({ ...state, order: newOrder });
                 }}
                 style={{ cursor: "pointer" }}
@@ -179,12 +186,13 @@ const LocationsTable: FC = (TLocationsTableProps) => {
                   <IconChevronUp size={12} />
                 ) : null}
               </Text>
-              </Table.Th>
-              <Table.Th>
+            </Table.Th>
+            <Table.Th>
               <Text
                 fw={700}
                 onClick={() => {
-                  let newOrder = state.order === "country" ? "country_desc" : "country";
+                  let newOrder =
+                    state.order === "country" ? "country_desc" : "country";
                   setState({ ...state, order: newOrder });
                 }}
                 style={{ cursor: "pointer" }}
@@ -196,7 +204,7 @@ const LocationsTable: FC = (TLocationsTableProps) => {
                   <IconChevronUp size={12} />
                 ) : null}
               </Text>
-              </Table.Th>
+            </Table.Th>
             <Table.Th>Možnosti</Table.Th>
           </Table.Tr>
           <Table.Tr>

@@ -14,7 +14,7 @@ import {
   Alert,
   Pagination,
   Flex,
-  NativeSelect
+  NativeSelect,
 } from "@mantine/core";
 import {
   IconInfoSmall,
@@ -43,23 +43,34 @@ type TCompaniesTableState = {
   size: number;
 };
 
-const STORAGE_ID ="companies-table";
+const STORAGE_ID = "companies-table";
 
 const CompaniesTable: FC = (TCompaniesTableProps) => {
   const searchParams = useSearchParams();
   const [loadTableState, storeTableState, removeTableState] =
     useSessionStorage<TCompaniesTableState>(STORAGE_ID);
-  const [data, setData] = useState<ListResult<CompanyWithLocation> | null>(null);
+  const [data, setData] = useState<ListResult<CompanyWithLocation> | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [state, setState] = useState<TCompaniesTableState>({
     filterMunicipality: searchParams.get("municipality") ?? "",
     filterTax: searchParams.get("tax") ?? "",
     filterName: searchParams.get("name") ?? "",
-    filterActive: (searchParams.has("active") && searchParams.get("active") !== "") ? (searchParams.get("active") === "true" ? true : false) : undefined,
+    filterActive:
+      searchParams.has("active") && searchParams.get("active") !== ""
+        ? searchParams.get("active") === "true"
+          ? true
+          : false
+        : undefined,
     filterCountry: searchParams.get("country") ?? "",
     order: searchParams.get("orderBy") ?? "name",
-    page: searchParams.get("page") ? parseInt(searchParams.get("page") as string) : 1,
-    size: searchParams.get("size") ? parseInt(searchParams.get("size") as string) : 10,
+    page: searchParams.get("page")
+      ? parseInt(searchParams.get("page") as string)
+      : 1,
+    size: searchParams.get("size")
+      ? parseInt(searchParams.get("size") as string)
+      : 10,
   });
   const [deleteOpened, { open, close }] = useDisclosure(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -71,7 +82,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
       tax: string | undefined,
       active: boolean | undefined,
       municipality: string | undefined,
-      country: string | undefined,  
+      country: string | undefined,
       orderBy: string,
       page: number = 1,
       pageSize: number = 10,
@@ -108,7 +119,12 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
     let storedState = loadTableState();
     const searchedName = searchParams.get("name") ?? "";
     const searchedTax = searchParams.get("tax") ?? "";
-    const searchedActive = (searchParams.has("active") && searchParams.get("active") !== "") ? (searchParams.get("active") === "true" ? true : false) : undefined;
+    const searchedActive =
+      searchParams.has("active") && searchParams.get("active") !== ""
+        ? searchParams.get("active") === "true"
+          ? true
+          : false
+        : undefined;
     const searchedMunicipality = searchParams.get("municipality") ?? "";
     const searchedCountry = searchParams.get("country") ?? "";
     const orderBy = searchParams.get("orderBy") ?? "name";
@@ -134,10 +150,14 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     state.filterName !== undefined && params.set("name", state.filterName);
-    state.filterMunicipality !== undefined && params.set("municipality", state.filterMunicipality);
-    state.filterActive === undefined ? params.set("active", "") : params.set("active", state.filterActive === true ? "true" : "false");
+    state.filterMunicipality !== undefined &&
+      params.set("municipality", state.filterMunicipality);
+    state.filterActive === undefined
+      ? params.set("active", "")
+      : params.set("active", state.filterActive === true ? "true" : "false");
     state.filterTax !== undefined && params.set("tax", state.filterTax);
-    state.filterCountry !== undefined && params.set("country", state.filterCountry);
+    state.filterCountry !== undefined &&
+      params.set("country", state.filterCountry);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
@@ -180,12 +200,17 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
             <Table.Th>
               <Text fw={700}>IČO</Text>
             </Table.Th>
-            <Table.Th><Text fw={700}>Aktivní</Text></Table.Th>
             <Table.Th>
-            <Text
+              <Text fw={700}>Aktivní</Text>
+            </Table.Th>
+            <Table.Th>
+              <Text
                 fw={700}
                 onClick={() => {
-                  let newOrder = state.order === "municipality" ? "municipality_desc" : "municipality";
+                  let newOrder =
+                    state.order === "municipality"
+                      ? "municipality_desc"
+                      : "municipality";
                   setState({ ...state, order: newOrder });
                 }}
                 style={{ cursor: "pointer" }}
@@ -197,12 +222,13 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                   <IconChevronUp size={12} />
                 ) : null}
               </Text>
-              </Table.Th>
-              <Table.Th>
+            </Table.Th>
+            <Table.Th>
               <Text
                 fw={700}
                 onClick={() => {
-                  let newOrder = state.order === "country" ? "country_desc" : "country";
+                  let newOrder =
+                    state.order === "country" ? "country_desc" : "country";
                   setState({ ...state, order: newOrder });
                 }}
                 style={{ cursor: "pointer" }}
@@ -214,7 +240,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                   <IconChevronUp size={12} />
                 ) : null}
               </Text>
-              </Table.Th>
+            </Table.Th>
             <Table.Th>Možnosti</Table.Th>
           </Table.Tr>
           <Table.Tr>
@@ -245,11 +271,33 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
               />
             </Table.Th>
             <Table.Th>
-            <NativeSelect size="xs" value={state.filterActive === undefined ? "" : (state.filterActive === true ? "true" : "false")} onChange={(event) => setState({...state, filterActive: (event.currentTarget.value === "" ? undefined : (event.currentTarget.value === "true" ? true : false)), page: 1})} data={[
-                                { label: 'Vše', value: '' },
-                                { label: 'Aktivní', value: "true" },
-                                { label: 'Zrušená', value: 'false' }
-                            ]}/>
+              <NativeSelect
+                size="xs"
+                value={
+                  state.filterActive === undefined
+                    ? ""
+                    : state.filterActive === true
+                      ? "true"
+                      : "false"
+                }
+                onChange={(event) =>
+                  setState({
+                    ...state,
+                    filterActive:
+                      event.currentTarget.value === ""
+                        ? undefined
+                        : event.currentTarget.value === "true"
+                          ? true
+                          : false,
+                    page: 1,
+                  })
+                }
+                data={[
+                  { label: "Vše", value: "" },
+                  { label: "Aktivní", value: "true" },
+                  { label: "Zrušená", value: "false" },
+                ]}
+              />
             </Table.Th>
             <Table.Th>
               <TextInput
@@ -318,10 +366,19 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                 <Table.Td>
                   <Text>{company.name}</Text>
                 </Table.Td>
-                  <Table.Td><Text>{company.companyIdentificationNumber ? String(company.companyIdentificationNumber).padStart(8, "0") : ""}</Text></Table.Td>
-                  <Table.Td>
-                    <Text>{company.active ? <IconCheck /> : <IconX />}</Text>
-                  </Table.Td>  
+                <Table.Td>
+                  <Text>
+                    {company.companyIdentificationNumber
+                      ? String(company.companyIdentificationNumber).padStart(
+                          8,
+                          "0",
+                        )
+                      : ""}
+                  </Text>
+                </Table.Td>
+                <Table.Td>
+                  <Text>{company.active ? <IconCheck /> : <IconX />}</Text>
+                </Table.Td>
                 <Table.Td>
                   <Text>{company.location.municipality}</Text>
                 </Table.Td>
