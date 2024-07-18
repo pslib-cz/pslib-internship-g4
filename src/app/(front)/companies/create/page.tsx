@@ -87,8 +87,10 @@ const Page = () => {
                 country: values.country,
                 municipality: values.municipality ?? "",
                 street: values.street ?? null,
-                descNumber: values.descNum ?? null,
-                orientNumber: String(values.orientNum) ?? null,
+                descNumber: values.descNum ? values.descNum : null,
+                orientNumber: values.orientNum
+                  ? String(values.orientNum)
+                  : null,
               }),
             })
               .then((response) => {

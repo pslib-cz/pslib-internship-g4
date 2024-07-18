@@ -1,6 +1,7 @@
 import { Role } from "@/types/auth";
+import { SelectItem } from "@/types/data";
 
-export const tagTypes = [
+export const tagTypes: SelectItem[] = [
   { label: "Školní obor", value: "1" },
   { label: "Technologie", value: "2" },
   { label: "Činnost", value: "3" },
@@ -25,3 +26,8 @@ export function getRoleLabel(value: string): string | undefined {
   const role = roleTypes.find((tag) => tag.value === value);
   return role ? role.label : undefined;
 }
+
+export const InternshipKinds: SelectItem[] = [
+  { value: "0", label: "Prezenčně na pracovišti" },
+  { value: "1", label: "Homeoffice" },
+];

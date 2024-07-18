@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { IconFilter } from "@tabler/icons-react";
 import { FilterContext } from "@/providers/CompanyFilterProvider";
+import MapDisplay from "./MapDisplay";
 import dynamic from "next/dynamic";
 
 const Page = () => {
@@ -46,13 +47,15 @@ const Page = () => {
         <Title order={2}>Mapa firem</Title>
         <ActionIcon
           variant="light"
-          onClick={() => () => dispatch({ type: "SET_OPENED", opened: true })}
+          onClick={() => dispatch({ type: "SET_OPENED", opened: true })}
         >
           <IconFilter />
         </ActionIcon>
       </Flex>
       <Box>
-        <Suspense fallback={<LoadingOverlay />}></Suspense>
+        <Suspense fallback={<LoadingOverlay />}>
+          <MapDisplay />
+        </Suspense>
       </Box>
     </>
   );

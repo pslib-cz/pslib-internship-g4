@@ -23,54 +23,42 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconCheck,
+  IconChecks,
   IconX,
 } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { CompanyWithLocation } from "@/types/entities";
+import { Set } from "@prisma/client";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 
-type TCompaniesTableProps = {};
-type TCompaniesTableState = {
-  filterName: string;
-  filterTax: string;
+type TSetsTableProps = {};
+type TSetsTableState = {
+  filterName: string | undefined;
+  filterYear: number | undefined;
   filterActive: boolean | undefined;
-  filterMunicipality: string;
-  filterCountry: string;
+  filterContinuous: boolean | undefined;
   order: string;
   page: number;
   size: number;
 };
 
-const STORAGE_ID = "companies-table";
+const STORAGE_ID = "locations-table";
 
-const CompaniesTable: FC = (TCompaniesTableProps) => {
+const SetsTable: FC = (TSetsTableProps) => {
   const searchParams = useSearchParams();
   const [loadTableState, storeTableState, removeTableState] =
-    useSessionStorage<TCompaniesTableState>(STORAGE_ID);
-  const [data, setData] = useState<ListResult<CompanyWithLocation> | null>(
-    null,
-  );
+    useSessionStorage<TSetsTableState>(STORAGE_ID);
+  const [data, setData] = useState<ListResult<Set> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [state, setState] = useState<TCompaniesTableState>({
-    filterMunicipality: searchParams.get("municipality") ?? "",
-    filterTax: searchParams.get("tax") ?? "",
-    filterName: searchParams.get("name") ?? "",
-    filterActive:
-      searchParams.has("active") && searchParams.get("active") !== ""
-        ? searchParams.get("active") === "true"
-          ? true
-          : false
-        : undefined,
-    filterCountry: searchParams.get("country") ?? "",
-    order: searchParams.get("orderBy") ?? "name",
-    page: searchParams.get("page")
-      ? parseInt(searchParams.get("page") as string)
-      : 1,
-    size: searchParams.get("size")
-      ? parseInt(searchParams.get("size") as string)
-      : 10,
+  const [state, setState] = useState<TSetsTableState>({
+    filterName: "",
+    filterActive: undefined,
+    filterContinuous: undefined,
+    filterYear: undefined,
+    order: "name",
+    page: 1,
+    size: 10,
   });
   const [deleteOpened, { open, close }] = useDisclosure(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -79,16 +67,15 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
   const fetchData = useCallback(
     (
       name: string | undefined,
-      tax: string | undefined,
+      year: number | undefined,
       active: boolean | undefined,
-      municipality: string | undefined,
-      country: string | undefined,
+      continuous: boolean | undefined,
       orderBy: string,
       page: number = 1,
       pageSize: number = 10,
     ) => {
       fetch(
-        `/api/companies?name=${name}&taxNum=${tax}&active=${active === undefined ? "" : active}&municipality=${municipality}&country=${country}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
+        `/api/sets?name=${name}&year=${year === undefined ? "" : year}&active=${active === undefined ? "" : active}&continuous=${continuous === undefined ? "" : continuous}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
         {
           method: "GET",
           headers: {
@@ -118,15 +105,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
   useEffect(() => {
     let storedState = loadTableState();
     const searchedName = searchParams.get("name") ?? "";
-    const searchedTax = searchParams.get("tax") ?? "";
-    const searchedActive =
-      searchParams.has("active") && searchParams.get("active") !== ""
-        ? searchParams.get("active") === "true"
-          ? true
-          : false
-        : undefined;
-    const searchedMunicipality = searchParams.get("municipality") ?? "";
-    const searchedCountry = searchParams.get("country") ?? "";
+    const searchedYear = searchParams.get("year") ?? "";
     const orderBy = searchParams.get("orderBy") ?? "name";
     const paginationPage = searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
@@ -134,12 +113,11 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
     const paginationSize = searchParams.get("size")
       ? parseInt(searchParams.get("size") as string)
       : 10;
-    let URLState: TCompaniesTableState = {
+    let URLState: TSetsTableState = {
       filterName: searchedName,
-      filterTax: searchedTax,
-      filterMunicipality: searchedMunicipality,
-      filterActive: searchedActive,
-      filterCountry: searchedCountry,
+      filterActive: storedState?.filterActive,
+      filterContinuous: storedState?.filterContinuous,
+      filterYear: searchedYear ? parseInt(searchedYear) : undefined,
       order: orderBy,
       page: paginationPage,
       size: paginationSize,
@@ -150,14 +128,17 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     state.filterName !== undefined && params.set("name", state.filterName);
-    state.filterMunicipality !== undefined &&
-      params.set("municipality", state.filterMunicipality);
+    state.filterYear !== undefined &&
+      params.set("year", state.filterYear.toString());
     state.filterActive === undefined
       ? params.set("active", "")
       : params.set("active", state.filterActive === true ? "true" : "false");
-    state.filterTax !== undefined && params.set("tax", state.filterTax);
-    state.filterCountry !== undefined &&
-      params.set("country", state.filterCountry);
+    state.filterContinuous === undefined
+      ? params.set("continuous", "")
+      : params.set(
+          "continuous",
+          state.filterContinuous === true ? "true" : "false",
+        );
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
@@ -165,10 +146,9 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
     storeTableState(state);
     fetchData(
       state.filterName,
-      state.filterTax,
+      state.filterYear,
       state.filterActive,
-      state.filterMunicipality,
-      state.filterCountry,
+      state.filterContinuous,
       state.order,
       state.page,
       state.size,
@@ -198,48 +178,27 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
               </Text>
             </Table.Th>
             <Table.Th>
-              <Text fw={700}>IČO</Text>
+              <Text
+                fw={700}
+                onClick={() => {
+                  let newOrder = state.order === "year" ? "year_desc" : "year";
+                  setState({ ...state, order: newOrder });
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                Rok{" "}
+                {state.order === "year" ? (
+                  <IconChevronDown size={12} />
+                ) : state.order === "year_desc" ? (
+                  <IconChevronUp size={12} />
+                ) : null}
+              </Text>
             </Table.Th>
             <Table.Th>
               <Text fw={700}>Aktivní</Text>
             </Table.Th>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "municipality"
-                      ? "municipality_desc"
-                      : "municipality";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Obec{" "}
-                {state.order === "municipality" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "municipality_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-            </Table.Th>
-            <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "country" ? "country_desc" : "country";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Stát{" "}
-                {state.order === "country" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "country_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+              <Text fw={700}>Průběžná</Text>
             </Table.Th>
             <Table.Th>Možnosti</Table.Th>
           </Table.Tr>
@@ -260,11 +219,14 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
             <Table.Th>
               <TextInput
                 size="xs"
-                value={state.filterTax}
+                value={state.filterYear}
                 onChange={(event) => {
                   setState({
                     ...state,
-                    filterTax: event.currentTarget.value,
+                    filterYear:
+                      event.currentTarget.value !== undefined
+                        ? parseInt(event.currentTarget.value)
+                        : undefined,
                     page: 1,
                   });
                 }}
@@ -300,29 +262,32 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
               />
             </Table.Th>
             <Table.Th>
-              <TextInput
+              <NativeSelect
                 size="xs"
-                value={state.filterMunicipality}
-                onChange={(event) => {
+                value={
+                  state.filterContinuous === undefined
+                    ? ""
+                    : state.filterContinuous === true
+                      ? "true"
+                      : "false"
+                }
+                onChange={(event) =>
                   setState({
                     ...state,
-                    filterMunicipality: event.currentTarget.value,
+                    filterContinuous:
+                      event.currentTarget.value === ""
+                        ? undefined
+                        : event.currentTarget.value === "true"
+                          ? true
+                          : false,
                     page: 1,
-                  });
-                }}
-              />
-            </Table.Th>
-            <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterCountry}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterCountry: event.currentTarget.value,
-                    page: 1,
-                  });
-                }}
+                  })
+                }
+                data={[
+                  { label: "Vše", value: "" },
+                  { label: "Souvislá", value: "false" },
+                  { label: "Průběžná", value: "true" },
+                ]}
               />
             </Table.Th>
             <Table.Th>
@@ -332,10 +297,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                   setState({
                     ...state,
                     filterName: "",
-                    filterTax: "",
-                    filterActive: undefined,
-                    filterMunicipality: "",
-                    order: "text",
+                    order: "name",
                     page: 1,
                   });
                 }}
@@ -356,40 +318,40 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
           {data && data.total === 0 && (
             <Table.Tr>
               <Table.Td colSpan={100}>
-                Žádná firma nevyhovuje podmínkám.
+                Žádná sada nevyhovuje podmínkám.
               </Table.Td>
             </Table.Tr>
           )}
           {data &&
-            data.data.map((company) => (
-              <Table.Tr key={company.id}>
+            data.data.map((set) => (
+              <Table.Tr key={set.id}>
                 <Table.Td>
-                  <Text>{company.name}</Text>
+                  <Text>{set.name}</Text>
+                </Table.Td>
+                <Table.Td>
+                  <Text>{set.year}</Text>
                 </Table.Td>
                 <Table.Td>
                   <Text>
-                    {company.companyIdentificationNumber
-                      ? String(company.companyIdentificationNumber).padStart(
-                          8,
-                          "0",
-                        )
-                      : ""}
+                    {set.active ? (
+                      set.editable ? (
+                        <IconChecks />
+                      ) : (
+                        <IconCheck />
+                      )
+                    ) : (
+                      <IconX />
+                    )}
                   </Text>
                 </Table.Td>
                 <Table.Td>
-                  <Text>{company.active ? <IconCheck /> : <IconX />}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{company.location.municipality}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{company.location.country}</Text>
+                  <Text>{set.continuous ? <IconCheck /> : <IconX />}</Text>
                 </Table.Td>
                 <Table.Td>
                   <ActionIcon
                     variant="light"
                     component={Link}
-                    href={"/dashboard/companies/" + company.id}
+                    href={"/dashboard/sets/" + set.id}
                   >
                     <IconInfoSmall />
                   </ActionIcon>{" "}
@@ -397,7 +359,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                     variant="light"
                     color="red"
                     onClick={() => {
-                      setDeleteId(company.id);
+                      setDeleteId(set.id);
                       open();
                     }}
                   >
@@ -406,7 +368,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                   <ActionIcon
                     variant="light"
                     component={Link}
-                    href={"/dashboard/companies/" + company.id + "/edit"}
+                    href={"/dashboard/sets/" + set.id + "/edit"}
                   >
                     <IconEdit />
                   </ActionIcon>
@@ -429,17 +391,17 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
         centered
         onClose={close}
         size="auto"
-        title="Odstranění firmy"
+        title="Odstranění sady"
         fullScreen={isMobile}
         transitionProps={{ transition: "fade", duration: 200 }}
       >
-        <Text>Opravdu si přejete tuto firmu odstranit?</Text>
+        <Text>Opravdu si přejete tuto sadu odstranit?</Text>
         <Text fw={700}>Data pak už nebude možné obnovit.</Text>
         <Group mt="xl">
           <Button
             onClick={() => {
               if (deleteId !== null) {
-                fetch("/api/companies/" + deleteId, {
+                fetch("/api/sets/" + deleteId, {
                   method: "DELETE",
                 })
                   .then((response) => {
@@ -448,15 +410,14 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                     }
                     notifications.show({
                       title: "Povedlo se!",
-                      message: "Firma byla odstraněna.",
+                      message: "Sada byla odstraněna.",
                       color: "lime",
                     });
                     fetchData(
                       state.filterName,
-                      state.filterTax,
+                      state.filterYear,
                       state.filterActive,
-                      state.filterMunicipality,
-                      state.filterCountry,
+                      state.filterContinuous,
                       state.order,
                       state.page,
                       state.size,
@@ -465,7 +426,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
                   .catch((error) => {
                     notifications.show({
                       title: "Chyba!",
-                      message: "Smazání firmy nebylo úspěšné.",
+                      message: "Smazání sady nebylo úspěšné.",
                       color: "red",
                     });
                   })
@@ -488,4 +449,4 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
   );
 };
 
-export default CompaniesTable;
+export default SetsTable;

@@ -57,8 +57,10 @@ const Page = () => {
       end: new Date().toISOString().split("T")[0],
       representativeName:
         process.env.NEXT_PUBLIC_DEFAULT_SCHOOL_REPRESENTATIVE || "",
-      representativeEmail: process.env.NEXT_PUBLIC_DEFAULT_SCHOOL_EMAIL || "",
-      representativePhone: process.env.NEXT_PUBLIC_DEFAULT_SCHOOL_PHONE || "",
+      representativeEmail:
+        process.env.NEXT_PUBLIC_DEFAULT_SCHOOL_REPRESENTATIVE_EMAIL || "",
+      representativePhone:
+        process.env.NEXT_PUBLIC_DEFAULT_SCHOOL_REPRESENTATIVE_PHONE || "",
       continuous: false,
       hoursDaily: 8,
       daysTotal: 10,
@@ -81,7 +83,9 @@ const Page = () => {
       hoursDaily: (value) =>
         value !== null ? null : "Počet hodin musí být vyplněn",
       templateId: (value) =>
-        value !== undefined ? null : "Tisková šablona musí být vyplněna",
+        value !== undefined || value !== ""
+          ? null
+          : "Tisková šablona musí být vyplněna",
     },
   });
 

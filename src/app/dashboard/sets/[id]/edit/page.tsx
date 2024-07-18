@@ -12,7 +12,6 @@ import {
   TextInput,
   Button,
   Group,
-  Textarea,
   Checkbox,
   NativeSelect,
   NumberInput,
@@ -88,7 +87,9 @@ const Page = ({ params }: { params: { id: string } }) => {
       hoursDaily: (value) =>
         value !== null ? null : "Počet hodin musí být vyplněn",
       templateId: (value) =>
-        value !== undefined ? null : "Tisková šablona musí být vyplněna",
+        value !== undefined || value !== ""
+          ? null
+          : "Tisková šablona musí být vyplněna",
     },
   });
   useEffect(() => {
@@ -110,8 +111,8 @@ const Page = ({ params }: { params: { id: string } }) => {
           name: data.name,
           schoolName:
             data.schoolName || process.env.NEXT_PUBLIC_DEFAULT_SCHOOL_NAME,
-          active: data.active || true,
-          editable: data.editable || true,
+          active: data.active || false,
+          editable: data.editable || false,
           start: new Date(data.start ?? null).toISOString().split("T")[0],
           end: new Date(data.end ?? null).toISOString().split("T")[0],
           representativeName:
@@ -160,7 +161,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       </Breadcrumbs>
       <Container>
         <LoadingOverlay visible={loading} />
-        <Title order={2}>Editace firmy</Title>
+        <Title order={2}>Editace sady</Title>
         <form
           onSubmit={form.onSubmit((values) => {
             setLoading(true);

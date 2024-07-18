@@ -98,9 +98,7 @@ const FrontLayout = ({ children }: LayoutProps) => {
           </Group>
         </Group>
       </AppShell.Header>
-      <AppShell.Main>
-        <div className={styles.pageContent}>{children}</div>
-      </AppShell.Main>
+      <AppShell.Main className={styles.pageContent}>{children}</AppShell.Main>
       <Drawer
         opened={drawerOpened}
         onClose={closeDrawer}

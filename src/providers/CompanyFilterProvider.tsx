@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useReducer } from "react";
 
-type FilterState = {
+export type FilterState = {
   opened: boolean;
   filterName: string;
   filterTaxNum: number | undefined;
