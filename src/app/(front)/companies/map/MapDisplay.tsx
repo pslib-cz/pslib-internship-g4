@@ -1,16 +1,21 @@
-"use client";
+"use client"
 
-import { useContext, useEffect, useState } from "react";
-import { LoadingOverlay } from "@mantine/core";
-import { FilterContext } from "@/providers/CompanyFilterProvider";
-import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
-import { Icon } from "leaflet";
-import { useSearchParams } from "next/navigation";
-import { LocationForComaniesAndBranches } from "@/types/entities";
-import Link from "next/link";
-import styles from "./MapDisplay.module.css";
-import "leaflet/dist/leaflet.css";
-import pinIcon from "@/assets/pins/pin-default.svg";
+import { useContext, useEffect, useState, useCallback } from "react"
+import { LoadingOverlay } from "@mantine/core"
+import { FilterContext } from "@/providers/CompanyFilterProvider"
+import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet"
+import { Icon } from "leaflet"
+import { useSearchParams } from "next/navigation"
+import { LocationForComaniesAndBranches } from "@/types/entities"
+import Link from "next/link"
+import styles from "./MapDisplay.module.css"
+import "leaflet/dist/leaflet.css"
+
+type TMapState = {
+  latitude: number;
+  longitude: number;
+  zoom: number | undefined;
+};
 
 const MapDisplay = () => {
   const searchParams = useSearchParams();
@@ -20,31 +25,33 @@ const MapDisplay = () => {
     iconAnchor: [0, 16],
     popupAnchor: [16, -16],
   });
-  const latitude = searchParams.get("lat")
-    ? Number(searchParams.get("lat"))
-    : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_LATITUDE);
-  const longitude = searchParams.get("lng")
-    ? Number(searchParams.get("lng"))
-    : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_LONGITUDE);
   const [state, dispatch] = useContext(FilterContext);
-  const zoom = searchParams.get("zoom")
-    ? Number(searchParams.get("zoom"))
-    : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_ZOOM);
+  const [mapState, setMapState] = useState<TMapState>({
+    latitude: searchParams.get("lat") ? Number(searchParams.get("lat")) : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_LATITUDE),
+    longitude: searchParams.get("lng") ? Number(searchParams.get("lng")) : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_LONGITUDE),
+    zoom: searchParams.get("zoom") ? Number(searchParams.get("zoom")) : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_ZOOM),
+  });
   const key = process.env.NEXT_PUBLIC_MAPY_CZ_KEY;
   const [points, setPoints] = useState<LocationForComaniesAndBranches[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  useEffect(() => {
+
+  const fetchData = useCallback((
+    name: string | undefined,
+    tax: number | undefined,
+    active: boolean | undefined,
+    municipality: string | undefined,
+  )=>{
     setLoading(true);
     fetch(
       "/api/maps/companies?name=" +
-        state.filterName +
+        name +
         "&municipality=" +
-        state.filterMunicipality +
+        municipality +
         "&taxNum=" +
-        state.filterTaxNum +
+        (tax ? tax : "") +
         "&active=" +
-        state.filterActive,
+        (active ? active : ""),
       {
         method: "GET",
         headers: {
@@ -54,7 +61,7 @@ const MapDisplay = () => {
     )
       .then((response) => response.json())
       .then((data) => {
-        setPoints(data);
+        setPoints(data.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -63,13 +70,18 @@ const MapDisplay = () => {
       .finally(() => {
         setLoading(false);
       });
+  },[]);
+
+  useEffect(() => {
+    fetchData(state.filterName, state.filterTaxNum, state.filterActive, state.filterMunicipality);
   }, [state]);
+
   return (
     <>
       <LoadingOverlay visible={loading} />
       <MapContainer
-        center={[latitude, longitude]}
-        zoom={zoom}
+        center={[mapState.latitude, mapState.longitude]}
+        zoom={mapState.zoom}
         scrollWheelZoom={true}
         className={styles.map}
       >

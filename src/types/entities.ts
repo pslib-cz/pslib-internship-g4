@@ -135,4 +135,4 @@ export type LocationForComaniesAndBranches = Prisma.LocationGetPayload<{
       };
     };
   };
-}>;
+}>

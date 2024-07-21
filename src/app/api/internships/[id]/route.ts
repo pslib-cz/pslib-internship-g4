@@ -12,7 +12,7 @@ export type InternshipWithUserLocationCompanySetInspector =
       reservationUser: true;
       user: true;
     };
-  }>;
+  }>
 
 export async function GET(
   request: NextRequest,

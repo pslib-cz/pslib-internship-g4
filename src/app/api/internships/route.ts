@@ -7,7 +7,7 @@ import { type ListResult } from "@/types/data";
 export async function GET(request: NextRequest) {
   const session = await auth();
   const searchParams = request.nextUrl.searchParams;
-  const userId = searchParams.get("user");
+  let userId = searchParams.get("user");
   const givenName = searchParams.get("givenName");
   const surname = searchParams.get("surname");
   const setId = searchParams.get("set");
@@ -32,6 +32,10 @@ export async function GET(request: NextRequest) {
     return new Response("Unauthorized", {
       status: 401,
     });
+  }
+
+  if(session.user.role !== "admin" && session.user.role !== "teacher") {
+    userId = session.user.id;
   }
 
   let summary = await prisma.internship.aggregate({
@@ -79,13 +83,6 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  /*
-    if(session.user.role !== "admin") {
-      return new Response("Forbidden", {
-        status: 403,
-      })
-    }
-*/
   let internships: InternshipExpandedRecord[] =
     await prisma.internship.findMany({
       select: {
@@ -213,6 +210,7 @@ export async function POST(request: NextRequest) {
       status: 401,
     });
   }
+  let isManager = session.user.role !== "admin" && session.user.role !== "teacher";
   if (
     session.user.role !== "admin" &&
     session.user.role !== "teacher" &&
@@ -232,7 +230,7 @@ export async function POST(request: NextRequest) {
       userId: body.userId,
       companyId: Number(body.companyId),
       locationId: Number(body.locationId),
-      reservationUserId: body.reservationUserId ?? null,
+      reservationUserId: (isManager ? body.reservationUserId : undefined) ?? null,
       classname: body.classname,
       setId: Number(body.setId),
       companyRepName: body.companyRepName,
@@ -247,6 +245,8 @@ export async function POST(request: NextRequest) {
       created: new Date(),
       creatorId: session.user.id,
       updated: new Date(),
+      kind: body.kind,
+      highlighted: isManager ? body.highlighted : false,
     },
   });
   return new Response(JSON.stringify(internship), { status: 201 });

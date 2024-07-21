@@ -10,7 +10,8 @@ import {
   Anchor,
   Text,
 } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react"
+import InternshipsTable from "./InternshipsTable";
 
 const Page = () => {
   return (
@@ -32,7 +33,9 @@ const Page = () => {
           Nová
         </Button>
       </Box>
-      <ScrollArea type="auto"></ScrollArea>
+      <ScrollArea type="auto">
+        <InternshipsTable />
+      </ScrollArea>
     </>
   );
 };
