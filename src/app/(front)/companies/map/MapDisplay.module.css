@@ -1,18 +1,18 @@
 .map {
-    height: calc(100vh - 200px);
- }
- .map p {
-    font-weight: bold;
- }
- .map {
-    :global(.leaflet-popup-content) {
-       * {
-          margin: 0;
-          padding: 0;
-       }
-       ul {
-          list-style-type: none;
-          padding: 0;
-       }
+  height: calc(100vh - 200px);
+}
+.map p {
+  font-weight: bold;
+}
+.map {
+  :global(.leaflet-popup-content) {
+    * {
+      margin: 0;
+      padding: 0;
     }
- }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+  }
+}

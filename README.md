@@ -27,17 +27,25 @@ Instalace balíčků
 npm install
 ```
 
-Migrace databáze
-
-```bash
-npx prisma migrate dev
-```
-
 Spuštění aplikace
 
 ```bash
 npm run dev
 ```
+
+Korektní typovost
+
+```bash
+npm run typecheck
+```
+
+Build aplikace
+
+```bash
+npm run build
+```
+
+## Databáze
 
 Inicializace Prisma
 
@@ -51,11 +59,19 @@ Vytvoření migrace
 npx prisma migrate dev --name ini
 ```
 
+Migrace databáze
+
+```bash
+npx prisma migrate dev
+```
+
 Seed databáze
 
 ```bash
 npx prisma db seed
 ```
+
+## Utility
 
 Prettier
 

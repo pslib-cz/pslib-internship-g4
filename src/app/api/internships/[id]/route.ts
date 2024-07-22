@@ -1,18 +1,9 @@
-import { Internship, Prisma } from "@prisma/client";
+import { Internship } from "@prisma/client";
 import { type NextRequest } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/utils/db";
-
-export type InternshipWithUserLocationCompanySetInspector =
-  Prisma.InternshipGetPayload<{
-    include: {
-      set: true;
-      location: true;
-      company: true;
-      reservationUser: true;
-      user: true;
-    };
-  }>
+import { Role } from "@/types/auth";
+import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 
 export async function GET(
   request: NextRequest,
@@ -26,7 +17,7 @@ export async function GET(
     });
   }
 
-  let internship: InternshipWithUserLocationCompanySetInspector | null =
+  let internship: InternshipWithCompanyLocationSetUser | null =
     await prisma.internship.findFirst({
       include: {
         user: true,
@@ -69,7 +60,10 @@ export async function DELETE(
     });
   }
 
-  if (session.user.role !== "admin" && session.user.id !== internship?.userId) {
+  if (
+    session.user.role !== Role.ADMIN &&
+    session.user.id !== internship?.userId
+  ) {
     return new Response("Forbidden", {
       status: 403,
     });
@@ -102,21 +96,70 @@ export async function PUT(
       status: 403,
     });
   }
-  let internship: Internship | null = await prisma.internship.findFirst({
-    where: { id: id },
-  });
+  let internship: InternshipWithCompanyLocationSetUser | null =
+    await prisma.internship.findFirst({
+      select: {
+        id: true,
+        classname: true,
+        created: true,
+        kind: true,
+        userId: true,
+        companyId: true,
+        setId: true,
+        user: {
+          select: {
+            givenName: true,
+            surname: true,
+          },
+        },
+        company: {
+          select: {
+            name: true,
+            companyIdentificationNumber: true,
+          },
+        },
+        location: {
+          select: {
+            municipality: true,
+          },
+        },
+        set: {
+          select: {
+            name: true,
+            year: true,
+            editable: true,
+            active: true,
+            daysTotal: true,
+            hoursDaily: true,
+            start: true,
+            end: true,
+            continuous: true,
+          },
+        },
+      },
+      where: { id: id },
+    });
   if (!internship) {
     return new Response("Not found", {
       status: 404,
     });
   }
-  if (session.user.role !== "admin" && session.user.id !== internship?.userId) {
+  if (
+    session.user.role !== Role.ADMIN &&
+    session.user.id !== internship?.userId
+  ) {
     return new Response("Forbidden", {
       status: 403,
     });
   }
-  // TODO omezit možnost editovat, pokud sada není editovatelná
+
+  if (internship.set.editable === false) {
+    return new Response("Set of this internship is not editable.", {
+      status: 402,
+    });
+  }
   const body = await request.json();
+  body.kind = Number(body.kind);
   await prisma.internship.update({
     where: { id: id },
     data: body,

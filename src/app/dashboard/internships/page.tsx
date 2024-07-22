@@ -10,7 +10,7 @@ import {
   Anchor,
   Text,
 } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react"
+import { IconPlus } from "@tabler/icons-react";
 import InternshipsTable from "./InternshipsTable";
 
 const Page = () => {

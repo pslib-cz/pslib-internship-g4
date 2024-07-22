@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useContext, useEffect, useState, useCallback } from "react"
-import { LoadingOverlay } from "@mantine/core"
-import { FilterContext } from "@/providers/CompanyFilterProvider"
-import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet"
-import { Icon } from "leaflet"
-import { useSearchParams } from "next/navigation"
-import { LocationForComaniesAndBranches } from "@/types/entities"
-import Link from "next/link"
-import styles from "./MapDisplay.module.css"
-import "leaflet/dist/leaflet.css"
+import { useContext, useEffect, useState, useCallback } from "react";
+import { LoadingOverlay } from "@mantine/core";
+import { FilterContext } from "@/providers/CompanyFilterProvider";
+import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
+import { Icon } from "leaflet";
+import { useSearchParams } from "next/navigation";
+import { LocationForComaniesAndBranches } from "@/types/entities";
+import Link from "next/link";
+import styles from "./MapDisplay.module.css";
+import "leaflet/dist/leaflet.css";
 
 type TMapState = {
   latitude: number;
@@ -27,53 +27,67 @@ const MapDisplay = () => {
   });
   const [state, dispatch] = useContext(FilterContext);
   const [mapState, setMapState] = useState<TMapState>({
-    latitude: searchParams.get("lat") ? Number(searchParams.get("lat")) : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_LATITUDE),
-    longitude: searchParams.get("lng") ? Number(searchParams.get("lng")) : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_LONGITUDE),
-    zoom: searchParams.get("zoom") ? Number(searchParams.get("zoom")) : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_ZOOM),
+    latitude: searchParams.get("lat")
+      ? Number(searchParams.get("lat"))
+      : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_LATITUDE),
+    longitude: searchParams.get("lng")
+      ? Number(searchParams.get("lng"))
+      : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_LONGITUDE),
+    zoom: searchParams.get("zoom")
+      ? Number(searchParams.get("zoom"))
+      : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_ZOOM),
   });
   const key = process.env.NEXT_PUBLIC_MAPY_CZ_KEY;
   const [points, setPoints] = useState<LocationForComaniesAndBranches[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchData = useCallback((
-    name: string | undefined,
-    tax: number | undefined,
-    active: boolean | undefined,
-    municipality: string | undefined,
-  )=>{
-    setLoading(true);
-    fetch(
-      "/api/maps/companies?name=" +
-        name +
-        "&municipality=" +
-        municipality +
-        "&taxNum=" +
-        (tax ? tax : "") +
-        "&active=" +
-        (active ? active : ""),
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+  const fetchData = useCallback(
+    (
+      name: string | undefined,
+      tax: number | undefined,
+      active: boolean | undefined,
+      municipality: string | undefined,
+    ) => {
+      setLoading(true);
+      fetch(
+        "/api/maps/companies?name=" +
+          name +
+          "&municipality=" +
+          municipality +
+          "&taxNum=" +
+          (tax ? tax : "") +
+          "&active=" +
+          (active ? active : ""),
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      },
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setPoints(data.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError(error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  },[]);
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          setPoints(data.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setError(error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    [],
+  );
 
   useEffect(() => {
-    fetchData(state.filterName, state.filterTaxNum, state.filterActive, state.filterMunicipality);
+    fetchData(
+      state.filterName,
+      state.filterTaxNum,
+      state.filterActive,
+      state.filterMunicipality,
+    );
   }, [state]);
 
   return (

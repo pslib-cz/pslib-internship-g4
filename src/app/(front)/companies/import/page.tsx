@@ -33,7 +33,7 @@ import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import "@mantine/tiptap/styles.css";
-import { PlaceCoordinates } from "../../../api/locations/geo/route";
+import { PlaceCoordinates } from "@/types/data";
 
 type CompanyData = {
   ico: string;

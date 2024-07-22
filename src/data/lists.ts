@@ -27,7 +27,12 @@ export function getRoleLabel(value: string): string | undefined {
   return role ? role.label : undefined;
 }
 
-export const InternshipKinds: SelectItem[] = [
+export const internshipKinds: SelectItem[] = [
   { value: "0", label: "Prezenčně na pracovišti" },
   { value: "1", label: "Homeoffice" },
 ];
+
+export function getInternshipKindLabel(value: string): string | undefined {
+  const kind = internshipKinds.find((kind) => kind.value === value);
+  return kind ? kind.label : undefined;
+}

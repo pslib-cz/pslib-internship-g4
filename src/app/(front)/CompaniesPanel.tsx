@@ -50,7 +50,7 @@ const CompaniesPanel = () => {
   };
 
   return (
-    <Paper p="xl" className="container" bg="transparent" m={0}>
+    <Paper className="container" bg="transparent" m={0}>
       <Title mb="sm" order={2}>
         Firmy
       </Title>

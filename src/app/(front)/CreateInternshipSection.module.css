@@ -1,9 +1,13 @@
 .panel {
-    margin: 0;
-    background-color: light-dark(var(--mantine-color-blue-1), var(--mantine-color-blue-6));
-    color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-    margin: 0 -1rem;
+  margin: 0;
+  background-color: light-dark(
+    var(--mantine-color-gray-2),
+    var(--mantine-color-gray-7)
+  );
+  color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+  margin: 0 -1rem;
+  padding: 1rem;
 }
 .panel .a {
-    color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+  color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
 }

@@ -27,44 +27,51 @@ import {
 } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { CompanyWithLocation } from "@/types/entities";
+import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { getInternshipKindLabel } from "@/data/lists";
 
 type TInternshipsTableProps = {};
 type TInternshipsTableState = {
-  filterName: string;
-  filterTax: string;
-  filterActive: boolean | undefined;
-  filterMunicipality: string;
-  filterCountry: string;
+  filterUser: string;
+  filterUserGivenName: string;
+  filterUserSurname: string;
+  filterSet: number | undefined;
+  filterYear: number | undefined;
+  filterCompany: number | undefined;
+  filterCompanyName: string | undefined;
+  filterClassname: string | undefined;
   order: string;
   page: number;
   size: number;
 };
 
-const STORAGE_ID = "companies-table";
+const STORAGE_ID = "internships-table";
 
-const InternshipsTable: FC = (TCompaniesTableProps) => {
+const InternshipsTable: FC = (TInternshipsTableProps) => {
   const searchParams = useSearchParams();
   const [loadTableState, storeTableState, removeTableState] =
     useSessionStorage<TInternshipsTableState>(STORAGE_ID);
-  const [data, setData] = useState<ListResult<CompanyWithLocation> | null>(
-    null,
-  );
+  const [data, setData] =
+    useState<ListResult<InternshipWithCompanyLocationSetUser> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [state, setState] = useState<TInternshipsTableState>({
-    filterMunicipality: searchParams.get("municipality") ?? "",
-    filterTax: searchParams.get("tax") ?? "",
-    filterName: searchParams.get("name") ?? "",
-    filterActive:
-      searchParams.has("active") && searchParams.get("active") !== ""
-        ? searchParams.get("active") === "true"
-          ? true
-          : false
-        : undefined,
-    filterCountry: searchParams.get("country") ?? "",
-    order: searchParams.get("orderBy") ?? "name",
+    filterUser: searchParams.get("user") ?? "",
+    filterUserGivenName: searchParams.get("givenName") ?? "",
+    filterUserSurname: searchParams.get("surname") ?? "",
+    filterSet: searchParams.get("set")
+      ? parseInt(searchParams.get("set") as string)
+      : undefined,
+    filterYear: searchParams.get("year")
+      ? parseInt(searchParams.get("year") as string)
+      : undefined,
+    filterCompany: searchParams.get("company")
+      ? parseInt(searchParams.get("company") as string)
+      : undefined,
+    filterCompanyName: searchParams.get("companyName") ?? "",
+    filterClassname: searchParams.get("classname") ?? "",
+    order: searchParams.get("orderBy") ?? "created",
     page: searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
       : 1,
@@ -78,17 +85,20 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
 
   const fetchData = useCallback(
     (
-      name: string | undefined,
-      tax: string | undefined,
-      active: boolean | undefined,
-      municipality: string | undefined,
-      country: string | undefined,
+      user: string,
+      givenName: string,
+      surname: string,
+      set: number | undefined,
+      year: number | undefined,
+      company: number | undefined,
+      companyName: string | undefined,
+      classname: string | undefined,
       orderBy: string,
       page: number = 1,
       pageSize: number = 10,
     ) => {
       fetch(
-        `/api/companies?name=${name}&taxNum=${tax}&active=${active === undefined ? "" : active}&municipality=${municipality}&country=${country}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
+        `/api/internships?user=${user}&givenName=${givenName}&surname=${surname}&set=${set !== undefined ? set : ""}&year=${year !== undefined ? year : ""}&company=${company !== undefined ? company : ""}&companyName=${companyName}&class=${classname}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
         {
           method: "GET",
           headers: {
@@ -117,17 +127,21 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
 
   useEffect(() => {
     let storedState = loadTableState();
-    const searchedName = searchParams.get("name") ?? "";
-    const searchedTax = searchParams.get("tax") ?? "";
-    const searchedActive =
-      searchParams.has("active") && searchParams.get("active") !== ""
-        ? searchParams.get("active") === "true"
-          ? true
-          : false
-        : undefined;
-    const searchedMunicipality = searchParams.get("municipality") ?? "";
-    const searchedCountry = searchParams.get("country") ?? "";
-    const orderBy = searchParams.get("orderBy") ?? "name";
+    const searchedUser = searchParams.get("user") ?? "";
+    const searchedGivenName = searchParams.get("givenName") ?? "";
+    const searchedSurname = searchParams.get("surname") ?? "";
+    const searchedSet = searchParams.get("set")
+      ? parseInt(searchParams.get("set") as string)
+      : undefined;
+    const searchedYear = searchParams.get("year")
+      ? parseInt(searchParams.get("year") as string)
+      : undefined;
+    const searchedCompany = searchParams.get("company")
+      ? parseInt(searchParams.get("company") as string)
+      : undefined;
+    const searchedCompanyName = searchParams.get("companyName") ?? "";
+    const searchedClassname = searchParams.get("classname") ?? "";
+    const orderBy = searchParams.get("orderBy") ?? "created";
     const paginationPage = searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
       : 1;
@@ -135,11 +149,14 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
       ? parseInt(searchParams.get("size") as string)
       : 10;
     let URLState: TInternshipsTableState = {
-      filterName: searchedName,
-      filterTax: searchedTax,
-      filterMunicipality: searchedMunicipality,
-      filterActive: searchedActive,
-      filterCountry: searchedCountry,
+      filterUser: searchedUser,
+      filterUserGivenName: searchedGivenName,
+      filterUserSurname: searchedSurname,
+      filterSet: searchedSet,
+      filterYear: searchedYear,
+      filterCompany: searchedCompany,
+      filterCompanyName: searchedCompanyName,
+      filterClassname: searchedClassname,
       order: orderBy,
       page: paginationPage,
       size: paginationSize,
@@ -149,26 +166,34 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    state.filterName !== undefined && params.set("name", state.filterName);
-    state.filterMunicipality !== undefined &&
-      params.set("municipality", state.filterMunicipality);
-    state.filterActive === undefined
-      ? params.set("active", "")
-      : params.set("active", state.filterActive === true ? "true" : "false");
-    state.filterTax !== undefined && params.set("tax", state.filterTax);
-    state.filterCountry !== undefined &&
-      params.set("country", state.filterCountry);
+    state.filterUser !== undefined && params.set("user", state.filterUser);
+    state.filterUserGivenName !== undefined &&
+      params.set("givenName", state.filterUserGivenName);
+    state.filterUserSurname !== undefined &&
+      params.set("surname", state.filterUserSurname);
+    state.filterSet !== undefined && params.set("set", String(state.filterSet));
+    state.filterYear !== undefined &&
+      params.set("year", String(state.filterYear));
+    state.filterCompany !== undefined &&
+      params.set("company", String(state.filterCompany));
+    state.filterCompanyName !== undefined &&
+      params.set("companyName", state.filterCompanyName);
+    state.filterClassname !== undefined &&
+      params.set("classname", state.filterClassname);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
     window.history.replaceState(null, "", `?${params.toString()}`);
     storeTableState(state);
     fetchData(
-      state.filterName,
-      state.filterTax,
-      state.filterActive,
-      state.filterMunicipality,
-      state.filterCountry,
+      state.filterUser,
+      state.filterUserGivenName,
+      state.filterUserSurname,
+      state.filterSet,
+      state.filterYear,
+      state.filterCompany,
+      state.filterCompanyName,
+      state.filterClassname,
       state.order,
       state.page,
       state.size,
@@ -184,41 +209,16 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
               <Text
                 fw={700}
                 onClick={() => {
-                  let newOrder = state.order === "name" ? "name_desc" : "name";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Název{" "}
-                {state.order === "name" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "name_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-            </Table.Th>
-            <Table.Th>
-              <Text fw={700}>IČO</Text>
-            </Table.Th>
-            <Table.Th>
-              <Text fw={700}>Aktivní</Text>
-            </Table.Th>
-            <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
                   let newOrder =
-                    state.order === "municipality"
-                      ? "municipality_desc"
-                      : "municipality";
+                    state.order === "" ? "givenName_desc" : "givenName";
                   setState({ ...state, order: newOrder });
                 }}
                 style={{ cursor: "pointer" }}
               >
-                Obec{" "}
-                {state.order === "municipality" ? (
+                Jméno{" "}
+                {state.order === "givenName" ? (
                   <IconChevronDown size={12} />
-                ) : state.order === "municipality_desc" ? (
+                ) : state.order === "givenName_desc" ? (
                   <IconChevronUp size={12} />
                 ) : null}
               </Text>
@@ -228,15 +228,48 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
                 fw={700}
                 onClick={() => {
                   let newOrder =
-                    state.order === "country" ? "country_desc" : "country";
+                    state.order === "" ? "surname_desc" : "surname";
                   setState({ ...state, order: newOrder });
                 }}
                 style={{ cursor: "pointer" }}
               >
-                Stát{" "}
-                {state.order === "country" ? (
+                Příjmení{" "}
+                {state.order === "surname" ? (
                   <IconChevronDown size={12} />
-                ) : state.order === "country_desc" ? (
+                ) : state.order === "surname_desc" ? (
+                  <IconChevronUp size={12} />
+                ) : null}
+              </Text>
+            </Table.Th>
+            <Table.Th>
+              <Text fw={700}>Sada</Text>
+            </Table.Th>
+            <Table.Th>
+              <Text fw={700}>Rok</Text>
+            </Table.Th>
+            <Table.Th>
+              <Text fw={700}>Třída</Text>
+            </Table.Th>
+            <Table.Th>
+              <Text fw={700}>Firma</Text>
+            </Table.Th>
+            <Table.Th>
+              <Text fw={700}>Způsob</Text>
+            </Table.Th>
+            <Table.Th>
+              <Text
+                fw={700}
+                onClick={() => {
+                  let newOrder =
+                    state.order === "created" ? "created_desc" : "created";
+                  setState({ ...state, order: newOrder });
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                Vytvořeno{" "}
+                {state.order === "created" ? (
+                  <IconChevronDown size={12} />
+                ) : state.order === "created_desc" ? (
                   <IconChevronUp size={12} />
                 ) : null}
               </Text>
@@ -247,11 +280,11 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
             <Table.Th>
               <TextInput
                 size="xs"
-                value={state.filterName}
+                value={state.filterUserGivenName}
                 onChange={(event) => {
                   setState({
                     ...state,
-                    filterName: event.currentTarget.value,
+                    filterUserGivenName: event.currentTarget.value,
                     page: 1,
                   });
                 }}
@@ -260,53 +293,27 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
             <Table.Th>
               <TextInput
                 size="xs"
-                value={state.filterTax}
+                value={state.filterUserSurname}
                 onChange={(event) => {
                   setState({
                     ...state,
-                    filterTax: event.currentTarget.value,
+                    filterUserSurname: event.currentTarget.value,
                     page: 1,
                   });
                 }}
               />
             </Table.Th>
-            <Table.Th>
-              <NativeSelect
-                size="xs"
-                value={
-                  state.filterActive === undefined
-                    ? ""
-                    : state.filterActive === true
-                      ? "true"
-                      : "false"
-                }
-                onChange={(event) =>
-                  setState({
-                    ...state,
-                    filterActive:
-                      event.currentTarget.value === ""
-                        ? undefined
-                        : event.currentTarget.value === "true"
-                          ? true
-                          : false,
-                    page: 1,
-                  })
-                }
-                data={[
-                  { label: "Vše", value: "" },
-                  { label: "Aktivní", value: "true" },
-                  { label: "Zrušená", value: "false" },
-                ]}
-              />
-            </Table.Th>
+            <Table.Th></Table.Th>
             <Table.Th>
               <TextInput
                 size="xs"
-                value={state.filterMunicipality}
+                value={state.filterYear}
                 onChange={(event) => {
                   setState({
                     ...state,
-                    filterMunicipality: event.currentTarget.value,
+                    filterYear: event.currentTarget.value
+                      ? parseInt(event.currentTarget.value)
+                      : undefined,
                     page: 1,
                   });
                 }}
@@ -315,27 +322,50 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
             <Table.Th>
               <TextInput
                 size="xs"
-                value={state.filterCountry}
+                value={state.filterClassname}
                 onChange={(event) => {
                   setState({
                     ...state,
-                    filterCountry: event.currentTarget.value,
+                    filterClassname: event.currentTarget.value
+                      ? event.currentTarget.value
+                      : undefined,
                     page: 1,
                   });
                 }}
               />
             </Table.Th>
+            <Table.Th>
+              <TextInput
+                size="xs"
+                value={state.filterCompanyName}
+                onChange={(event) => {
+                  setState({
+                    ...state,
+                    filterCompanyName: event.currentTarget.value
+                      ? event.currentTarget.value
+                      : undefined,
+                    page: 1,
+                  });
+                }}
+              />
+            </Table.Th>
+            <Table.Th></Table.Th>
+            <Table.Th></Table.Th>
             <Table.Th>
               <Button
                 size="xs"
                 onClick={(event) => {
                   setState({
                     ...state,
-                    filterName: "",
-                    filterTax: "",
-                    filterActive: undefined,
-                    filterMunicipality: "",
-                    order: "text",
+                    filterUser: "",
+                    filterUserGivenName: "",
+                    filterUserSurname: "",
+                    filterSet: undefined,
+                    filterYear: undefined,
+                    filterCompany: undefined,
+                    filterCompanyName: "",
+                    filterClassname: "",
+                    order: "created",
                     page: 1,
                   });
                 }}
@@ -356,40 +386,42 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
           {data && data.total === 0 && (
             <Table.Tr>
               <Table.Td colSpan={100}>
-                Žádná firma nevyhovuje podmínkám.
+                Žádná praxe nevyhovuje podmínkám.
               </Table.Td>
             </Table.Tr>
           )}
           {data &&
-            data.data.map((company) => (
-              <Table.Tr key={company.id}>
+            data.data.map((internship) => (
+              <Table.Tr key={internship.id}>
                 <Table.Td>
-                  <Text>{company.name}</Text>
+                  <Text>{internship.user.givenName}</Text>
                 </Table.Td>
                 <Table.Td>
-                  <Text>
-                    {company.companyIdentificationNumber
-                      ? String(company.companyIdentificationNumber).padStart(
-                          8,
-                          "0",
-                        )
-                      : ""}
-                  </Text>
+                  <Text>{internship.user.surname}</Text>
                 </Table.Td>
                 <Table.Td>
-                  <Text>{company.active ? <IconCheck /> : <IconX />}</Text>
+                  <Text>{internship.set.name}</Text>
                 </Table.Td>
                 <Table.Td>
-                  <Text>{company.location.municipality}</Text>
+                  <Text>{internship.set.year}</Text>
                 </Table.Td>
                 <Table.Td>
-                  <Text>{company.location.country}</Text>
+                  <Text>{internship.classname}</Text>
+                </Table.Td>
+                <Table.Td>
+                  <Text>{internship.company.name}</Text>
+                </Table.Td>
+                <Table.Td>
+                  <Text>{getInternshipKindLabel(String(internship.kind))}</Text>
+                </Table.Td>
+                <Table.Td>
+                  <Text>{new Date(internship.created).toLocaleString()}</Text>
                 </Table.Td>
                 <Table.Td>
                   <ActionIcon
                     variant="light"
                     component={Link}
-                    href={"/dashboard/companies/" + company.id}
+                    href={"/dashboard/internships/" + internship.id}
                   >
                     <IconInfoSmall />
                   </ActionIcon>{" "}
@@ -397,7 +429,7 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
                     variant="light"
                     color="red"
                     onClick={() => {
-                      setDeleteId(company.id);
+                      setDeleteId(internship.id);
                       open();
                     }}
                   >
@@ -406,7 +438,7 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
                   <ActionIcon
                     variant="light"
                     component={Link}
-                    href={"/dashboard/companies/" + company.id + "/edit"}
+                    href={"/dashboard/internships/" + internship.id + "/edit"}
                   >
                     <IconEdit />
                   </ActionIcon>
@@ -429,17 +461,17 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
         centered
         onClose={close}
         size="auto"
-        title="Odstranění firmy"
+        title="Odstranění praxe"
         fullScreen={isMobile}
         transitionProps={{ transition: "fade", duration: 200 }}
       >
-        <Text>Opravdu si přejete tuto firmu odstranit?</Text>
+        <Text>Opravdu si přejete tuto praxi odstranit?</Text>
         <Text fw={700}>Data pak už nebude možné obnovit.</Text>
         <Group mt="xl">
           <Button
             onClick={() => {
               if (deleteId !== null) {
-                fetch("/api/companies/" + deleteId, {
+                fetch("/api/internships/" + deleteId, {
                   method: "DELETE",
                 })
                   .then((response) => {
@@ -448,15 +480,18 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
                     }
                     notifications.show({
                       title: "Povedlo se!",
-                      message: "Firma byla odstraněna.",
+                      message: "Praxe byla odstraněna.",
                       color: "lime",
                     });
                     fetchData(
-                      state.filterName,
-                      state.filterTax,
-                      state.filterActive,
-                      state.filterMunicipality,
-                      state.filterCountry,
+                      state.filterUser,
+                      state.filterUserGivenName,
+                      state.filterUserSurname,
+                      state.filterSet,
+                      state.filterYear,
+                      state.filterCompany,
+                      state.filterCompanyName,
+                      state.filterClassname,
                       state.order,
                       state.page,
                       state.size,
@@ -465,7 +500,7 @@ const InternshipsTable: FC = (TCompaniesTableProps) => {
                   .catch((error) => {
                     notifications.show({
                       title: "Chyba!",
-                      message: "Smazání firmy nebylo úspěšné.",
+                      message: "Smazání praxe nebylo úspěšné.",
                       color: "red",
                     });
                   })

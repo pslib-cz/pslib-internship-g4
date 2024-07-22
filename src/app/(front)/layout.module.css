@@ -1,9 +1,9 @@
 .pageContent {
-    margin-top: 64px;
-    min-height: auto;
+  margin-top: 64px;
+  min-height: auto;
 }
 .navigation {
-    margin: 0;
+  margin: 0;
 }
 .link {
   display: block;
@@ -15,6 +15,9 @@
   font-size: var(--mantine-font-size-sm);
   font-weight: 500;
   @mixin hover {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+    background-color: light-dark(
+      var(--mantine-color-gray-0),
+      var(--mantine-color-dark-6)
+    );
   }
 }

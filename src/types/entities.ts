@@ -43,6 +43,13 @@ export type CompanyBranchWithLocation = Prisma.CompanyBranchGetPayload<{
 
 export type InternshipWithCompanyLocationSetUser = Prisma.InternshipGetPayload<{
   select: {
+    id: true;
+    classname: true;
+    created: true;
+    kind: true;
+    userId: true;
+    companyId: true;
+    setId: true;
     user: {
       select: {
         givenName: true;
@@ -64,48 +71,25 @@ export type InternshipWithCompanyLocationSetUser = Prisma.InternshipGetPayload<{
       select: {
         name: true;
         year: true;
-      };
-    };
-    reservationUser: {
-      select: {
-        givenName: true;
-        surname: true;
+        editable: true;
+        active: true;
+        daysTotal: true;
+        hoursDaily: true;
+        start: true;
+        end: true;
+        continuous: true;
       };
     };
   };
 }>;
 
-export type InternshipExpandedRecord = Prisma.InternshipGetPayload<{
-  select: {
-    user: {
-      select: {
-        givenName: true;
-        surname: true;
-      };
-    };
-    company: {
-      select: {
-        name: true;
-        companyIdentificationNumber: true;
-      };
-    };
-    location: {
-      select: {
-        municipality: true;
-      };
-    };
-    set: {
-      select: {
-        name: true;
-        year: true;
-      };
-    };
-    reservationUser: {
-      select: {
-        givenName: true;
-        surname: true;
-      };
-    };
+export type InternshipFullRecord = Prisma.InternshipGetPayload<{
+  include: {
+    set: true;
+    user: true;
+    company: true;
+    location: true;
+    reservationUser: true;
   };
 }>;
 
@@ -135,4 +119,4 @@ export type LocationForComaniesAndBranches = Prisma.LocationGetPayload<{
       };
     };
   };
-}>
+}>;

@@ -1,7 +1,7 @@
 import { type NextRequest } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/utils/db";
-import { InternshipExpandedRecord } from "@/types/entities";
+import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 
 export async function GET(request: NextRequest) {
@@ -10,9 +10,15 @@ export async function GET(request: NextRequest) {
   let userId = searchParams.get("user");
   const givenName = searchParams.get("givenName");
   const surname = searchParams.get("surname");
-  const setId = searchParams.get("set");
+  const setId: number | null =
+    searchParams.get("set") !== null
+      ? parseInt(searchParams.get("set") ?? "")
+      : null;
   const setName = searchParams.get("setName");
-  const companyId = searchParams.get("company");
+  const companyId: number | null =
+    searchParams.get("company") !== null
+      ? parseInt(searchParams.get("company") ?? "")
+      : null;
   const companyName = searchParams.get("companyName");
   const locationId = searchParams.get("location");
   const year = searchParams.get("year");
@@ -34,7 +40,7 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  if(session.user.role !== "admin" && session.user.role !== "teacher") {
+  if (session.user.role !== "admin" && session.user.role !== "teacher") {
     userId = session.user.id;
   }
 
@@ -83,25 +89,16 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  let internships: InternshipExpandedRecord[] =
+  let internships: InternshipWithCompanyLocationSetUser[] =
     await prisma.internship.findMany({
       select: {
         id: true,
+        classname: true,
+        created: true,
+        kind: true,
         userId: true,
         companyId: true,
-        locationId: true,
-        reservationUserId: true,
-        classname: true,
-        companyRepName: true,
-        companyRepEmail: true,
-        companyRepPhone: true,
-        companyMentorName: true,
-        companyMentorEmail: true,
-        companyMentorPhone: true,
-        jobDescription: true,
-        additionalInfo: true,
-        appendixText: true,
-        created: true,
+        setId: true,
         user: {
           select: {
             givenName: true,
@@ -123,12 +120,13 @@ export async function GET(request: NextRequest) {
           select: {
             name: true,
             year: true,
-          },
-        },
-        reservationUser: {
-          select: {
-            givenName: true,
-            surname: true,
+            editable: true,
+            active: true,
+            daysTotal: true,
+            hoursDaily: true,
+            start: true,
+            end: true,
+            continuous: true,
           },
         },
       },
@@ -192,7 +190,7 @@ export async function GET(request: NextRequest) {
       skip: page !== null && size !== null ? page * size : undefined,
       take: size !== null ? size : undefined,
     });
-  let result: ListResult<InternshipExpandedRecord> = {
+  let result: ListResult<InternshipWithCompanyLocationSetUser> = {
     data: internships,
     count: internships.length,
     total: summary._count || 0,
@@ -210,7 +208,8 @@ export async function POST(request: NextRequest) {
       status: 401,
     });
   }
-  let isManager = session.user.role !== "admin" && session.user.role !== "teacher";
+  let isManager =
+    session.user.role !== "admin" && session.user.role !== "teacher";
   if (
     session.user.role !== "admin" &&
     session.user.role !== "teacher" &&
@@ -230,7 +229,8 @@ export async function POST(request: NextRequest) {
       userId: body.userId,
       companyId: Number(body.companyId),
       locationId: Number(body.locationId),
-      reservationUserId: (isManager ? body.reservationUserId : undefined) ?? null,
+      reservationUserId:
+        (isManager ? body.reservationUserId : undefined) ?? null,
       classname: body.classname,
       setId: Number(body.setId),
       companyRepName: body.companyRepName,
@@ -245,7 +245,7 @@ export async function POST(request: NextRequest) {
       created: new Date(),
       creatorId: session.user.id,
       updated: new Date(),
-      kind: body.kind,
+      kind: Number(body.kind),
       highlighted: isManager ? body.highlighted : false,
     },
   });

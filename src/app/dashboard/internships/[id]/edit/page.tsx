@@ -1,7 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   TextInput,
   Button,
@@ -10,14 +13,11 @@ import {
   Anchor,
   Breadcrumbs,
   Text,
-  LoadingOverlay,
+  Checkbox,
   NativeSelect,
   Title,
-  Checkbox,
+  Alert,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { RichTextEditor, Link as TipLink } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -25,9 +25,11 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { Location, Company, User, Set } from "@prisma/client";
 import { internshipKinds } from "@/data/lists";
 
-const Page = () => {
-  const router = useRouter();
+const Page = ({ params }: { params: { id: string } }) => {
+  const id = params.id;
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const router = useRouter();
   const [locations, setLocations] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [sets, setSets] = useState([]);
@@ -182,8 +184,8 @@ const Page = () => {
       locationId: undefined,
       setId: undefined,
       reservationUserId: undefined,
-      highlighted: false,
-      kind: "0",
+      kind: 0,
+      highlight: false,
     },
     validate: {
       companyRepName: (value) =>
@@ -203,6 +205,49 @@ const Page = () => {
       kind: (value) => (value ? null : "Způsob praxe musí být vybrán."),
     },
   });
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/internships/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then(async (response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Nepodařilo se načíst místo");
+      })
+      .then((data) => {
+        form.setValues({
+          companyRepName: data.companyRepName,
+          companyRepEmail: data.companyRepEmail,
+          companyRepPhone: data.companyRepPhone,
+          companyMentorName: data.companyMentorName,
+          companyMentorEmail: data.companyMentorEmail,
+          companyMentorPhone: data.companyMentorPhone,
+          jobDescription: data.jobDescription,
+          additionalInfo: data.additionalInfo,
+          appendixText: data.appendixText,
+          classname: data.classname,
+          userId: data.userId,
+          companyId: data.companyId,
+          locationId: data.locationId,
+          setId: data.setId,
+          reservationUserId: data.reservationUserId,
+          kind: data.kind,
+          highlight: data.highlight,
+        });
+      })
+      .catch((error) => {
+        setError(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [id]);
+
   const editorDescription = useEditor({
     extensions: [
       StarterKit,
@@ -242,7 +287,23 @@ const Page = () => {
       form.setValues({ appendixText: editor.getHTML() });
     },
   });
+  useEffect(() => {
+    editorDescription?.chain().setContent(form.values.jobDescription).run();
+  }, [editorDescription, form]);
+  useEffect(() => {
+    editorInfo?.chain().setContent(form.values.additionalInfo).run();
+  }, [editorInfo, form]);
+  useEffect(() => {
+    editorAppendix?.chain().setContent(form.values.appendixText).run();
+  }, [editorAppendix, form]);
 
+  if (error) {
+    return (
+      <Alert color="red" title="Chyba při načítání nebo ukládání praxe">
+        {error}
+      </Alert>
+    );
+  }
   return (
     <>
       <Breadcrumbs separatorMargin="md" m="xs">
@@ -252,15 +313,14 @@ const Page = () => {
         <Anchor component={Link} href="/dashboard/internships">
           Praxe
         </Anchor>
-        <Text>Nová</Text>
+        <Text>Editace</Text>
       </Breadcrumbs>
-      <LoadingOverlay visible={loading} />
       <Container>
-        <Title order={2}>Nová praxe</Title>
+        <Title order={2}>Editace praxe</Title>
         <form
           onSubmit={form.onSubmit((values) => {
-            fetch("/api/internships", {
-              method: "POST",
+            fetch("/api/internships/" + id, {
+              method: "PUT",
               headers: {
                 "Content-Type": "application/json",
               },
@@ -272,7 +332,7 @@ const Page = () => {
                 }
                 notifications.show({
                   title: "Povedlo se!",
-                  message: "Praxe byla vytvořena.",
+                  message: "Praxe byla uložena.",
                   color: "lime",
                 });
                 router.push("/dashboard/internships", { scroll: false });
@@ -280,7 +340,7 @@ const Page = () => {
               .catch((error) => {
                 notifications.show({
                   title: "Chyba!",
-                  message: "Praxi se nepodařilo vytvořit.",
+                  message: "Praxi se nepodařilo uložit.",
                   color: "red",
                 });
               });
@@ -315,7 +375,7 @@ const Page = () => {
             data={[{ label: "--", value: "" }, ...companies]}
             {...form.getInputProps("companyId")}
           />
-          <Text>Popis zaměstnání *</Text>
+          <Text>Popis zaměstnání</Text>
           <RichTextEditor
             editor={editorDescription}
             {...form.getInputProps("jobDescription")}
@@ -365,7 +425,6 @@ const Page = () => {
             <RichTextEditor.Content />
           </RichTextEditor>
           <NativeSelect
-            withAsterisk
             label="Adresa místa praxe"
             description={`Pokud se zde adresa nenachází, musíte ji nejprve vytvořit v sekci Místa`}
             data={[{ label: "--", value: "" }, ...locations]}
