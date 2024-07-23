@@ -1,0 +1,10 @@
+.panel {
+    margin: 0;
+    background-color: light-dark(
+      var(--mantine-color-pink-2),
+      var(--mantine-color-pink-7)
+    );
+    color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+    margin: 0 -1rem;
+    padding: 1rem;
+  }

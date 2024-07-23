@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   ScrollArea,
+  Container,
   Title,
   Loader,
   Box,
@@ -32,6 +33,7 @@ const Page = () => {
         </Anchor>
         <Text>Firmy</Text>
       </Breadcrumbs>
+      <Container>
       <Title my="lg" order={2}>
         Seznam firem
       </Title>
@@ -42,6 +44,7 @@ const Page = () => {
             session?.user.role === "student") && (
             <>
               <Button
+                variant="filled"
                 component={Link}
                 href="/companies/import"
                 leftSection={<IconHomePlus />}
@@ -71,6 +74,7 @@ const Page = () => {
       <Suspense fallback={<Loader />}>
         <CompaniesTable />
       </Suspense>
+    </Container>
     </>
   );
 };

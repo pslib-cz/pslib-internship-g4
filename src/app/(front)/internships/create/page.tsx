@@ -79,7 +79,7 @@ const Page = () => {
       .catch((error) => {
         notifications.show({
           title: "Chyba!",
-          message: "Nepodařilo se načíst firmy.",
+          message: "Nepodařilo se načíst lokace.",
           color: "red",
         });
       })
@@ -105,7 +105,7 @@ const Page = () => {
       .catch((error) => {
         notifications.show({
           title: "Chyba!",
-          message: "Nepodařilo se načíst uživatele.",
+          message: "Nepodařilo se načíst lokace.",
           color: "red",
         });
       })
@@ -131,7 +131,7 @@ const Page = () => {
       .catch((error) => {
         notifications.show({
           title: "Chyba!",
-          message: "Nepodařilo se načíst učitele.",
+          message: "Nepodařilo se načíst lokace.",
           color: "red",
         });
       })
@@ -157,7 +157,7 @@ const Page = () => {
       .catch((error) => {
         notifications.show({
           title: "Chyba!",
-          message: "Nepodařilo se načíst sady.",
+          message: "Nepodařilo se načíst lokace.",
           color: "red",
         });
       })
@@ -177,7 +177,6 @@ const Page = () => {
       additionalInfo: "",
       appendixText: "",
       classname: "",
-      userId: "",
       companyId: undefined,
       locationId: undefined,
       setId: undefined,
@@ -194,8 +193,6 @@ const Page = () => {
           : "Popis zaměstnání firmy musí být vyplněno.",
       classname: (value) =>
         value.trim() !== "" ? null : "Název třídy musí být vyplněn.",
-      userId: (value) =>
-        value.trim() !== "" ? null : "Uživatel musí být vybrán.",
       companyId: (value) => (value ? null : "Firma musí být vybrána."),
       locationId: (value) =>
         value ? null : "Adresa místa praxe musí být vybrána.",
@@ -246,10 +243,10 @@ const Page = () => {
   return (
     <>
       <Breadcrumbs separatorMargin="md" m="xs">
-        <Anchor component={Link} href="/dashboard">
-          Administrace
+        <Anchor component={Link} href="/">
+          Titulní stránka
         </Anchor>
-        <Anchor component={Link} href="/dashboard/internships">
+        <Anchor component={Link} href="/internships">
           Praxe
         </Anchor>
         <Text>Nová</Text>
@@ -417,19 +414,6 @@ const Page = () => {
             type="tel"
             placeholder="+420 123 456 789"
             {...form.getInputProps("companyMentorPhone")}
-          />
-          <Title order={3}>Kontrola praxí</Title>
-          <NativeSelect
-            withAsterisk
-            label="Vyučující"
-            description={`Pokud se zde uživatel nenachází, musí se do aplikace nejprve alespoň jednou přihlásit.`}
-            data={[{ label: "--", value: "" }, ...teachers]}
-            {...form.getInputProps("reservationUserId")}
-          />
-          <Checkbox
-            my="sm"
-            label="Důležitá kontrola"
-            {...form.getInputProps("highlighted", { type: "checkbox" })}
           />
           <Group justify="flex-start" mt="md">
             <Button type="submit">Vytvořit</Button>

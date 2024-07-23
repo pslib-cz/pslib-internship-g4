@@ -12,6 +12,7 @@ import {
   Loader,
   Card,
   Grid,
+  Container,
 } from "@mantine/core";
 import { CompanyBranchWithLocation } from "../../../api/companies/[id]/locations/route";
 import { CompanyWithLocation } from "@/types/entities";
@@ -147,6 +148,8 @@ const Page = ({ params }: { params: { id: number } }) => {
         </Anchor>
         <Text>Detail</Text>
       </Breadcrumbs>
+      <Container>
+        <Title order={2}>Detail firmy</Title>
       <Grid justify="flex-start" align="stretch">
         <Grid.Col span={mobile ? 12 : 6}>
           <Card shadow="xs" p="xl" h="100%">
@@ -170,6 +173,7 @@ const Page = ({ params }: { params: { id: number } }) => {
           </Card>
         </Grid.Col>
       </Grid>
+      </Container>
     </>
   );
 };
