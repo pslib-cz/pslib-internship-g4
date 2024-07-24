@@ -22,44 +22,15 @@ import { RichTextEditor, Link as TipLink } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import { Location, Company, User, Set } from "@prisma/client";
+import { Company, Set } from "@prisma/client";
 import { internshipKinds } from "@/data/lists";
 
 const Page = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [locations, setLocations] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [sets, setSets] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [teachers, setTeachers] = useState([]);
   useEffect(() => {
-    setLoading(true);
-    fetch("/api/locations?orderBy=municipality")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Při komunikaci se serverem došlo k chybě.");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setLocations(
-          data.data.map((location: Location) => ({
-            label: `${location.country}, ${location.municipality ?? "?"}, ${location.street ?? ""} ${location.descNo ?? ""} ${location.descNo && location.orientNo ? "/" : ""} ${location.orientNo ?? ""}`,
-            value: location.id,
-          })),
-        );
-      })
-      .catch((error) => {
-        notifications.show({
-          title: "Chyba!",
-          message: "Nepodařilo se načíst lokace.",
-          color: "red",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
     setLoading(true);
     fetch("/api/companies?orderBy=name")
       .then((response) => {
@@ -79,66 +50,13 @@ const Page = () => {
       .catch((error) => {
         notifications.show({
           title: "Chyba!",
-          message: "Nepodařilo se načíst lokace.",
+          message: "Nepodařilo se načíst firmy.",
           color: "red",
         });
       })
       .finally(() => {
         setLoading(false);
       });
-    setLoading(true);
-    fetch("/api/users?role=student&orderBy=surname")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Při komunikaci se serverem došlo k chybě.");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setStudents(
-          data.data.map((user: User) => ({
-            label: `${user.surname}, ${user.givenName} (${user.email}, ${user.department})`,
-            value: user.id,
-          })),
-        );
-      })
-      .catch((error) => {
-        notifications.show({
-          title: "Chyba!",
-          message: "Nepodařilo se načíst lokace.",
-          color: "red",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    setLoading(true);
-    fetch("/api/users?role=manager&orderBy=surname")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Při komunikaci se serverem došlo k chybě.");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setTeachers(
-          data.data.map((user: User) => ({
-            label: `${user.surname}, ${user.givenName} (${user.email}, ${user.department})`,
-            value: user.id,
-          })),
-        );
-      })
-      .catch((error) => {
-        notifications.show({
-          title: "Chyba!",
-          message: "Nepodařilo se načíst lokace.",
-          color: "red",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    setLoading(true);
     fetch("/api/sets?orderBy=year")
       .then((response) => {
         if (!response.ok) {
@@ -157,7 +75,7 @@ const Page = () => {
       .catch((error) => {
         notifications.show({
           title: "Chyba!",
-          message: "Nepodařilo se načíst lokace.",
+          message: "Nepodařilo se načíst sady.",
           color: "red",
         });
       })
@@ -178,24 +96,17 @@ const Page = () => {
       appendixText: "",
       classname: "",
       companyId: undefined,
-      locationId: undefined,
       setId: undefined,
-      reservationUserId: undefined,
-      highlighted: false,
       kind: "0",
     },
     validate: {
       companyRepName: (value) =>
         value.trim() !== "" ? null : "Jméno zástupce firmy musí být vyplněno.",
       jobDescription: (value) =>
-        value.trim() !== ""
-          ? null
-          : "Popis zaměstnání firmy musí být vyplněno.",
+        value.trim() !== "" ? null : "Popis praxe musí být vyplněn.",
       classname: (value) =>
         value.trim() !== "" ? null : "Název třídy musí být vyplněn.",
       companyId: (value) => (value ? null : "Firma musí být vybrána."),
-      locationId: (value) =>
-        value ? null : "Adresa místa praxe musí být vybrána.",
       setId: (value) => (value ? null : "Sada praxí musí být vybrána."),
       kind: (value) => (value ? null : "Způsob praxe musí být vybrán."),
     },
@@ -267,12 +178,15 @@ const Page = () => {
                 if (!response.ok) {
                   throw new Error("Při komunikaci se serverem došlo k chybě.");
                 }
+                return response.json();
+              })
+              .then((data) => {
                 notifications.show({
                   title: "Povedlo se!",
                   message: "Praxe byla vytvořena.",
                   color: "lime",
                 });
-                router.push("/dashboard/internships", { scroll: false });
+                router.push("/internships/" + data.id, { scroll: false });
               })
               .catch((error) => {
                 notifications.show({
@@ -286,17 +200,9 @@ const Page = () => {
           <NativeSelect
             withAsterisk
             label="Sada praxí"
-            description={`Základní definice vlastností praxí, je nutné ji předem vytvořit v sekci Sady.`}
+            description={`Základní definice vlastností této praxe.`}
             data={[{ label: "--", value: "" }, ...sets]}
             {...form.getInputProps("setId")}
-          />
-          <Title order={3}>Student</Title>
-          <NativeSelect
-            withAsterisk
-            label="Student"
-            description={`Pokud se zde uživatel nenachází, musí se do aplikace nejprve alespoň jednou přihlásit.`}
-            data={[{ label: "--", value: "" }, ...students]}
-            {...form.getInputProps("userId")}
           />
           <TextInput
             withAsterisk
@@ -329,7 +235,7 @@ const Page = () => {
           <NativeSelect
             withAsterisk
             label="Způsob praxe"
-            description={`Povaha přítomnosti studenta na praxi..`}
+            description={`Povaha přítomnosti na praxi.`}
             data={[{ label: "--", value: "" }, ...internshipKinds]}
             {...form.getInputProps("kind")}
           />
@@ -361,13 +267,6 @@ const Page = () => {
             </RichTextEditor.Toolbar>
             <RichTextEditor.Content />
           </RichTextEditor>
-          <NativeSelect
-            withAsterisk
-            label="Adresa místa praxe"
-            description={`Pokud se zde adresa nenachází, musíte ji nejprve vytvořit v sekci Místa`}
-            data={[{ label: "--", value: "" }, ...locations]}
-            {...form.getInputProps("locationId")}
-          />
           <Title order={3}>Zástupce firmy</Title>
           <Text>
             Osoba oprávněná podepsat smlouvu za firmu. Zároveň dodatečný
@@ -417,11 +316,7 @@ const Page = () => {
           />
           <Group justify="flex-start" mt="md">
             <Button type="submit">Vytvořit</Button>
-            <Button
-              component={Link}
-              href="/dashboard/internships"
-              variant="default"
-            >
+            <Button component={Link} href="/internships" variant="default">
               Storno
             </Button>
           </Group>

@@ -87,7 +87,7 @@ const Page = () => {
         setLoading(false);
       });
     setLoading(true);
-    fetch("/api/users?role=student&orderBy=surname")
+    fetch("/api/users?orderBy=surname")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Při komunikaci se serverem došlo k chybě.");

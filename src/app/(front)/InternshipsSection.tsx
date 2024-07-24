@@ -1,5 +1,13 @@
-import { Container, Box, Grid, GridCol, Title, Text, Anchor } from "@mantine/core"
-import Link from "next/link"
+import {
+  Container,
+  Box,
+  Grid,
+  GridCol,
+  Title,
+  Text,
+  Anchor,
+} from "@mantine/core";
+import Link from "next/link";
 import styles from "./InternshipsSection.module.css";
 
 const InternshipsSection = () => {

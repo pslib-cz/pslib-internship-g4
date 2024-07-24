@@ -27,7 +27,7 @@ import {
   IconChevronUp,
   IconCheck,
   IconX,
-    IconPlus,
+  IconPlus,
 } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -177,15 +177,17 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
     <>
       <Box my="sm">
         <Group>
-        <Button
-          component={Link}
-          href="/internships/create"
-          variant="filled"
-          leftSection={<IconPlus />}
-        >
-          Nová
-        </Button>
-        <Button onClick={toggleFilter} variant="default">Filtr</Button>
+          <Button
+            component={Link}
+            href="/internships/create"
+            variant="filled"
+            leftSection={<IconPlus />}
+          >
+            Nová
+          </Button>
+          <Button onClick={toggleFilter} variant="default">
+            Filtr
+          </Button>
         </Group>
       </Box>
       <Collapse in={filterOpened}>
@@ -228,36 +230,39 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
             }}
             placeholder="P2A"
           />
-          <Button onClick={(event) => {
-                  setState({
-                    ...state,
-                    filterYear: undefined,
-                    filterCompany: undefined,
-                    filterCompanyName: "",
-                    filterClassname: "",
-                    order: "created_desc",
-                    page: 1,
-                  });
-                }}>Vše</Button>
+          <Button
+            onClick={(event) => {
+              setState({
+                ...state,
+                filterYear: undefined,
+                filterCompany: undefined,
+                filterCompanyName: "",
+                filterClassname: "",
+                order: "created_desc",
+                page: 1,
+              });
+            }}
+          >
+            Vše
+          </Button>
         </Group>
-        </Collapse>
-                <Box mt="lg">
-                {data && data.total === 0 && (
-              <Alert>
-                Žádná praxe nevyhovuje podmínkám.
-              </Alert>
-          )}   
-          {data && data.data.map((internship, index) => (
+      </Collapse>
+      <Box mt="lg">
+        {data && data.total === 0 && (
+          <Alert>Žádná praxe nevyhovuje podmínkám.</Alert>
+        )}
+        {data &&
+          data.data.map((internship, index) => (
             <Link key={index} href={"/internship/" + internship.id}>
-            <Paper >
-                <Title order={3}>{internship.company.name} ({internship.set.year})</Title>
-                <Grid>
-
-                </Grid>
-            </Paper>
+              <Paper>
+                <Title order={3}>
+                  {internship.company.name} ({internship.set.year})
+                </Title>
+                <Grid></Grid>
+              </Paper>
             </Link>
           ))}
-                </Box>
+      </Box>
       <Flex justify="center">
         <Pagination
           total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}

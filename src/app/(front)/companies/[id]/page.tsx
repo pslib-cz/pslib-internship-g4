@@ -150,29 +150,29 @@ const Page = ({ params }: { params: { id: number } }) => {
       </Breadcrumbs>
       <Container>
         <Title order={2}>Detail firmy</Title>
-      <Grid justify="flex-start" align="stretch">
-        <Grid.Col span={mobile ? 12 : 6}>
-          <Card shadow="xs" p="xl" h="100%">
-            <Suspense fallback={<Loader />}>
-              <DataDisplay id={Number(id)} />
-            </Suspense>
-          </Card>
-        </Grid.Col>
-        <Grid.Col span={mobile ? 12 : 6}>
-          <Card shadow="xs" p="xl" h="100%">
-            <Title order={2}>Přiřazené značky</Title>
-            <Suspense fallback={<Loader />}>
-              <TagsDisplay id={Number(id)} />
-            </Suspense>
-          </Card>
-        </Grid.Col>
-        <Grid.Col span={12}>
-          <Card shadow="xs" p="xl" h="100%">
-            <Title order={2}>Pobočky a místa praxí</Title>
-            <BranchesSwitch id={Number(id)} />
-          </Card>
-        </Grid.Col>
-      </Grid>
+        <Grid justify="flex-start" align="stretch">
+          <Grid.Col span={mobile ? 12 : 6}>
+            <Card shadow="xs" p="xl" h="100%">
+              <Suspense fallback={<Loader />}>
+                <DataDisplay id={Number(id)} />
+              </Suspense>
+            </Card>
+          </Grid.Col>
+          <Grid.Col span={mobile ? 12 : 6}>
+            <Card shadow="xs" p="xl" h="100%">
+              <Title order={2}>Přiřazené značky</Title>
+              <Suspense fallback={<Loader />}>
+                <TagsDisplay id={Number(id)} />
+              </Suspense>
+            </Card>
+          </Grid.Col>
+          <Grid.Col span={12}>
+            <Card shadow="xs" p="xl" h="100%">
+              <Title order={2}>Pobočky a místa praxí</Title>
+              <BranchesSwitch id={Number(id)} />
+            </Card>
+          </Grid.Col>
+        </Grid>
       </Container>
     </>
   );

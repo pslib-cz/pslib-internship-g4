@@ -224,11 +224,23 @@ export async function POST(request: NextRequest) {
     body.companyMentorEmail = body.companyRepEmail;
     body.companyMentorPhone = body.companyRepPhone;
   }
+  const company = await prisma.company.findFirst({
+    where: { id: Number(body.companyId) },
+  });
+  if (!company) {
+    return new Response("Company not found", {
+      status: 404,
+    });
+  }
+  console.log(company);
   const internship = await prisma.internship.create({
     data: {
-      userId: body.userId,
+      userId: body.userId ?? session.user.id,
       companyId: Number(body.companyId),
-      locationId: Number(body.locationId),
+      locationId:
+        body.locationId === undefined
+          ? company.locationId
+          : Number(body.locationId),
       reservationUserId:
         (isManager ? body.reservationUserId : undefined) ?? null,
       classname: body.classname,

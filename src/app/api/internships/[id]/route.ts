@@ -3,7 +3,10 @@ import { type NextRequest } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/utils/db";
 import { Role } from "@/types/auth";
-import { InternshipFullRecord, InternshipWithCompanyLocationSetUser } from "@/types/entities";
+import {
+  InternshipFullRecord,
+  InternshipWithCompanyLocationSetUser,
+} from "@/types/entities";
 
 export async function GET(
   request: NextRequest,
@@ -17,7 +20,10 @@ export async function GET(
     });
   }
 
-  let internship: InternshipWithCompanyLocationSetUser | InternshipFullRecord | null;
+  let internship:
+    | InternshipWithCompanyLocationSetUser
+    | InternshipFullRecord
+    | null;
   if (session.user.role === Role.ADMIN || session.user.role === Role.TEACHER) {
     internship = await prisma.internship.findFirst({
       include: {
@@ -30,7 +36,7 @@ export async function GET(
       where: { id: id },
     });
   } else {
-  internship = await prisma.internship.findFirst({
+    internship = await prisma.internship.findFirst({
       select: {
         id: true,
         classname: true,
@@ -154,7 +160,7 @@ export async function DELETE(
       status: 403,
     });
   }
-if (internship === null) {
+  if (internship === null) {
     return new Response("Not found", {
       status: 404,
     });
@@ -162,7 +168,7 @@ if (internship === null) {
   if (internship.set.editable === false) {
     return new Response("Set of this internship is not editable.", {
       status: 402,
-    })
+    });
   }
 
   await prisma.internship.delete({
@@ -185,7 +191,7 @@ export async function PUT(
       status: 401,
     });
   }
-  
+
   let internship: InternshipWithCompanyLocationSetUser | null =
     await prisma.internship.findFirst({
       select: {
@@ -234,7 +240,11 @@ export async function PUT(
       status: 404,
     });
   }
-  if (session.user.role !== Role.ADMIN && session.user.role !== Role.TEACHER && session.user.id !== internship?.userId) {
+  if (
+    session.user.role !== Role.ADMIN &&
+    session.user.role !== Role.TEACHER &&
+    session.user.id !== internship?.userId
+  ) {
     return new Response("Forbidden", {
       status: 403,
     });
