@@ -12,16 +12,12 @@ import {
   Card,
   SimpleGrid,
 } from "@mantine/core";
-import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
+import { InternshipFullRecord } from "@/types/entities";
 import DateTime from "@/components/DateTime/DateTime";
 import Link from "next/link";
 import { getInternshipKindLabel } from "@/data/lists";
 
-const DataDisplay = ({
-  data,
-}: {
-  data: InternshipWithCompanyLocationSetUser;
-}) => {
+const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <Card shadow="sm" padding="lg">
       <Title order={2}>Základní údaje</Title>
@@ -63,11 +59,7 @@ const DataDisplay = ({
   );
 };
 
-const ContactsDisplay = ({
-  data,
-}: {
-  data: InternshipWithCompanyLocationSetUser;
-}) => {
+const ContactsDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <Card shadow="sm" padding="lg">
       <Title order={2}>Kontakty</Title>
@@ -123,11 +115,7 @@ const ContactsDisplay = ({
   );
 };
 
-const InternshipDisplay = ({
-  data,
-}: {
-  data: InternshipWithUserLocationCompanySetInspector;
-}) => {
+const InternshipDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <Card shadow="sm" padding="lg">
       <Title order={2}>Praxe</Title>
@@ -153,11 +141,7 @@ const InternshipDisplay = ({
   );
 };
 
-const StudentDisplay = ({
-  data,
-}: {
-  data: InternshipWithUserLocationCompanySetInspector;
-}) => {
+const StudentDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <Card shadow="sm" padding="lg">
       <Title order={2}>Student</Title>
@@ -193,11 +177,7 @@ const StudentDisplay = ({
   );
 };
 
-const InspectionsDisplay = ({
-  data,
-}: {
-  data: InternshipWithCompanyLocationSetUser;
-}) => {
+const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <Card shadow="sm" padding="lg">
       <Title order={2}>Kontroly</Title>
@@ -222,9 +202,7 @@ const InspectionsDisplay = ({
 
 const Page = ({ params }: { params: { id: number } }) => {
   const id = params.id;
-  const [data, setData] = useState<InternshipWithCompanyLocationSetUser | null>(
-    null,
-  );
+  const [data, setData] = useState<InternshipFullRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     fetch(`/api/internships/${id}`, {

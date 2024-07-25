@@ -34,7 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         )
           .then((response) => response.json())
           .catch((error) => console.error("Chyba:", error));
-        console.log("DATA:", response);
+        //console.log("DATA:", response);
         const imageResponse = await fetch(
           `https://graph.microsoft.com/v1.0/me/photos/${PROFILE_PHOTO_SIZE}x${PROFILE_PHOTO_SIZE}/$value`,
           { headers: { Authorization: `Bearer ${tokens.access_token}` } },

@@ -88,7 +88,7 @@ const MapDisplay = () => {
       state.filterActive,
       state.filterMunicipality,
     );
-  }, [state]);
+  }, [state, fetchData]);
 
   return (
     <>

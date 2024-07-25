@@ -3,10 +3,9 @@
 import React, { FC, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
-  Title,
   Button,
-  ActionIcon,
   Text,
   TextInput,
   Modal,
@@ -16,8 +15,6 @@ import {
   Flex,
   Collapse,
   Box,
-  Paper,
-  Grid,
 } from "@mantine/core";
 import {
   IconInfoSmall,
@@ -36,6 +33,7 @@ import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { getInternshipKindLabel } from "@/data/lists";
 import { useSession } from "next-auth/react";
+import InternshipItem from "./InternshipItem";
 
 type TInternshipsListProps = {};
 type TInternshipsListState = {
@@ -52,6 +50,7 @@ const STORAGE_ID = "internships-table";
 
 const InternshipsList: FC = (TInternshipsTableProps) => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [filterOpened, { toggle: toggleFilter }] = useDisclosure(false);
   const { data: session, status } = useSession();
   const [loadTableState, storeTableState, removeTableState] =
@@ -82,6 +81,7 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
 
   const fetchData = useCallback(
     (
+      user: string | undefined,
       year: number | undefined,
       company: number | undefined,
       companyName: string | undefined,
@@ -91,7 +91,7 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
       pageSize: number = 10,
     ) => {
       fetch(
-        `/api/internships?user=${session?.user.id}&year=${year !== undefined ? year : ""}&company=${company !== undefined ? company : ""}&companyName=${companyName}&class=${classname}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
+        `/api/internships?user=${user}&year=${year !== undefined ? year : ""}&company=${company !== undefined ? company : ""}&companyName=${companyName}&class=${classname}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
         {
           method: "GET",
           headers: {
@@ -163,6 +163,7 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
     window.history.replaceState(null, "", `?${params.toString()}`);
     storeTableState(state);
     fetchData(
+      session?.user?.id,
       state.filterYear,
       state.filterCompany,
       state.filterCompanyName,
@@ -171,7 +172,7 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
       state.page,
       state.size,
     );
-  }, [state, fetchData, searchParams, storeTableState]);
+  }, [state, fetchData, searchParams, storeTableState, session]);
 
   return (
     <>
@@ -253,17 +254,23 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
         )}
         {data &&
           data.data.map((internship, index) => (
-            <Link key={index} href={"/internship/" + internship.id}>
-              <Paper>
-                <Title order={3}>
-                  {internship.company.name} ({internship.set.year})
-                </Title>
-                <Grid></Grid>
-              </Paper>
-            </Link>
+            <InternshipItem
+              key={index}
+              internship={internship}
+              onClick={(int) => {
+                router.push("/internships/" + int.id);
+              }}
+              onDeleteClick={(int) => {
+                setDeleteId(int.id);
+                open();
+              }}
+              onEditClick={(int) => {
+                router.push("/internships/" + int.id + "/edit");
+              }}
+            />
           ))}
       </Box>
-      <Flex justify="center">
+      <Flex justify="center" mt="sm">
         <Pagination
           total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
           value={(data?.page ?? 1) + 1}
@@ -300,6 +307,7 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
                       color: "lime",
                     });
                     fetchData(
+                      session?.user?.id,
                       state.filterYear,
                       state.filterCompany,
                       state.filterCompanyName,

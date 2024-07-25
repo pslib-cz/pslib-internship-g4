@@ -1,23 +1,26 @@
 # Správa praxí pro _pslib.cz_
 
-Aplikace slouží pro správu praxí pro potřebu SPŠ a VOŠ Liberec. Má umožňovat:
+Aplikace slouží pro správu praxí pro potřebu SPŠ a VOŠ Liberec. Umožňuje:
 
 - studentům
-  - vytvářet a registrovat praxe
-  - tisknout přihlášku k praxi
-  - vytvářet deník praxe
+  - [x] vytvářet a registrovat praxe
+  - [ ] upravovat a mazat vytvořené praxe
+  - [ ] tisknout přihlášku k praxi
+  - [ ] vytvářet deník praxe
 - učitelům
-  - vybírat a registrovat praxe ke kontrole
-  - vyplňovat zprávu o kontrole
+  - [ ] vybírat a registrovat praxe ke kontrole
+  - [ ] vyplňovat zprávu o kontrole
 - třídním učitelům
-  - kontrolovat, kteří studenti už mají přihlášku
+  - [ ] kontrolovat, kteří studenti už mají přihlášku
 - administrátorům
-  - spravovat všechny datové entity
-  - vytvářet a spravovat sady praxí
-  - vytvářet a spravovat šablony pro přihlášky
-  - prohlížet a editovat veškerá data v aplikaci
+  - [x] vytvářet a spravovat sady praxí
+  - [x] vytvářet a spravovat šablony pro přihlášky
+  - [x] spravovat uživatele
+  - [x] spravovat firmy
+  - [x] spravovat značky pro firmy
+  - [ ] prohlížet a editovat veškerá data v aplikaci
 
-Aplikace poběží na adrese https://praxe.pslib.cz
+Aplikace běží na adrese https://praxe.pslib.cz
 
 ## Příkazy ve vývojovém prostředí
 
@@ -46,6 +49,12 @@ npm run build
 ```
 
 ## Databáze
+
+Vygenerování klienta
+
+```bash
+npx prisma generate
+```
 
 Inicializace Prisma
 

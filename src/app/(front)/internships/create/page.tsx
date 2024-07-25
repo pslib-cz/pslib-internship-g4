@@ -24,8 +24,12 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Company, Set } from "@prisma/client";
 import { internshipKinds } from "@/data/lists";
+import { useSearchParams } from "next/navigation";
 
 const Page = () => {
+  const searchParams = useSearchParams();
+  const requestedCompany = searchParams.get("company");
+  const requestedSet = searchParams.get("set");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [companies, setCompanies] = useState([]);
@@ -95,8 +99,8 @@ const Page = () => {
       additionalInfo: "",
       appendixText: "",
       classname: "",
-      companyId: undefined,
-      setId: undefined,
+      companyId: requestedCompany ?? undefined,
+      setId: requestedSet ?? undefined,
       kind: "0",
     },
     validate: {

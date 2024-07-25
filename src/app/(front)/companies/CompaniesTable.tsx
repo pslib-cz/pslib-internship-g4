@@ -296,7 +296,7 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
                     <ActionIcon
                       variant="light"
                       component={Link}
-                      href={"/internships/create/1?company=" + company.id}
+                      href={"/internships/create?company=" + company.id}
                       color="green"
                       aria-label="Založení praxe"
                     >
