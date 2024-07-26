@@ -2,7 +2,8 @@ import NextAuth from "next-auth";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 import { Role } from "@/types/auth";
 import PrismaSingleton from "@/utils/db";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+//import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 const PROFILE_PHOTO_SIZE = 48;
 

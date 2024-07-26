@@ -22,8 +22,6 @@ import {
   IconEdit,
   IconChevronDown,
   IconChevronUp,
-  IconCheck,
-  IconX,
 } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState, useCallback, useMemo } from "react";
 import { LoadingOverlay } from "@mantine/core";
 import { FilterContext } from "@/providers/CompanyFilterProvider";
 import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
@@ -14,7 +14,7 @@ import "leaflet/dist/leaflet.css";
 type TMapState = {
   latitude: number;
   longitude: number;
-  zoom: number | undefined;
+  zoom: number;
 };
 
 const MapDisplay = () => {
@@ -90,12 +90,20 @@ const MapDisplay = () => {
     );
   }, [state, fetchData]);
 
+useEffect(() => {
+  const params = new URLSearchParams(searchParams.toString());
+  params.set("lat", mapState.latitude.toString());
+  params.set("lng", mapState.longitude.toString());
+  params.set("zoom", mapState.zoom.toString());
+  window.history.replaceState(null, "", `?${params.toString()}`);
+}, [mapState, searchParams]);
+
   return (
     <>
       <LoadingOverlay visible={loading} />
       <MapContainer
         center={[mapState.latitude, mapState.longitude]}
-        zoom={mapState.zoom}
+        zoom={mapState.zoom ? mapState.zoom : 10}
         scrollWheelZoom={true}
         className={styles.map}
       >

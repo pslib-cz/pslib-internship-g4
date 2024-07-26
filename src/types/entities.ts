@@ -54,6 +54,7 @@ export type InternshipWithCompanyLocationSetUser = Prisma.InternshipGetPayload<{
       select: {
         givenName: true;
         surname: true;
+        email: true;
       };
     };
     company: {

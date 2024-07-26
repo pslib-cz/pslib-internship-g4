@@ -4,13 +4,14 @@ import CompaniesSection from "./CompaniesSection";
 import CreateInternshipSection from "./CreateInternshipSection";
 import ApiOutputsSection from "./ApiOutputsSection";
 import InternshipsSection from "./InternshipsSection";
+import InspectionsSection from "./InspectionsSection";
 
 const Page = () => {
   return (
     <>
       <CompaniesSection />
-      <CreateInternshipSection />
       <InternshipsSection />
+      <InspectionsSection />
       <ApiOutputsSection />
     </>
   );

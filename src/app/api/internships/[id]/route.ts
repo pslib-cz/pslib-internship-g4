@@ -49,6 +49,7 @@ export async function GET(
           select: {
             givenName: true,
             surname: true,
+            email: true,
           },
         },
         company: {
@@ -122,6 +123,7 @@ export async function DELETE(
           select: {
             givenName: true,
             surname: true,
+            email: true,
           },
         },
         company: {
@@ -206,6 +208,7 @@ export async function PUT(
           select: {
             givenName: true,
             surname: true,
+            email: true,
           },
         },
         company: {
