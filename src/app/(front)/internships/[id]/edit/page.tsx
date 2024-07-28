@@ -30,38 +30,9 @@ const Page = ({ params }: { params: { id: string } }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
-  const [locations, setLocations] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [sets, setSets] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [teachers, setTeachers] = useState([]);
   useEffect(() => {
-    setLoading(true);
-    fetch("/api/locations?orderBy=municipality")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Při komunikaci se serverem došlo k chybě.");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setLocations(
-          data.data.map((location: Location) => ({
-            label: `${location.country}, ${location.municipality ?? "?"}, ${location.street ?? ""} ${location.descNo ?? ""} ${location.descNo && location.orientNo ? "/" : ""} ${location.orientNo ?? ""}`,
-            value: location.id,
-          })),
-        );
-      })
-      .catch((error) => {
-        notifications.show({
-          title: "Chyba!",
-          message: "Nepodařilo se načíst lokace.",
-          color: "red",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
     setLoading(true);
     fetch("/api/companies?orderBy=name")
       .then((response) => {
@@ -81,59 +52,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       .catch((error) => {
         notifications.show({
           title: "Chyba!",
-          message: "Nepodařilo se načíst firmy.",
-          color: "red",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    setLoading(true);
-    fetch("/api/users?role=student&orderBy=surname")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Při komunikaci se serverem došlo k chybě.");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setStudents(
-          data.data.map((user: User) => ({
-            label: `${user.surname}, ${user.givenName} (${user.email}, ${user.department})`,
-            value: user.id,
-          })),
-        );
-      })
-      .catch((error) => {
-        notifications.show({
-          title: "Chyba!",
-          message: "Nepodařilo se načíst studenty.",
-          color: "red",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    setLoading(true);
-    fetch("/api/users?role=manager&orderBy=surname")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Při komunikaci se serverem došlo k chybě.");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setTeachers(
-          data.data.map((user: User) => ({
-            label: `${user.surname}, ${user.givenName} (${user.email}, ${user.department})`,
-            value: user.id,
-          })),
-        );
-      })
-      .catch((error) => {
-        notifications.show({
-          title: "Chyba!",
-          message: "Nepodařilo se načíst učitele.",
+          message: "Nepodařilo se načíst lokace.",
           color: "red",
         });
       })
@@ -159,7 +78,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       .catch((error) => {
         notifications.show({
           title: "Chyba!",
-          message: "Nepodařilo se načíst sady.",
+          message: "Nepodařilo se načíst lokace.",
           color: "red",
         });
       })
@@ -179,13 +98,9 @@ const Page = ({ params }: { params: { id: string } }) => {
       additionalInfo: "",
       appendixText: "",
       classname: "",
-      userId: "",
       companyId: undefined,
-      locationId: undefined,
       setId: undefined,
-      reservationUserId: undefined || null,
-      kind: "0",
-      highlight: false,
+      kind: 0,
     },
     validate: {
       companyRepName: (value) =>
@@ -196,11 +111,7 @@ const Page = ({ params }: { params: { id: string } }) => {
           : "Popis zaměstnání firmy musí být vyplněno.",
       classname: (value) =>
         value.trim() !== "" ? null : "Název třídy musí být vyplněn.",
-      userId: (value) =>
-        value.trim() !== "" ? null : "Uživatel musí být vybrán.",
       companyId: (value) => (value ? null : "Firma musí být vybrána."),
-      locationId: (value) =>
-        value ? null : "Adresa místa praxe musí být vybrána.",
       setId: (value) => (value ? null : "Sada praxí musí být vybrána."),
       kind: (value) => (value ? null : "Způsob praxe musí být vybrán."),
     },
@@ -231,13 +142,9 @@ const Page = ({ params }: { params: { id: string } }) => {
           additionalInfo: data.additionalInfo,
           appendixText: data.appendixText,
           classname: data.classname,
-          userId: data.userId,
           companyId: data.companyId,
-          locationId: data.locationId,
           setId: data.setId,
-          reservationUserId: data.reservationUserId,
-          kind: String(data.kind),
-          highlight: data.highlight,
+          kind: data.kind,
         });
       })
       .catch((error) => {
@@ -310,10 +217,10 @@ const Page = ({ params }: { params: { id: string } }) => {
   return (
     <>
       <Breadcrumbs separatorMargin="md" m="xs">
-        <Anchor component={Link} href="/dashboard">
-          Administrace
+        <Anchor component={Link} href="/">
+          Titulní stránka
         </Anchor>
-        <Anchor component={Link} href="/dashboard/internships">
+        <Anchor component={Link} href="/internships">
           Praxe
         </Anchor>
         <Text>Editace</Text>
@@ -322,7 +229,6 @@ const Page = ({ params }: { params: { id: string } }) => {
         <Title order={2}>Editace praxe</Title>
         <form
           onSubmit={form.onSubmit((values) => {
-            if (values.reservationUserId === "") values.reservationUserId = null;
             fetch("/api/internships/" + id, {
               method: "PUT",
               headers: {
@@ -339,7 +245,7 @@ const Page = ({ params }: { params: { id: string } }) => {
                   message: "Praxe byla uložena.",
                   color: "lime",
                 });
-                router.push("/dashboard/internships", { scroll: false });
+                router.push("/internships", { scroll: false });
               })
               .catch((error) => {
                 notifications.show({
@@ -353,17 +259,9 @@ const Page = ({ params }: { params: { id: string } }) => {
           <NativeSelect
             withAsterisk
             label="Sada praxí"
-            description={`Základní definice vlastností praxí, je nutné ji předem vytvořit v sekci Sady.`}
+            description={`Základní definice vlastností praxí.`}
             data={[{ label: "--", value: "" }, ...sets]}
             {...form.getInputProps("setId")}
-          />
-          <Title order={3}>Student</Title>
-          <NativeSelect
-            withAsterisk
-            label="Student"
-            description={`Pokud se zde uživatel nenachází, musí se do aplikace nejprve alespoň jednou přihlásit.`}
-            data={[{ label: "--", value: "" }, ...students]}
-            {...form.getInputProps("userId")}
           />
           <TextInput
             withAsterisk
@@ -428,15 +326,10 @@ const Page = ({ params }: { params: { id: string } }) => {
             </RichTextEditor.Toolbar>
             <RichTextEditor.Content />
           </RichTextEditor>
-          <NativeSelect
-            label="Adresa místa praxe"
-            description={`Pokud se zde adresa nenachází, musíte ji nejprve vytvořit v sekci Místa`}
-            data={[{ label: "--", value: "" }, ...locations]}
-            {...form.getInputProps("locationId")}
-          />
           <Title order={3}>Zástupce firmy</Title>
           <Text>
-            Osoba oprávněná podepsat smlouvu za firmu. Zároveň dodatečný kontakt.
+            Osoba oprávněná podepsat smlouvu za firmu. Zároveň dodatečný
+            kontakt.
           </Text>
           <TextInput
             withAsterisk
@@ -459,7 +352,8 @@ const Page = ({ params }: { params: { id: string } }) => {
           <Title order={3}>Kontaktní osoba</Title>
           <Text>Zaměstnanec, který se bude studentovi na praxi věnovat.</Text>
           <Text>
-            Není potřeba vyplnit, pokud jde o stejnou osobu, jako je zástupce firmy.
+            Není potřeba vyplnit, pokud jde o stejnou osobu, jako je zástupce
+            firmy.
           </Text>
           <TextInput
             withAsterisk
@@ -479,24 +373,11 @@ const Page = ({ params }: { params: { id: string } }) => {
             placeholder="+420 123 456 789"
             {...form.getInputProps("companyMentorPhone")}
           />
-          <Title order={3}>Kontrola praxí</Title>
-          <NativeSelect
-            withAsterisk
-            label="Vyučující"
-            description={`Pokud se zde uživatel nenachází, musí se do aplikace nejprve alespoň jednou přihlásit.`}
-            data={[{ label: "--", value: "" }, ...teachers]}
-            {...form.getInputProps("reservationUserId")}
-          />
-          <Checkbox
-            my="sm"
-            label="Důležitá kontrola"
-            {...form.getInputProps("highlighted", { type: "checkbox" })}
-          />
           <Group justify="flex-start" mt="md">
             <Button type="submit">Uložit</Button>
             <Button
               component={Link}
-              href="/dashboard/internships"
+              href="/internships"
               variant="default"
             >
               Storno

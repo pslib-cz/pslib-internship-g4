@@ -201,7 +201,9 @@ const Page = ({ params }: { params: { id: string } }) => {
                     municipality: form.values.municipality ?? "",
                     street: form.values.street ?? null,
                     descNumber: form.values.descNo ?? null,
-                    orientNumber: String(form.values.orientNo) ?? null,
+                    orientNumber: form.values.orientNo
+                      ? String(form.values.orientNo)
+                      : null,
                   }),
                 })
                   .then((response) => {

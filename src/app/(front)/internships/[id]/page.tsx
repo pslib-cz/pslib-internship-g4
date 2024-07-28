@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense, FC } from "react";
+import React, { useState, useEffect, Suspense, FC, useCallback } from "react";
 import {
   Title,
   Box,
@@ -12,14 +12,14 @@ import {
   Container,
   SimpleGrid,
   Card, 
-  Button
+  Button,
+  Group
 } from "@mantine/core";
 import { InternshipWithCompanyLocationSetUser, InternshipFullRecord } from "@/types/entities";
-import { Location } from "@prisma/client";
 import DateTime from "@/components/DateTime/DateTime"
-import Address from "@/components/Address/Address"
 import Link from "next/link";
 import { getInternshipKindLabel } from "@/data/lists";
+import LocationPanel from "./LocationPanel";
 
 const StudentDisplay: FC<InternshipFullRecord | InternshipWithCompanyLocationSetUser> = (internship) => {
   return (
@@ -67,72 +67,26 @@ const CompanyDisplay: FC<InternshipFullRecord | InternshipWithCompanyLocationSet
   );
 }
 
-const LocationDisplay: FC<InternshipFullRecord | InternshipWithCompanyLocationSetUser> = (internship) => {
-  const [data, setData] = useState<Location | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    fetch(`/api/locations/${internship.location.id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          setData(null);
-          setError("Došlo k chybě při získávání dat.");
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setData(data);
-      })
-      .catch((error) => {
-        setError(error.message);
-      })
-      .finally(() => {});
-  }, [internship]);
-  if (error) {
-    return <Alert color="red">{error}</Alert>;
-  }
-  if (!data) {
-    return <LoadingOverlay />;
-  }
-  return (
-    <Card shadow="sm" padding="lg">
-      <Title order={2}>Místo praxe</Title>
-      <Text fw={700}>Adresa</Text>
-      <Address street={data.street} municipality={data.municipality ?? ""} descNum={data.descNo} orientNum={data.orientNo} country={data.country ?? ""} postalCode={data.postalCode} />
-      <Text fw={700}>GPS</Text>
-      <Text>{data.latitude ? String(data.latitude) : "?"}, {data.longitude ? String(data.longitude) : "?"}</Text>  
-    </Card>
-  );
-}
-
 const FilesDisplay: FC<InternshipFullRecord | InternshipWithCompanyLocationSetUser> = (internship) => {
   return (
     <Card shadow="sm" padding="lg">
-      <Title order={2}>Soubory ke stažení</Title>
-      <Text>Smlouva o praxi</Text>
+      <Title order={2}>Smlouva o praxi</Title>
       <Box>
+        <Group mt="1em">
       <Button onClick={e => {
         e.preventDefault();
         window.open(`/api/internships/${internship.id}/agreement`, "_blank");
       }} variant="default">.html</Button>
-      </Box>
-      
+      </Group>
+      </Box>     
     </Card>
   );
 }
 
 const Page = ({ params }: { params: { id: number } }) => {
   const id = params.id;
-  const [data, setData] = useState<InternshipWithCompanyLocationSetUser | null>(
-    null,
-  );
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
+  const loadData = useCallback(() => {
+    console.log("LOADING DATA");
     fetch(`/api/internships/${id}`, {
       method: "GET",
       headers: {
@@ -154,7 +108,14 @@ const Page = ({ params }: { params: { id: number } }) => {
         setError(error.message);
       })
       .finally(() => {});
-  }, [id]);
+  },[]);
+  const [data, setData] = useState<InternshipWithCompanyLocationSetUser | null>(
+    null,
+  );
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   if (error) {
     return <Alert color="red">{error}</Alert>;
@@ -176,16 +137,16 @@ const Page = ({ params }: { params: { id: number } }) => {
       <Container>
       <SimpleGrid cols={{base: 1, sm: 2}} spacing="lg">
         <Suspense fallback={<LoadingOverlay />}>
-        <StudentDisplay {...data} />
+          <StudentDisplay {...data} />
         </Suspense>
         <Suspense fallback={<LoadingOverlay />}>
-        <SetDisplay {...data} />
+          <SetDisplay {...data} />
         </Suspense>
         <Suspense fallback={<LoadingOverlay />}>
-        <CompanyDisplay {...data} />
+          <CompanyDisplay {...data} />
         </Suspense>
         <Suspense fallback={<LoadingOverlay />}>
-        <LocationDisplay {...data} />
+          <LocationPanel internship={data} reloadInternshipCallback={loadData}/>
         </Suspense>
         <Suspense fallback={<LoadingOverlay />}>
           <FilesDisplay {...data} />

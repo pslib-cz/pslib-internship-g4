@@ -45,6 +45,7 @@ export async function GET(
         userId: true,
         companyId: true,
         setId: true,
+        locationId: true,
         user: {
           select: {
             givenName: true,
@@ -119,6 +120,7 @@ export async function DELETE(
         userId: true,
         companyId: true,
         setId: true,
+        locationId: true,
         user: {
           select: {
             givenName: true,
@@ -204,6 +206,7 @@ export async function PUT(
         userId: true,
         companyId: true,
         setId: true,
+        locationId: true,
         user: {
           select: {
             givenName: true,
@@ -253,9 +256,9 @@ export async function PUT(
     });
   }
 
-  if (internship.set.editable === false) {
+  if (session.user.role !== Role.ADMIN && internship.set.editable === false) {
     return new Response("Set of this internship is not editable.", {
-      status: 402,
+      status: 400,
     });
   }
   const body = await request.json();
@@ -266,11 +269,11 @@ export async function PUT(
     body.highlighted = undefined;
   }
 
-  body.updated = new Date();
+  let changed : Internship = body || internship;
 
   await prisma.internship.update({
     where: { id: id },
-    data: body,
+    data: changed,
   });
   return new Response("Updated", {
     status: 200,

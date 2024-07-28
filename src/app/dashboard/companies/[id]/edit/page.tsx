@@ -116,7 +116,7 @@ const Page = ({ params }: { params: { id: string } }) => {
   }, [id]);
   useEffect(() => {
     editor?.chain().setContent(form.values.description).run();
-  }, [editor, form]);
+  }, [editor, form.values.description]);
 
   if (error) {
     return (

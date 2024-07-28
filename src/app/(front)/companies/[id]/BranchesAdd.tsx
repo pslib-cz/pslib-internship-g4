@@ -23,7 +23,7 @@ const BranchesAdd = ({
   }>({
     initialValues: {
       name: "",
-      country: "Česká republika",
+      country: "Česko",
       municipality: "Liberec",
       street: "",
       descNo: undefined,

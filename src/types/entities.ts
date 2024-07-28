@@ -50,6 +50,7 @@ export type InternshipWithCompanyLocationSetUser = Prisma.InternshipGetPayload<{
     userId: true;
     companyId: true;
     setId: true;
+    locationId: true;
     user: {
       select: {
         givenName: true;
@@ -61,6 +62,7 @@ export type InternshipWithCompanyLocationSetUser = Prisma.InternshipGetPayload<{
       select: {
         name: true;
         companyIdentificationNumber: true;
+        locationId: true;
       };
     };
     location: {
@@ -88,7 +90,9 @@ export type InternshipFullRecord = Prisma.InternshipGetPayload<{
   include: {
     set: true;
     user: true;
-    company: true;
+    company: {
+      include: { location: true };
+    }
     location: true;
     reservationUser: true;
   };

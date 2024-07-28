@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import prisma from "@/utils/db";
 import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 import { type ListResult } from "@/types/data";
+import { Role } from "@/types/auth";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -99,10 +100,12 @@ export async function GET(request: NextRequest) {
         userId: true,
         companyId: true,
         setId: true,
+        locationId: true,
         user: {
           select: {
             givenName: true,
             surname: true,
+            email: true,
           },
         },
         company: {
@@ -209,10 +212,10 @@ export async function POST(request: NextRequest) {
     });
   }
   let isManager =
-    session.user.role !== "admin" && session.user.role !== "teacher";
+    session.user.role !== Role.ADMIN && session.user.role !== Role.TEACHER;
   if (
-    session.user.role !== "admin" &&
-    session.user.role !== "teacher" &&
+    session.user.role !== Role.ADMIN &&
+    session.user.role !== Role.TEACHER &&
     session.user.id !== body.userId
   ) {
     return new Response("Forbidden", {
