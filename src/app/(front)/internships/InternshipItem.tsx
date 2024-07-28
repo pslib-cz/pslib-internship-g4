@@ -48,7 +48,11 @@ const InternshipItem: FC<TInternshipItemProps> = ({
         {internship.set.daysTotal}
       </Text>
       <Box className={styles.controls}>
-        <Button onClick={(e) => onClick(internship)} size="xs" variant="default">
+        <Button
+          onClick={(e) => onClick(internship)}
+          size="xs"
+          variant="default"
+        >
           Detail
         </Button>
         {!internship.set.editable ? (

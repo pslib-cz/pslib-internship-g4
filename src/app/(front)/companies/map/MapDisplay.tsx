@@ -90,13 +90,13 @@ const MapDisplay = () => {
     );
   }, [state, fetchData]);
 
-useEffect(() => {
-  const params = new URLSearchParams(searchParams.toString());
-  params.set("lat", mapState.latitude.toString());
-  params.set("lng", mapState.longitude.toString());
-  params.set("zoom", mapState.zoom.toString());
-  window.history.replaceState(null, "", `?${params.toString()}`);
-}, [mapState, searchParams]);
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("lat", mapState.latitude.toString());
+    params.set("lng", mapState.longitude.toString());
+    params.set("zoom", mapState.zoom.toString());
+    window.history.replaceState(null, "", `?${params.toString()}`);
+  }, [mapState, searchParams]);
 
   return (
     <>

@@ -112,6 +112,7 @@ export async function GET(request: NextRequest) {
           select: {
             name: true,
             companyIdentificationNumber: true,
+            locationId: true,
           },
         },
         location: {

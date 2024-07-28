@@ -21,7 +21,6 @@ const CreateInternshipSection = () => {
     <Box className={styles.panel}>
       <Container>
         <Title order={2}>Založení praxe</Title>
-        
       </Container>
     </Box>
   );

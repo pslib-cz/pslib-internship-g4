@@ -322,7 +322,8 @@ const Page = ({ params }: { params: { id: string } }) => {
         <Title order={2}>Editace praxe</Title>
         <form
           onSubmit={form.onSubmit((values) => {
-            if (values.reservationUserId === "") values.reservationUserId = null;
+            if (values.reservationUserId === "")
+              values.reservationUserId = null;
             fetch("/api/internships/" + id, {
               method: "PUT",
               headers: {
@@ -436,7 +437,8 @@ const Page = ({ params }: { params: { id: string } }) => {
           />
           <Title order={3}>Zástupce firmy</Title>
           <Text>
-            Osoba oprávněná podepsat smlouvu za firmu. Zároveň dodatečný kontakt.
+            Osoba oprávněná podepsat smlouvu za firmu. Zároveň dodatečný
+            kontakt.
           </Text>
           <TextInput
             withAsterisk
@@ -459,7 +461,8 @@ const Page = ({ params }: { params: { id: string } }) => {
           <Title order={3}>Kontaktní osoba</Title>
           <Text>Zaměstnanec, který se bude studentovi na praxi věnovat.</Text>
           <Text>
-            Není potřeba vyplnit, pokud jde o stejnou osobu, jako je zástupce firmy.
+            Není potřeba vyplnit, pokud jde o stejnou osobu, jako je zástupce
+            firmy.
           </Text>
           <TextInput
             withAsterisk

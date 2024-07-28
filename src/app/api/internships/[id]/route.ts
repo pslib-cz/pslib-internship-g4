@@ -57,6 +57,7 @@ export async function GET(
           select: {
             name: true,
             companyIdentificationNumber: true,
+            locationId: true,
           },
         },
         location: {
@@ -132,6 +133,7 @@ export async function DELETE(
           select: {
             name: true,
             companyIdentificationNumber: true,
+            locationId: true,
           },
         },
         location: {
@@ -218,6 +220,7 @@ export async function PUT(
           select: {
             name: true,
             companyIdentificationNumber: true,
+            locationId: true,
           },
         },
         location: {
@@ -269,7 +272,7 @@ export async function PUT(
     body.highlighted = undefined;
   }
 
-  let changed : Internship = body || internship;
+  let changed: Internship = body || internship;
 
   await prisma.internship.update({
     where: { id: id },

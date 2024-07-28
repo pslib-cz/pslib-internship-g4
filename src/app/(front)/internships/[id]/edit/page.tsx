@@ -375,11 +375,7 @@ const Page = ({ params }: { params: { id: string } }) => {
           />
           <Group justify="flex-start" mt="md">
             <Button type="submit">Uložit</Button>
-            <Button
-              component={Link}
-              href="/internships"
-              variant="default"
-            >
+            <Button component={Link} href="/internships" variant="default">
               Storno
             </Button>
           </Group>

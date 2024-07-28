@@ -92,7 +92,7 @@ export type InternshipFullRecord = Prisma.InternshipGetPayload<{
     user: true;
     company: {
       include: { location: true };
-    }
+    };
     location: true;
     reservationUser: true;
   };
