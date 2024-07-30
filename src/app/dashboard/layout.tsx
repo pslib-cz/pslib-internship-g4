@@ -38,6 +38,7 @@ import {
   IconTag,
   IconCheckbox,
   IconTemplate,
+  IconTextCaption,
 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 
@@ -148,6 +149,13 @@ const DashboardLayout = ({
           label="Šablony"
           leftSection={<IconTemplate />}
           active={pathname.includes("/dashboard/templates")}
+        />
+        <NavLink
+          component={Link}
+          href="/dashboard/texts"
+          label="Texty"
+          leftSection={<IconTextCaption />}
+          active={pathname.includes("/dashboard/texts")}
         />
         <NavLink
           component={Link}

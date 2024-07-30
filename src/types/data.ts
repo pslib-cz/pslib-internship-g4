@@ -44,3 +44,8 @@ export enum InspectionType {
   BY_PHONE = 2,
   BY_EMAIL = 3,
 }
+
+export enum PublicationTarget {
+  NONE = 0,
+  FRONT = 1,
+}

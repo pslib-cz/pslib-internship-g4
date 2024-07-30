@@ -67,6 +67,7 @@ model User {
   inspections   Inspection[]
   diaries       Diary[]
   reservations  Internship[]   @relation("reserved")
+  texts         Text[]
 }
 
 model VerificationToken {
@@ -153,7 +154,7 @@ model Set {
 }
 
 model Internship {
-  id                           Int             @id @default(autoincrement())
+  id                           String             @id @default(cuid())
   companyRepName               String
   companyRepEmail              String?
   companyRepPhone              String?
@@ -188,7 +189,7 @@ model Diary {
   id                           Int             @id @default(autoincrement())
   date                         DateTime
   internship                   Internship      @relation(fields: [internshipId], references: [id], onDelete: Cascade)
-  internshipId                 Int
+  internshipId                 String
   text                         String
   createdBy                    User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
   createdById                  String
@@ -198,7 +199,7 @@ model Diary {
 model Inspection {
   id                            Int             @id @default(autoincrement())
   internship                    Internship      @relation(fields: [internshipId], references: [id], onDelete: Cascade)
-  internshipId                  Int
+  internshipId                  String
   date                          DateTime        @default(now())
   inspectionUser                User            @relation(fields: [inspectionUserId], references: [id], onDelete: Restrict)
   inspectionUserId              String
@@ -219,11 +220,24 @@ model Tag {
 model CompanyTag {
   companyId                   Int
   tagId                       Int
-  company                     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  tag                         Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  company                     Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  tag                         Tag            @relation(fields: [tagId], references: [id], onDelete: Cascade)
   created                     DateTime
   creatorId                   String
   creator                     User           @relation(fields: [creatorId], references: [id], onDelete: Restrict)
 
   @@id([companyId, tagId])
+}
+
+model Text {
+  id                       Int            @id @default(autoincrement())
+  title                    String
+  content                  String
+  shortable                Boolean        @default(true)
+  published                Int            @default(0)
+  priority                 Int            @default(0)
+  created                  DateTime       @default(now())
+  updated                  DateTime       @default(now())
+  creatorId                String
+  creator                  User           @relation(fields: [creatorId], references: [id], onDelete: Restrict)
 }

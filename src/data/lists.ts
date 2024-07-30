@@ -1,5 +1,10 @@
 import { Role } from "@/types/auth";
-import { SelectItem } from "@/types/data";
+import {
+  InspectionResult,
+  InspectionType,
+  PublicationTarget,
+  SelectItem,
+} from "@/types/data";
 
 export const tagTypes: SelectItem[] = [
   { label: "Školní obor", value: "1" },
@@ -35,4 +40,42 @@ export const internshipKinds: SelectItem[] = [
 export function getInternshipKindLabel(value: string): string | undefined {
   const kind = internshipKinds.find((kind) => kind.value === value);
   return kind ? kind.label : undefined;
+}
+
+export const inspectionResults: SelectItem[] = [
+  { value: String(InspectionResult.UNKNOWN), label: "Neznámý" },
+  { value: String(InspectionResult.OK), label: "OK" },
+  {
+    value: String(InspectionResult.PROBLEMS),
+    label: "Se studentem jsou problémy",
+  },
+  { value: String(InspectionResult.NOT_PRESENT), label: "Není přítomen" },
+  { value: String(InspectionResult.NOT_KNOWN), label: "O studentovi nevědí" },
+];
+
+export function getInspectionResultLabel(value: string): string | undefined {
+  const result = inspectionResults.find((result) => result.value === value);
+  return result ? result.label : undefined;
+}
+
+export const inspectionTypes: SelectItem[] = [
+  { value: String(InspectionType.OTHER), label: "Ostatní" },
+  { value: String(InspectionType.BY_VISIT), label: "Osobní návštěva" },
+  { value: String(InspectionType.BY_PHONE), label: "Telefonický rozhovor" },
+  { value: String(InspectionType.BY_EMAIL), label: "Email" },
+];
+
+export function getInspectionTypeLabel(value: string): string | undefined {
+  const type = inspectionTypes.find((type) => type.value === value);
+  return type ? type.label : undefined;
+}
+
+export const publicationTargets: SelectItem[] = [
+  { value: String(PublicationTarget.NONE), label: "Nikde" },
+  { value: String(PublicationTarget.FRONT), label: "Titulní strana" },
+];
+
+export function getPublicationTargetLabel(value: string): string | undefined {
+  const target = publicationTargets.find((target) => target.value === value);
+  return target ? target.label : undefined;
 }

@@ -78,7 +78,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       : 10,
   });
   const [deleteOpened, { open, close }] = useDisclosure(false);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 50em)");
 
   const fetchData = useCallback(

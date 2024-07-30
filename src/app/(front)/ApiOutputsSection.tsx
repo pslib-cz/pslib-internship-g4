@@ -23,6 +23,9 @@ const ApiOutputsSection = () => {
             <Link href="/api/templates">Šablony</Link>
           </li>
           <li>
+            <Link href="/api/texts">Texty</Link>
+          </li>
+          <li>
             <Link href="/api/users">Uživatelé</Link>
           </li>
           <li>

@@ -16,16 +16,7 @@ import {
   Collapse,
   Box,
 } from "@mantine/core";
-import {
-  IconInfoSmall,
-  IconTrash,
-  IconEdit,
-  IconChevronDown,
-  IconChevronUp,
-  IconCheck,
-  IconX,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconTrash, IconPlus } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
@@ -76,7 +67,7 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
       : 10,
   });
   const [deleteOpened, { open, close }] = useDisclosure(false);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 50em)");
 
   const fetchData = useCallback(

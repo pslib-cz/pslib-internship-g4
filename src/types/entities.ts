@@ -125,3 +125,23 @@ export type LocationForComaniesAndBranches = Prisma.LocationGetPayload<{
     };
   };
 }>;
+
+export type TextWithAuthor = Prisma.TextGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    content: true;
+    created: true;
+    published: true;
+    updated: true;
+    shortable: true;
+    priority: true;
+    creator: {
+      select: {
+        id: true;
+        givenName: true;
+        surname: true;
+      };
+    };
+  };
+}>;

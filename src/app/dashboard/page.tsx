@@ -10,6 +10,7 @@ import {
   IconCheckbox,
   IconTemplate,
   IconCalendar,
+  IconTextCaption,
 } from "@tabler/icons-react";
 import classes from "./page.module.css";
 
@@ -90,6 +91,16 @@ const Page = () => {
               <IconTemplate size={24} />
               <Text size="xs" mt={7}>
                 Šablony
+              </Text>
+            </UnstyledButton>
+            <UnstyledButton
+              component={Link}
+              href="/dashboard/texts"
+              className={classes.item}
+            >
+              <IconTextCaption size={24} />
+              <Text size="xs" mt={7}>
+                Texty
               </Text>
             </UnstyledButton>
             <UnstyledButton

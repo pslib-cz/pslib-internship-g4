@@ -5,12 +5,13 @@ import CreateInternshipSection from "./CreateInternshipSection";
 import ApiOutputsSection from "./ApiOutputsSection";
 import InternshipsSection from "./InternshipsSection";
 import InspectionsSection from "./InspectionsSection";
+import TextsSection from "./TextsSection";
 
 const Page = () => {
   return (
     <>
       <CompaniesSection />
-      <InternshipsSection />
+      <TextsSection />
       <InspectionsSection />
       <ApiOutputsSection />
     </>

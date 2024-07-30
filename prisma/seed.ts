@@ -244,7 +244,7 @@ async function main() {
     where: { id: 19 },
     update: {},
     create: {
-      id: 18,
+      id: 19,
       text: "Prodej",
       type: 3,
       background: "#dddddd",
@@ -255,7 +255,7 @@ async function main() {
     where: { id: 20 },
     update: {},
     create: {
-      id: 18,
+      id: 20,
       text: "Marketing",
       type: 3,
       background: "#dddddd",

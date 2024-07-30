@@ -126,7 +126,7 @@ CREATE TABLE "Set" (
 
 -- CreateTable
 CREATE TABLE "Internship" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "companyRepName" TEXT NOT NULL,
     "companyRepEmail" TEXT,
     "companyRepPhone" TEXT,
@@ -159,7 +159,7 @@ CREATE TABLE "Internship" (
 CREATE TABLE "Diary" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "date" DATETIME NOT NULL,
-    "internshipId" INTEGER NOT NULL,
+    "internshipId" TEXT NOT NULL,
     "text" TEXT NOT NULL,
     "createdById" TEXT NOT NULL,
     "created" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -170,7 +170,7 @@ CREATE TABLE "Diary" (
 -- CreateTable
 CREATE TABLE "Inspection" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "internshipId" INTEGER NOT NULL,
+    "internshipId" TEXT NOT NULL,
     "date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "inspectionUserId" TEXT NOT NULL,
     "note" TEXT NOT NULL,
@@ -200,6 +200,20 @@ CREATE TABLE "CompanyTag" (
     CONSTRAINT "CompanyTag_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "CompanyTag_tagId_fkey" FOREIGN KEY ("tagId") REFERENCES "Tag" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "CompanyTag_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Text" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "shortable" BOOLEAN NOT NULL DEFAULT true,
+    "published" INTEGER NOT NULL DEFAULT 0,
+    "priority" INTEGER NOT NULL DEFAULT 0,
+    "created" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "creatorId" TEXT NOT NULL,
+    CONSTRAINT "Text_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex
