@@ -12,7 +12,6 @@ const Page = () => {
     <>
       <CompaniesSection />
       <TextsSection />
-      <InspectionsSection />
       <ApiOutputsSection />
     </>
   );

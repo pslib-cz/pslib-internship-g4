@@ -6,12 +6,7 @@ const CompaniesSection = () => {
   return (
     <Box className={styles.panel}>
       <Container>
-        <Grid>
-          <GridCol span={{ base: 12, sm: 12, lg: 9 }}>
-            <CompaniesPanel />
-          </GridCol>
-          <GridCol span={{ base: 12, sm: 0, lg: 3 }}>X</GridCol>
-        </Grid>
+        <CompaniesPanel />
       </Container>
     </Box>
   );

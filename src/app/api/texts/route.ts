@@ -1,14 +1,14 @@
 import { type NextRequest } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/utils/db";
-import { Text } from "@prisma/client";
 import { TextWithAuthor } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { Role } from "@/types/auth";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const title = searchParams.get("title");
+  const title = searchParams.get("title") ? searchParams.get("title") : null;
+  const author = searchParams.get("author") ? searchParams.get("author") : null;
   const published: number | null = searchParams.get("published")
     ? parseInt(searchParams.get("published") ?? "")
     : null;
@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
       ? parseInt(searchParams.get("size") ?? "")
       : null;
   const session = await auth();
-  console.log(title, published);
   if (!session) {
     return new Response("Unauthorized", {
       status: 401,
@@ -37,6 +36,11 @@ export async function GET(request: NextRequest) {
       },
       published: {
         equals: published !== null ? published : undefined,
+      },
+      creator: {
+        id: {
+          equals: author !== null ? author : undefined,
+        },
       },
     },
   });
@@ -66,18 +70,17 @@ export async function GET(request: NextRequest) {
       published: {
         equals: published !== null ? published : undefined,
       },
+      creator: {
+        id: {
+          equals: author !== null ? author : undefined,
+        },
+      },
     },
     orderBy: {
       title:
         orderBy === "title"
           ? "asc"
           : orderBy === "title_desc"
-            ? "desc"
-            : undefined,
-      published:
-        orderBy === "published"
-          ? "asc"
-          : orderBy === "published_desc"
             ? "desc"
             : undefined,
     },

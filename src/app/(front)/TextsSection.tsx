@@ -13,7 +13,7 @@ import {
 import Link from "next/link";
 import { TextWithAuthor } from "@/types/entities";
 import styles from "./TextsSection.module.css";
-import { PublicationTarget } from "@/types/data";
+import TextArticle from "./TextArticle";
 
 const TextsSection = () => {
   const [texts, setTexts] = useState<TextWithAuthor[] | null>(null);
@@ -40,19 +40,7 @@ const TextsSection = () => {
         {texts && (
           <Grid>
             {texts.map((text) => (
-              <GridCol span={12} key={text.id}>
-                <Box p="md" className={styles.text} component="article">
-                  <Title order={3}>{text.title}</Title>
-                  <Box
-                    dangerouslySetInnerHTML={{ __html: text.content ?? "" }}
-                  />
-                  <Text>
-                    <Link href={`/authors/${text.creator.id}`}>
-                      <Anchor>{text.creator.givenName}</Anchor>
-                    </Link>
-                  </Text>
-                </Box>
-              </GridCol>
+              <TextArticle key={text.id} text={text} />
             ))}
           </Grid>
         )}

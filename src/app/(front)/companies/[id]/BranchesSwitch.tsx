@@ -18,11 +18,6 @@ const BranchesSwitch = ({ id }: { id: number }) => {
       return (
         <Suspense fallback={<Loader />}>
           <BranchesDisplay id={id} switchModeAction={(x) => setMode(x)} />
-          {session && (
-            <Box mt="10">
-              <Button onClick={() => setMode("CREATE")}>Přidat pobočku</Button>
-            </Box>
-          )}
         </Suspense>
       );
     case "CREATE":

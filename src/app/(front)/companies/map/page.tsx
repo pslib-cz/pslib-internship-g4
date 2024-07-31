@@ -14,18 +14,19 @@ import {
 import Link from "next/link";
 import { IconFilter } from "@tabler/icons-react";
 import { FilterContext } from "@/providers/CompanyFilterProvider";
-import MapDisplay from "./MapDisplay";
+//import MapDisplay from "./MapDisplay";
 import dynamic from "next/dynamic";
 
 const Page = () => {
   const [state, dispatch] = useContext(FilterContext);
-  /*const MapDisplay = useMemo(() => dynamic(
-        () => import('./MapDisplay'),
-        {
-            loading: () => <LoadingOverlay />, 
-            ssr: false 
-        }
-    ),[]);*/
+  const MapDisplay = useMemo(
+    () =>
+      dynamic(() => import("./MapDisplay"), {
+        loading: () => <LoadingOverlay />,
+        ssr: false,
+      }),
+    [],
+  );
   return (
     <>
       <Breadcrumbs separatorMargin="md" mt="xs">

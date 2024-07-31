@@ -9,6 +9,8 @@ import {
   Text,
   Alert,
   ActionIcon,
+  Box,
+  Button,
 } from "@mantine/core";
 import { CompanyBranchWithLocation } from "../../../api/companies/[id]/locations/route";
 import { useMediaQuery } from "@mantine/hooks";
@@ -39,6 +41,9 @@ const BranchesDisplay = ({
       },
     })
       .then(async (response) => {
+        if (response.status === 404) {
+          throw new Error("Taková firma neexistuje");
+        }
         if (response.ok) {
           return response.json();
         }
@@ -112,6 +117,13 @@ const BranchesDisplay = ({
           ))}
         </TableTbody>
       </Table>
+      {session && (
+        <Box mt="10">
+          <Button onClick={() => switchModeAction("CREATE")}>
+            Přidat pobočku
+          </Button>
+        </Box>
+      )}
     </>
   );
 };

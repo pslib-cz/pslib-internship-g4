@@ -32,6 +32,9 @@ const DataDisplay = ({ id }: { id: number }) => {
       },
     })
       .then(async (response) => {
+        if (response.status === 404) {
+          throw new Error("Taková firma neexistuje");
+        }
         if (response.ok) {
           return response.json();
         }

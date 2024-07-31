@@ -106,6 +106,17 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
   }, [searchParams]);
 
   useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    state.filterName !== undefined && params.set("name", state.filterName);
+    state.filterMunicipality !== undefined &&
+      params.set("municipality", state.filterMunicipality);
+    state.filterActive === undefined
+      ? params.set("active", "")
+      : params.set("active", state.filterActive === true ? "true" : "false");
+    params.set("page", page.toString());
+    params.set("size", size.toString());
+    params.set("orderBy", order);
+    window.history.replaceState(null, "", `?${params.toString()}`);
     fetchData(
       state.filterName,
       state.filterTaxNum ? state.filterTaxNum.toString() : undefined,
@@ -115,7 +126,7 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
       page,
       size,
     );
-  }, [state, order, page, size, fetchData]);
+  }, [state, order, page, size, fetchData, searchParams]);
 
   return (
     <>

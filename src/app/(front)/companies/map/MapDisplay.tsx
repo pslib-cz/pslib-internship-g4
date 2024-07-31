@@ -3,7 +3,14 @@
 import { useContext, useEffect, useState, useCallback, useMemo } from "react";
 import { LoadingOverlay } from "@mantine/core";
 import { FilterContext } from "@/providers/CompanyFilterProvider";
-import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  useMap,
+  Marker,
+  Popup,
+  useMapEvents,
+} from "react-leaflet";
 import { Icon } from "leaflet";
 import { useSearchParams } from "next/navigation";
 import { LocationForComaniesAndBranches } from "@/types/entities";
@@ -17,15 +24,40 @@ type TMapState = {
   zoom: number;
 };
 
+type TMapLayerProps = {
+  mapState: TMapState;
+  setMapState: (state: TMapState) => void;
+};
+
+const MapLayer: React.FC<TMapLayerProps> = ({ mapState, setMapState }) => {
+  const searchParams = useSearchParams();
+  const key = process.env.NEXT_PUBLIC_MAPY_CZ_KEY;
+  const map = useMapEvents({
+    moveend: () => {
+      setMapState({
+        latitude: map.getCenter().lat,
+        longitude: map.getCenter().lng,
+        zoom: map.getZoom(),
+      });
+    },
+  });
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("lat", mapState.latitude.toString());
+    params.set("lng", mapState.longitude.toString());
+    params.set("zoom", mapState.zoom.toString());
+    window.history.replaceState(null, "", `?${params.toString()}`);
+  }, [mapState, searchParams]);
+  return (
+    <TileLayer
+      attribution='<a href="https://api.mapy.cz/copyright" target="_blank"><img src="https://api.mapy.cz/img/api/logo.svg" height="18" /></a>'
+      url={`https://api.mapy.cz/v1/maptiles/basic/256/{z}/{x}/{y}?apikey=${key}`}
+    />
+  );
+};
+
 const MapDisplay = () => {
   const searchParams = useSearchParams();
-  let ico = new Icon({
-    iconUrl: "/Map-Pin.svg",
-    iconSize: [32, 32],
-    iconAnchor: [0, 16],
-    popupAnchor: [16, -16],
-  });
-  const [state, dispatch] = useContext(FilterContext);
   const [mapState, setMapState] = useState<TMapState>({
     latitude: searchParams.get("lat")
       ? Number(searchParams.get("lat"))
@@ -37,7 +69,14 @@ const MapDisplay = () => {
       ? Number(searchParams.get("zoom"))
       : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_ZOOM),
   });
-  const key = process.env.NEXT_PUBLIC_MAPY_CZ_KEY;
+  let ico = new Icon({
+    iconUrl: "/Map-Pin.svg",
+    iconSize: [32, 32],
+    iconAnchor: [0, 16],
+    popupAnchor: [16, -16],
+  });
+  const [state, dispatch] = useContext(FilterContext);
+
   const [points, setPoints] = useState<LocationForComaniesAndBranches[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -90,14 +129,6 @@ const MapDisplay = () => {
     );
   }, [state, fetchData]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("lat", mapState.latitude.toString());
-    params.set("lng", mapState.longitude.toString());
-    params.set("zoom", mapState.zoom.toString());
-    window.history.replaceState(null, "", `?${params.toString()}`);
-  }, [mapState, searchParams]);
-
   return (
     <>
       <LoadingOverlay visible={loading} />
@@ -107,10 +138,7 @@ const MapDisplay = () => {
         scrollWheelZoom={true}
         className={styles.map}
       >
-        <TileLayer
-          attribution='<a href="https://api.mapy.cz/copyright" target="_blank"><img src="https://api.mapy.cz/img/api/logo.svg" height="18" /></a>'
-          url={`https://api.mapy.cz/v1/maptiles/basic/256/{z}/{x}/{y}?apikey=${key}`}
-        />
+        <MapLayer mapState={mapState} setMapState={setMapState} />
         {points.map((point, index) => (
           <Marker
             key={point.id}

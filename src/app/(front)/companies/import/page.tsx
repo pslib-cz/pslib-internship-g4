@@ -233,8 +233,6 @@ const CompanyDisplay = ({ id }: { id: string }) => {
                       coords.lat === null ? null : coords.lat.toString(),
                     longitude:
                       coords.lon === null ? null : coords.lon.toString(),
-                    description: values.description ?? "",
-                    website: values.website ?? "",
                   }),
                 })
                   .then((response) => {
@@ -261,6 +259,8 @@ const CompanyDisplay = ({ id }: { id: string }) => {
                         companyIdentificationNumber: Number(compData?.ico),
                         name: compData?.obchodniJmeno,
                         locationId: locationId,
+                        description: values.description ?? "",
+                        website: values.website ?? "",
                       }),
                     })
                       .then((response) => {

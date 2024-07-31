@@ -110,7 +110,6 @@ const FilesDisplay: FC<
 const Page = ({ params }: { params: { id: number } }) => {
   const id = params.id;
   const loadData = useCallback(() => {
-    console.log("LOADING DATA");
     fetch(`/api/internships/${id}`, {
       method: "GET",
       headers: {
@@ -159,26 +158,30 @@ const Page = ({ params }: { params: { id: number } }) => {
         <Text>Detail</Text>
       </Breadcrumbs>
       <Container>
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
-          <Suspense fallback={<LoadingOverlay />}>
-            <StudentDisplay {...data} />
-          </Suspense>
-          <Suspense fallback={<LoadingOverlay />}>
-            <SetDisplay {...data} />
-          </Suspense>
-          <Suspense fallback={<LoadingOverlay />}>
-            <CompanyDisplay {...data} />
-          </Suspense>
-          <Suspense fallback={<LoadingOverlay />}>
-            <LocationPanel
-              internship={data}
-              reloadInternshipCallback={loadData}
-            />
-          </Suspense>
-          <Suspense fallback={<LoadingOverlay />}>
-            <FilesDisplay {...data} />
-          </Suspense>
-        </SimpleGrid>
+        {error ? (
+          <Alert color="red">{error}</Alert>
+        ) : (
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
+            <Suspense fallback={<LoadingOverlay />}>
+              <StudentDisplay {...data} />
+            </Suspense>
+            <Suspense fallback={<LoadingOverlay />}>
+              <SetDisplay {...data} />
+            </Suspense>
+            <Suspense fallback={<LoadingOverlay />}>
+              <CompanyDisplay {...data} />
+            </Suspense>
+            <Suspense fallback={<LoadingOverlay />}>
+              <LocationPanel
+                internship={data}
+                reloadInternshipCallback={loadData}
+              />
+            </Suspense>
+            <Suspense fallback={<LoadingOverlay />}>
+              <FilesDisplay {...data} />
+            </Suspense>
+          </SimpleGrid>
+        )}
       </Container>
     </>
   );

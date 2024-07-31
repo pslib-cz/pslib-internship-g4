@@ -116,7 +116,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
   );
 
   useEffect(() => {
-    let storedState = loadTableState();
+    //let storedState = loadTableState();
     const searchedName = searchParams.get("name") ?? "";
     const searchedTax = searchParams.get("tax") ?? "";
     const searchedActive =
@@ -145,7 +145,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
       size: paginationSize,
     };
     setState({ ...URLState });
-  }, [searchParams, loadTableState]);
+  }, [searchParams /*loadTableState*/]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
