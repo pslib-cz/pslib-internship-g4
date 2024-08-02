@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  if (session.user.role !== "admin" && session.user.role !== "teacher") {
+  if (session.user && session.user.role !== "admin" && session.user.role !== "teacher") {
     userId = session.user.id;
   }
 

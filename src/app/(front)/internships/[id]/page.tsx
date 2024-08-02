@@ -23,6 +23,7 @@ import DateTime from "@/components/DateTime/DateTime";
 import Link from "next/link";
 import { getInternshipKindLabel } from "@/data/lists";
 import LocationPanel from "./LocationPanel";
+import DiarySection from "./DiarySection";
 
 const StudentDisplay: FC<
   InternshipFullRecord | InternshipWithCompanyLocationSetUser
@@ -182,6 +183,9 @@ const Page = ({ params }: { params: { id: number } }) => {
             </Suspense>
           </SimpleGrid>
         )}
+        <Suspense fallback={<LoadingOverlay />}>
+          <DiarySection id={id} />
+        </Suspense>
       </Container>
     </>
   );

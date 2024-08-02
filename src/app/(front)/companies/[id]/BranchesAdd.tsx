@@ -104,7 +104,6 @@ const BranchesAdd = ({
               });
             })
             .finally(() => {
-              console.log(latitude, longitude);
               fetch(`/api/locations`, {
                 method: "POST",
                 headers: {
