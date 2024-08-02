@@ -114,7 +114,6 @@ const OtherDisplay: FC<{
   internship: InternshipFullRecord | InternshipWithCompanyLocationSetUser;
   setMode: (mode: DisplayMode) => void;
   setLocation: (location: number) => void;
-  
 }> = ({ internship, setMode, setLocation }) => {
   const form = useForm<{
     country: string;
@@ -144,144 +143,149 @@ const OtherDisplay: FC<{
           return "PSČ musí být v rozmezí 00000 - 99999";
         return null;
       },
-      municipality: (value: string | undefined) => ((value === undefined || value.trim() !== "") ? null : "Obec je povinná"),
+      municipality: (value: string | undefined) =>
+        value === undefined || value.trim() !== "" ? null : "Obec je povinná",
     },
   });
   return (
     <>
       <Text fw={700}>Nové místo</Text>
-      <form onSubmit={form.onSubmit(
-            (values: {
-              country: string;
-              municipality: string | undefined;
-              postalCode: number | undefined;
-              street: string | undefined;
-              descNo: number | undefined;
-              orientNo: string;
-              latitude: number | undefined;
-              longitude: number | undefined;
-            }) => {
-              let latitude: number | undefined = undefined;
-          let longitude: number | undefined = undefined;
-          fetch(`/api/locations/geo`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              country: values.country,
-              municipality: values.municipality,
-              street: values.street ?? undefined,
-              descNumber: values.descNo ? Number(values.descNo) : undefined,
-              orientNumber: String(values.orientNo) ?? undefined,
-              postalCode: values.postalCode ?? undefined,
-            }),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json();
-            })
-            .then(
-              (result: {
-                lat: number | undefined;
-                lon: number | undefined;
-              }) => {
-                latitude = Number(result.lat) || undefined;
-                longitude = Number(result.lon) || undefined;
-                notifications.show({
-                  title: "Povedlo se!",
-                  message:
-                    "Geokódování bylo úspěšné: " +
-                    latitude +
-                    ", " +
-                    longitude +
-                    ".",
-                  color: "lime",
-                });
+      <form
+        onSubmit={form.onSubmit(
+          (values: {
+            country: string;
+            municipality: string | undefined;
+            postalCode: number | undefined;
+            street: string | undefined;
+            descNo: number | undefined;
+            orientNo: string;
+            latitude: number | undefined;
+            longitude: number | undefined;
+          }) => {
+            let latitude: number | undefined = undefined;
+            let longitude: number | undefined = undefined;
+            fetch(`/api/locations/geo`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
               },
-            )
-            .catch((error) => {
-              notifications.show({
-                title: "Chyba!",
-                message: "Geokódování se nepodařilo.",
-                color: "red",
-              });
+              body: JSON.stringify({
+                country: values.country,
+                municipality: values.municipality,
+                street: values.street ?? undefined,
+                descNumber: values.descNo ? Number(values.descNo) : undefined,
+                orientNumber: String(values.orientNo) ?? undefined,
+                postalCode: values.postalCode ?? undefined,
+              }),
             })
-            .finally(() => {
-              fetch(`/api/locations`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  country: values.country,
-                  municipality: values.municipality,
-                  postalCode: values.postalCode,
-                  street: values.street ?? "",
-                  orientNo: values.orientNo ?? "",
-                  descNo: values.descNo ? Number(values.descNo) : undefined,
-                  latitude: latitude,
-                  longitude: longitude,
-                }),
-              })
               .then((response) => {
                 if (!response.ok) {
-                  throw new Error("Chyba při přidávání adresy do databáze.");
+                  throw new Error("Network response was not ok");
                 }
                 return response.json();
               })
-              .then((data) => {
+              .then(
+                (result: {
+                  lat: number | undefined;
+                  lon: number | undefined;
+                }) => {
+                  latitude = Number(result.lat) || undefined;
+                  longitude = Number(result.lon) || undefined;
+                  notifications.show({
+                    title: "Povedlo se!",
+                    message:
+                      "Geokódování bylo úspěšné: " +
+                      latitude +
+                      ", " +
+                      longitude +
+                      ".",
+                    color: "lime",
+                  });
+                },
+              )
+              .catch((error) => {
                 notifications.show({
-                  title: "Povedlo se!",
-                  message: `Místo ${data.id} bylo vytvořeno nebo nalezeno.`,
-                  color: "lime",
+                  title: "Chyba!",
+                  message: "Geokódování se nepodařilo.",
+                  color: "red",
                 });
-                setLocation(data.id);
-                setMode(DisplayMode.DISPLAY);
-            })
-            .catch((error) => {
-              notifications.show({
-                title: "Chyba!",
-                message: "Nepodařilo se vytvořit nové místo.",
-                color: "red",
+              })
+              .finally(() => {
+                fetch(`/api/locations`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    country: values.country,
+                    municipality: values.municipality,
+                    postalCode: values.postalCode,
+                    street: values.street ?? "",
+                    orientNo: values.orientNo ?? "",
+                    descNo: values.descNo ? Number(values.descNo) : undefined,
+                    latitude: latitude,
+                    longitude: longitude,
+                  }),
+                })
+                  .then((response) => {
+                    if (!response.ok) {
+                      throw new Error(
+                        "Chyba při přidávání adresy do databáze.",
+                      );
+                    }
+                    return response.json();
+                  })
+                  .then((data) => {
+                    notifications.show({
+                      title: "Povedlo se!",
+                      message: `Místo ${data.id} bylo vytvořeno nebo nalezeno.`,
+                      color: "lime",
+                    });
+                    setLocation(data.id);
+                    setMode(DisplayMode.DISPLAY);
+                  })
+                  .catch((error) => {
+                    notifications.show({
+                      title: "Chyba!",
+                      message: "Nepodařilo se vytvořit nové místo.",
+                      color: "red",
+                    });
+                  });
               });
-            });
-          });
-        })}
-          >
-          <TextInput
-            label="Ulice"
-            placeholder="Bifröst"
-            {...form.getInputProps("street")}
-          />
-          <TextInput
-            label="Číslo popisné"
-            placeholder="1"
-            {...form.getInputProps("descNo")}
-          />
-          <TextInput
-            label="Číslo orientační"
-            placeholder="1a"
-            {...form.getInputProps("orientNo")}
-          />
-          <TextInput
-            label="Obec"
-            placeholder="Ljósálfheimr"
-            {...form.getInputProps("municipality")}
-          />
-          <NumberInput
-            label="PSČ"
-            placeholder="00000"
-            {...form.getInputProps("postalCode")}
-          />
-          <TextInput
-            withAsterisk
-            label="Stát"
-            placeholder="Álfheimr"
-            {...form.getInputProps("country")}
-          />
+          },
+        )}
+      >
+        <TextInput
+          label="Ulice"
+          placeholder="Bifröst"
+          {...form.getInputProps("street")}
+        />
+        <TextInput
+          label="Číslo popisné"
+          placeholder="1"
+          {...form.getInputProps("descNo")}
+        />
+        <TextInput
+          label="Číslo orientační"
+          placeholder="1a"
+          {...form.getInputProps("orientNo")}
+        />
+        <TextInput
+          label="Obec"
+          placeholder="Ljósálfheimr"
+          {...form.getInputProps("municipality")}
+        />
+        <NumberInput
+          label="PSČ"
+          placeholder="00000"
+          {...form.getInputProps("postalCode")}
+        />
+        <TextInput
+          withAsterisk
+          label="Stát"
+          placeholder="Álfheimr"
+          {...form.getInputProps("country")}
+        />
         <Group mt="1rem">
           <Button variant="filled" type="submit">
             Vytvořit
