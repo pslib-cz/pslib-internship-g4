@@ -38,6 +38,9 @@ export async function GET(
       internshipId: {
         equals: id ?? undefined,
       },
+      date: {
+        equals: date ? new Date(date) : undefined,
+      },
     },
   });
 
@@ -46,6 +49,9 @@ export async function GET(
       internshipId: {
         equals: id ?? undefined,
       },
+      date: {
+        equals: date ? new Date(date) : undefined,
+      },
     },
     orderBy: [
       {
@@ -53,6 +59,12 @@ export async function GET(
           orderBy === "created"
             ? "asc"
             : orderBy === "created_desc"
+              ? "desc"
+              : undefined,
+        date:
+          orderBy === "date"
+            ? "asc"
+            : orderBy === "date_desc"
               ? "desc"
               : undefined,
       },
@@ -79,8 +91,6 @@ export async function POST(request: NextRequest) {
       status: 401,
     });
   }
-  let isManager =
-    session.user.role !== Role.ADMIN && session.user.role !== Role.TEACHER;
   if (
     session.user.role !== Role.ADMIN &&
     session.user.role !== Role.TEACHER &&
@@ -90,6 +100,23 @@ export async function POST(request: NextRequest) {
       status: 403,
     });
   }
+  const internship = await prisma.internship.findFirst({
+    where: { id: body.internshipId },
+  });
+  if (!internship) {
+    return new Response("Internship not found", {
+      status: 404,
+    });
+  }
+  const diary = await prisma.diary.create({
+    data: {
+      internshipId: body.internshipId,
+      date: new Date(body.date),
+      created: new Date(),
+      createdById: session.user.id,
+      text: body.text,
+    },
+  });
 
-  return new Response(JSON.stringify(null), { status: 201 });
+  return new Response(JSON.stringify(diary), { status: 201 });
 }

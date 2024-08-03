@@ -46,6 +46,9 @@ export async function GET(
         companyId: true,
         setId: true,
         locationId: true,
+        jobDescription: true,
+        appendixText: true,
+        additionalInfo: true,
         user: {
           select: {
             givenName: true,
@@ -122,6 +125,9 @@ export async function DELETE(
         companyId: true,
         setId: true,
         locationId: true,
+        jobDescription: true,
+        appendixText: true,
+        additionalInfo: true,
         user: {
           select: {
             givenName: true,
@@ -209,6 +215,9 @@ export async function PUT(
         companyId: true,
         setId: true,
         locationId: true,
+        jobDescription: true,
+        appendixText: true,
+        additionalInfo: true,
         user: {
           select: {
             givenName: true,

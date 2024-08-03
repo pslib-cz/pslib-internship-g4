@@ -22,12 +22,13 @@ export async function GET(request: NextRequest) {
       ? parseInt(searchParams.get("size") ?? "")
       : null;
   const session = await auth();
+  /*
   if (!session) {
     return new Response("Unauthorized", {
       status: 401,
     });
   }
-
+*/
   let summary = await prisma.text.aggregate({
     _count: true,
     where: {

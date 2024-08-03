@@ -55,7 +55,7 @@ const InternshipItem: FC<TInternshipItemProps> = ({
         >
           Detail
         </Button>
-        {!internship.set.editable ? (
+        {internship.set.editable ? (
           <Button
             size="xs"
             variant="default"
@@ -64,7 +64,7 @@ const InternshipItem: FC<TInternshipItemProps> = ({
             Editovat
           </Button>
         ) : null}
-        {!internship.set.editable ? (
+        {internship.set.editable ? (
           <Button
             color="red"
             variant="default"

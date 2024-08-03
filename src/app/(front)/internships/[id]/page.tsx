@@ -82,6 +82,40 @@ const CompanyDisplay: FC<
   );
 };
 
+const DescriptionDisplay: FC<
+  InternshipFullRecord | InternshipWithCompanyLocationSetUser
+> = (internship) => {
+  return (
+    <Card shadow="sm" padding="lg">
+      <Title order={2}>Textové informace</Title>
+      <Text fw={700}>Popis práce</Text>
+      <Text>
+        <Box
+          dangerouslySetInnerHTML={{
+            __html: internship.jobDescription ?? "není",
+          }}
+        />
+      </Text>
+      <Text fw={700}>Další informace</Text>
+      <Text>
+        <Box
+          dangerouslySetInnerHTML={{
+            __html: internship.additionalInfo ?? "není",
+          }}
+        />
+      </Text>
+      <Text fw={700}>Doplňky ke smlouvě</Text>
+      <Text>
+        <Box
+          dangerouslySetInnerHTML={{
+            __html: internship.appendixText ?? "není",
+          }}
+        />
+      </Text>
+    </Card>
+  );
+};
+
 const FilesDisplay: FC<
   InternshipFullRecord | InternshipWithCompanyLocationSetUser
 > = (internship) => {
@@ -108,7 +142,7 @@ const FilesDisplay: FC<
   );
 };
 
-const Page = ({ params }: { params: { id: number } }) => {
+const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const loadData = useCallback(() => {
     fetch(`/api/internships/${id}`, {
@@ -179,12 +213,15 @@ const Page = ({ params }: { params: { id: number } }) => {
               />
             </Suspense>
             <Suspense fallback={<LoadingOverlay />}>
+              <DescriptionDisplay {...data} />
+            </Suspense>
+            <Suspense fallback={<LoadingOverlay />}>
               <FilesDisplay {...data} />
             </Suspense>
           </SimpleGrid>
         )}
         <Suspense fallback={<LoadingOverlay />}>
-          <DiarySection id={id} />
+          <DiarySection id={id} editable={data.set.active} />
         </Suspense>
       </Container>
     </>

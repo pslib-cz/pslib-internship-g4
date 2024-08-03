@@ -105,6 +105,9 @@ export async function GET(request: NextRequest) {
         companyId: true,
         setId: true,
         locationId: true,
+        jobDescription: true,
+        additionalInfo: true,
+        appendixText: true,
         user: {
           select: {
             givenName: true,
@@ -240,7 +243,6 @@ export async function POST(request: NextRequest) {
       status: 404,
     });
   }
-  console.log(company);
   const internship = await prisma.internship.create({
     data: {
       userId: body.userId ?? session.user.id,

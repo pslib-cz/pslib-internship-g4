@@ -51,6 +51,9 @@ export type InternshipWithCompanyLocationSetUser = Prisma.InternshipGetPayload<{
     companyId: true;
     setId: true;
     locationId: true;
+    jobDescription: true;
+    additionalInfo: true;
+    appendixText: true;
     user: {
       select: {
         givenName: true;

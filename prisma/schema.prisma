@@ -89,7 +89,7 @@ model Location {
   latitude                    Decimal?
   longitude                   Decimal?
   created                     DateTime
-  text                        String?
+  text                        String?          //@db.Text
   companyBranches             CompanyBranch[]
   companies                   Company[]
   internships                 Internship[]
@@ -99,7 +99,7 @@ model Company {
   id                          Int             @id @default(autoincrement())
   name                        String
   companyIdentificationNumber Int?            @unique
-  description                 String?
+  description                 String?         //@db.Text
   website                     String?
   active                      Boolean         @default(true)
   created                     DateTime
@@ -161,9 +161,9 @@ model Internship {
   companyMentorName            String
   companyMentorEmail           String?
   companyMentorPhone           String?
-  jobDescription               String
-  additionalInfo               String?
-  appendixText                 String?
+  jobDescription               String          //@db.Text
+  additionalInfo               String?         //@db.Text
+  appendixText                 String?         //@db.Text
   user                         User            @relation(name: "intern", fields: [userId], references: [id], onDelete: Restrict)
   userId                       String
   classname                    String 
@@ -190,10 +190,12 @@ model Diary {
   date                         DateTime
   internship                   Internship      @relation(fields: [internshipId], references: [id], onDelete: Cascade)
   internshipId                 String
-  text                         String
+  text                         String          //@db.Text
   createdBy                    User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
   createdById                  String
   created                      DateTime        @default(now())   
+
+  @@unique([internshipId, date])
 }
 
 model Inspection {
@@ -203,9 +205,11 @@ model Inspection {
   date                          DateTime        @default(now())
   inspectionUser                User            @relation(fields: [inspectionUserId], references: [id], onDelete: Restrict)
   inspectionUserId              String
-  note                          String
+  note                          String          //@db.Text
   result                        Int
   kind                          Int
+
+  @@unique([internshipId, date])
 }
 
 model Tag {
@@ -232,7 +236,7 @@ model CompanyTag {
 model Text {
   id                       Int            @id @default(autoincrement())
   title                    String
-  content                  String
+  content                  String         //@db.Text
   shortable                Boolean        @default(true)
   published                Int            @default(0)
   priority                 Int            @default(0)
