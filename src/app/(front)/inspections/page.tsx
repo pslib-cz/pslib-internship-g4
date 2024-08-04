@@ -1,9 +1,10 @@
 import isTeacher from "@/hocs/isAuthorized";
+import InternshipsTable from "./InternshipsTable";
 
 const Page = () => {
   return (
     <div>
-      <p>Zde bude seznam všech aktuálních praxí všech studentů.</p>
+      <InternshipsTable />
     </div>
   );
 };

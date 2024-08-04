@@ -181,6 +181,7 @@ model Internship {
   reservationUserId            String?
   kind                         Int             @default(0)
   highlighted                  Boolean         @default(false)
+  conclusion                   String?         //@db.Text
   inspections                  Inspection[]
   diaries                      Diary[]
 }

@@ -20,9 +20,6 @@ import {
   Drawer,
   rem,
   Flex,
-  Box,
-  Avatar,
-  Text,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { usePathname } from "next/navigation";

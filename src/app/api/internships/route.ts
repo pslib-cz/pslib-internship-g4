@@ -25,6 +25,9 @@ export async function GET(request: NextRequest) {
   const year = searchParams.get("year");
   const inspectorId = searchParams.get("inspector");
   const classname = searchParams.get("class");
+  const kind = searchParams.get("kind");
+  const reservationUserId = searchParams.get("reservationUser");
+  const active = searchParams.get("active");
   const orderBy = searchParams.get("orderBy");
   const page: number | null =
     searchParams.get("page") !== null
@@ -70,6 +73,9 @@ export async function GET(request: NextRequest) {
       classname: {
         contains: classname ? classname : undefined,
       },
+      kind: {
+        equals: kind ? Number(kind) : undefined,
+      },
       user: {
         givenName: {
           contains: givenName ? givenName : undefined,
@@ -84,6 +90,10 @@ export async function GET(request: NextRequest) {
         },
         year: {
           equals: year ? Number(year) : undefined,
+        },
+        active: {
+          equals:
+            active === "true" ? true : active === "false" ? false : undefined,
         },
       },
       company: {
@@ -160,6 +170,9 @@ export async function GET(request: NextRequest) {
         classname: {
           contains: classname ? classname : undefined,
         },
+        kind: {
+          equals: kind ? Number(kind) : undefined,
+        },
         user: {
           givenName: {
             contains: givenName ? givenName : undefined,
@@ -174,6 +187,10 @@ export async function GET(request: NextRequest) {
           },
           year: {
             equals: year ? Number(year) : undefined,
+          },
+          active: {
+            equals:
+              active === "true" ? true : active === "false" ? false : undefined,
           },
         },
         company: {

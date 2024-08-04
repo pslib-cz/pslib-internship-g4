@@ -1,9 +1,9 @@
 import { Role } from "../types/auth";
-import { auth } from "@/auth";
+import { useSession } from "next-auth/react";
 
 export default function isTeacher(Component: any) {
-  return async function IsTeacher(props: any) {
-    const session = await auth();
+  return function IsTeacher(props: any) {
+    const { data: session, status } = useSession();
 
     if (!session) {
       return <p>Nepřihlášený uživatel</p>;
