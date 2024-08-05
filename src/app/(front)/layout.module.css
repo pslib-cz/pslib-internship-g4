@@ -1,6 +1,10 @@
 .pageContent {
   margin-top: 60px;
   min-height: auto;
+  margin-bottom: 5rem;
+  @media (min-width: 32em) {
+    margin-bottom: 3rem;
+  }
 }
 .navigation {
   margin: 0;
@@ -19,5 +23,26 @@
       var(--mantine-color-gray-0),
       var(--mantine-color-dark-6)
     );
+  }
+}
+.pageFooter {
+  padding: var(--mantine-spacing-sm) 0;
+  text-align: center;
+  font-size: var(--mantine-font-size-xs);
+  color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2));
+  background-color: light-dark( var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+}
+.pageFooter a {
+  color: light-dark(var(--mantine-color-primary), var(--mantine-color-primary-dark));
+}
+.innerFooter {
+  display: flex;
+  gap: var(--mantine-spacing-sm);
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+
+  @media (min-width: 32em) {
+    flex-direction: row;
   }
 }

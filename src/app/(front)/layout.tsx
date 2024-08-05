@@ -11,11 +11,14 @@ import {
   Divider,
   Drawer,
   ScrollArea,
+  Container,
+  Anchor,
   rem,
 } from "@mantine/core";
 import { useDisclosure, useHeadroom } from "@mantine/hooks";
 import { useSession } from "next-auth/react";
 import { Role } from "@/types/auth";
+import Image from "next/image";
 import {
   SignButton,
   UserAvatar,
@@ -24,6 +27,7 @@ import {
   MainLogo,
 } from "@/components";
 import styles from "./layout.module.css";
+import ThemedContent from "@/components/ThemedContent/ThemedContent";
 
 type LayoutProps = {
   children?: React.ReactNode;
@@ -99,6 +103,19 @@ const FrontLayout = ({ children }: LayoutProps) => {
         </Group>
       </AppShell.Header>
       <AppShell.Main className={styles.pageContent}>{children}</AppShell.Main>
+      <AppShell.Footer className={styles.pageFooter}>
+      <Container className={styles.innerFooter}>
+        <Group>
+          <Anchor href="https://www.pslib.cz/" target="_blank">Průmyslová škola Liberec</Anchor>
+          <Anchor href="https://github.com/pslib-cz/pslib-internship-g4" target="_blank">GitHub</Anchor>
+        </Group>
+        <Group>
+          <Anchor href="https://www.pslib.cz/" target="_blank">
+            <ThemedContent light={<Image src="/images/logos/pslib-large-light.svg" alt="Průmyslová škola Liberec" width={110} height={20} />} dark={<Image src="/images/logos/pslib-large-dark.svg" alt="Průmyslová škola Liberec" width={110} height={20} />} />
+          </Anchor>
+        </Group>
+        </Container>
+      </AppShell.Footer>
       <Drawer
         opened={drawerOpened}
         onClose={closeDrawer}

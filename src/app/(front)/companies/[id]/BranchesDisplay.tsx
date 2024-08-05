@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
+  Anchor,
   Table,
   TableThead,
   TableTbody,
@@ -67,7 +68,7 @@ const BranchesDisplay = ({
     );
   }
   if (branches?.length === 0) {
-    return <Text>Firma nemá žádné pobočky</Text>;
+    return <Text>Firma nemá žádné pobočky. Můžete nějakou <Anchor onClick={()=>{switchModeAction("CREATE")}}>přidat</Anchor>.</Text>;
   }
   return (
     <>
@@ -101,7 +102,7 @@ const BranchesDisplay = ({
                     variant="light"
                     component={Link}
                     href={
-                      "/internships/create/1?company=" +
+                      "/internships/create?company=" +
                       id +
                       "&location=" +
                       branch.locationId

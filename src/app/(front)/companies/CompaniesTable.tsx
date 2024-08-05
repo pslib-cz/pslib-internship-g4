@@ -16,6 +16,7 @@ import {
   Pagination,
   Flex,
   NativeSelect,
+  Anchor,
 } from "@mantine/core";
 import {
   IconInfoSmall,
@@ -277,7 +278,7 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
             data.data.map((company) => (
               <Table.Tr key={company.id}>
                 <Table.Td>
-                  <Text>{company.name}</Text>
+                  <Text><Anchor href={"/companies/" + company.id}>{company.name}</Anchor></Text>
                 </Table.Td>
                 <Table.Td>
                   <Text>

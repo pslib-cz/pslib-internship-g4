@@ -70,7 +70,7 @@ const MapDisplay = () => {
       : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_ZOOM),
   });
   let ico = new Icon({
-    iconUrl: "/Map-Pin.svg",
+    iconUrl: "/images/pins/Map-Pin.svg",
     iconSize: [32, 32],
     iconAnchor: [0, 16],
     popupAnchor: [16, -16],

@@ -262,6 +262,15 @@ async function main() {
       color: "#333333",
     },
   });
+  const temp1 = await prisma.template.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      name: "Původní šablona",
+      content: "<!DOCTYPE html>\n<html>\n<head>\n    <meta name=\"viewport\" content=\"width=device-width\" />\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head>\n<body>\n    <h1>Šablona</h1>\n    <p>Šablona pro email</p>\n</body>\n</html>",
+    },
+  });
 }
 main()
   .then(async () => {
