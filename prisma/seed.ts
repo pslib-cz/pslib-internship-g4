@@ -34,7 +34,7 @@ async function main() {
     where: { id: 1 },
     update: {},
     create: {
-      id: 1,
+      //id: 1,
       text: "Informační technologie",
       type: 1,
       background: "#3cab68",
@@ -45,7 +45,7 @@ async function main() {
     where: { id: 2 },
     update: {},
     create: {
-      id: 2,
+      //id: 2,
       text: "Elektrotechnika",
       type: 1,
       background: "#e34242",
@@ -56,7 +56,7 @@ async function main() {
     where: { id: 3 },
     update: {},
     create: {
-      id: 3,
+      //id: 3,
       text: "Strojírenství",
       type: 1,
       background: "#429fe3",
@@ -67,7 +67,7 @@ async function main() {
     where: { id: 4 },
     update: {},
     create: {
-      id: 4,
+      //id: 4,
       text: "Technické lyceum",
       type: 1,
       background: "#e3a342",
@@ -78,7 +78,7 @@ async function main() {
     where: { id: 5 },
     update: {},
     create: {
-      id: 5,
+      //id: 5,
       text: "Oděvnictví",
       type: 1,
       background: "#9c42e3",
@@ -89,19 +89,18 @@ async function main() {
     where: { id: 6 },
     update: {},
     create: {
-      id: 6,
+      //id: 6,
       text: "Textilnictví",
       type: 1,
       background: "#e3428f",
       color: "#ffffff",
     },
   });
-  console.log(it, el, st, ly, od, tx);
   const x1 = await prisma.tag.upsert({
     where: { id: 7 },
     update: {},
     create: {
-      id: 7,
+      //id: 7,
       text: "IT",
       type: 3,
       background: "#dddddd",
@@ -112,7 +111,7 @@ async function main() {
     where: { id: 8 },
     update: {},
     create: {
-      id: 8,
+      //id: 8,
       text: "C#",
       type: 2,
       background: "#dddddd",
@@ -123,7 +122,7 @@ async function main() {
     where: { id: 9 },
     update: {},
     create: {
-      id: 9,
+      //id: 9,
       text: "Typescript",
       type: 2,
       background: "#dddddd",
@@ -134,7 +133,7 @@ async function main() {
     where: { id: 10 },
     update: {},
     create: {
-      id: 10,
+      //id: 10,
       text: "Angličtina",
       type: 4,
       background: "#dddddd",
@@ -145,7 +144,7 @@ async function main() {
     where: { id: 11 },
     update: {},
     create: {
-      id: 11,
+      //id: 11,
       text: "Němčina",
       type: 4,
       background: "#dddddd",
@@ -156,7 +155,7 @@ async function main() {
     where: { id: 12 },
     update: {},
     create: {
-      id: 12,
+      //id: 12,
       text: "React",
       type: 2,
       background: "#dddddd",
@@ -167,7 +166,7 @@ async function main() {
     where: { id: 13 },
     update: {},
     create: {
-      id: 13,
+      //id: 13,
       text: "PHP",
       type: 2,
       background: "#dddddd",
@@ -178,7 +177,7 @@ async function main() {
     where: { id: 13 },
     update: {},
     create: {
-      id: 13,
+      //id: 13,
       text: "Webdesign",
       type: 3,
       background: "#dddddd",
@@ -189,7 +188,7 @@ async function main() {
     where: { id: 14 },
     update: {},
     create: {
-      id: 14,
+      //id: 14,
       text: "Internet věcí",
       type: 3,
       background: "#dddddd",
@@ -200,7 +199,7 @@ async function main() {
     where: { id: 15 },
     update: {},
     create: {
-      id: 15,
+      //id: 15,
       text: "Python",
       type: 2,
       background: "#dddddd",
@@ -211,7 +210,7 @@ async function main() {
     where: { id: 16 },
     update: {},
     create: {
-      id: 16,
+      //id: 16,
       text: "Javascript",
       type: 2,
       background: "#dddddd",
@@ -222,7 +221,7 @@ async function main() {
     where: { id: 17 },
     update: {},
     create: {
-      id: 17,
+      //id: 17,
       text: "Elektrotechnika",
       type: 3,
       background: "#dddddd",
@@ -233,7 +232,7 @@ async function main() {
     where: { id: 18 },
     update: {},
     create: {
-      id: 18,
+      //id: 18,
       text: "Databáze",
       type: 3,
       background: "#dddddd",
@@ -244,7 +243,7 @@ async function main() {
     where: { id: 19 },
     update: {},
     create: {
-      id: 19,
+      //id: 19,
       text: "Prodej",
       type: 3,
       background: "#dddddd",
@@ -255,7 +254,7 @@ async function main() {
     where: { id: 20 },
     update: {},
     create: {
-      id: 20,
+      //id: 20,
       text: "Marketing",
       type: 3,
       background: "#dddddd",

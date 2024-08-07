@@ -117,11 +117,13 @@ export async function POST(request: NextRequest) {
       status: 401,
     });
   }
+  /*
   if (session.user?.role !== Role.ADMIN) {
     return new Response("Forbidden", {
       status: 403,
     });
   }
+  */
   const loc = await prisma.location.findFirst({
     where: {
       country: body.country,

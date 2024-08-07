@@ -14,13 +14,14 @@ import {
   Flex,
   NativeSelect,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronUp, IconAlertTriangle, IconInfoCircle, IconMapPinCheck, IconProgressCheck, IconX } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
+import { InternshipInspectionList } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { getInternshipKindLabel } from "@/data/lists";
+import { UserAvatar } from "@/components";
 
 type TInternshipsTableProps = {};
 type TInternshipsTableState = {
@@ -28,13 +29,12 @@ type TInternshipsTableState = {
   filterUserGivenName: string;
   filterUserSurname: string;
   filterSet: number | undefined;
-  filterYear: number | undefined;
   filterCompany: number | undefined;
   filterCompanyName: string | undefined;
   filterClassname: string | undefined;
   filterReservedUser: string | undefined;
+  filterHighlighted: boolean | undefined;
   filterKind: number | undefined;
-  filterResult: number | undefined;
   order: string;
   page: number;
   size: number;
@@ -47,7 +47,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
   const [loadTableState, storeTableState, removeTableState] =
     useSessionStorage<TInternshipsTableState>(STORAGE_ID);
   const [data, setData] =
-    useState<ListResult<InternshipWithCompanyLocationSetUser> | null>(null);
+    useState<ListResult<InternshipInspectionList> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [state, setState] = useState<TInternshipsTableState>({
     filterUser: searchParams.get("user") ?? "",
@@ -55,9 +55,6 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
     filterUserSurname: searchParams.get("surname") ?? "",
     filterSet: searchParams.get("set")
       ? parseInt(searchParams.get("set") as string)
-      : undefined,
-    filterYear: searchParams.get("year")
-      ? parseInt(searchParams.get("year") as string)
       : undefined,
     filterCompany: searchParams.get("company")
       ? parseInt(searchParams.get("company") as string)
@@ -67,9 +64,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
     filterKind: searchParams.get("kind")
       ? parseInt(searchParams.get("kind") as string)
       : undefined,
-    filterResult: searchParams.get("result")
-      ? parseInt(searchParams.get("result") as string)
-      : undefined,
+    filterHighlighted: searchParams.get("highlighted") === "true" ? true : searchParams.get("highlighted") === "false" ? false : undefined,
     filterReservedUser: searchParams.get("reservedUser") ?? "",
     order: searchParams.get("orderBy") ?? "created",
     page: searchParams.get("page")
@@ -89,16 +84,18 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       givenName: string,
       surname: string,
       set: number | undefined,
-      year: number | undefined,
       company: number | undefined,
       companyName: string | undefined,
       classname: string | undefined,
+      reservedUser: string | undefined,
+      kind: number | undefined,
+      highlighted: boolean | undefined,
       orderBy: string,
       page: number = 1,
       pageSize: number = 10,
     ) => {
       fetch(
-        `/api/internships?user=${user}&givenName=${givenName}&surname=${surname}&set=${set !== undefined ? set : ""}&year=${year !== undefined ? year : ""}&company=${company !== undefined ? company : ""}&companyName=${companyName}&class=${classname}&active=true&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
+        `/api/inspections/internships?user=${user ?? ""}&givenName=${givenName}&surname=${surname}&set=${set !== undefined ? set : ""}&company=${company ?? ""}&companyName=${companyName ?? ""}&class=${classname}&active=true&orderBy=${orderBy}&highlighter=${highlighted !== undefined ? highlighted : ""}&inspector=${reservedUser ?? ""}&kind=${kind ?? ""}&page=${page - 1}&size=${pageSize}`,
         {
           method: "GET",
           headers: {
@@ -133,9 +130,6 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
     const searchedSet = searchParams.get("set")
       ? parseInt(searchParams.get("set") as string)
       : undefined;
-    const searchedYear = searchParams.get("year")
-      ? parseInt(searchParams.get("year") as string)
-      : undefined;
     const searchedCompany = searchParams.get("company")
       ? parseInt(searchParams.get("company") as string)
       : undefined;
@@ -143,9 +137,6 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
     const searchedClassname = searchParams.get("classname") ?? "";
     const searchedKind = searchParams.get("kind")
       ? parseInt(searchParams.get("kind") as string)
-      : undefined;
-    const searchedResult = searchParams.get("result")
-      ? parseInt(searchParams.get("result") as string)
       : undefined;
     const searchedReservedUser = searchParams.get("reservedUser") ?? "";
     const orderBy = searchParams.get("orderBy") ?? "created";
@@ -160,12 +151,11 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       filterUserGivenName: searchedGivenName,
       filterUserSurname: searchedSurname,
       filterSet: searchedSet,
-      filterYear: searchedYear,
       filterCompany: searchedCompany,
       filterCompanyName: searchedCompanyName,
       filterClassname: searchedClassname,
       filterKind: searchedKind,
-      filterResult: searchedResult,
+      filterHighlighted: searchParams.get("highlighted") === "true" ? true : searchParams.get("highlighted") === "false" ? false : undefined,
       filterReservedUser: searchedReservedUser,
       order: orderBy,
       page: paginationPage,
@@ -182,14 +172,18 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
     state.filterUserSurname !== undefined &&
       params.set("surname", state.filterUserSurname);
     state.filterSet !== undefined && params.set("set", String(state.filterSet));
-    state.filterYear !== undefined &&
-      params.set("year", String(state.filterYear));
     state.filterCompany !== undefined &&
       params.set("company", String(state.filterCompany));
     state.filterCompanyName !== undefined &&
       params.set("companyName", state.filterCompanyName);
     state.filterClassname !== undefined &&
       params.set("classname", state.filterClassname);
+    state.filterKind !== undefined &&
+      params.set("kind", String(state.filterKind));
+    state.filterHighlighted !== undefined &&
+      params.set("highlighted", String(state.filterHighlighted));
+    state.filterReservedUser !== undefined &&
+      params.set("reservedUser", state.filterReservedUser);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
@@ -200,10 +194,12 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       state.filterUserGivenName,
       state.filterUserSurname,
       state.filterSet,
-      state.filterYear,
       state.filterCompany,
       state.filterCompanyName,
       state.filterClassname,
+      state.filterReservedUser,
+      state.filterKind,
+      state.filterHighlighted,
       state.order,
       state.page,
       state.size,
@@ -212,7 +208,8 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
 
   return (
     <>
-      <Table>
+    <Table.ScrollContainer minWidth={1300}>
+      <Table striped highlightOnHover>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>
@@ -255,9 +252,6 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
               <Text fw={700}>Sada</Text>
             </Table.Th>
             <Table.Th>
-              <Text fw={700}>Rok</Text>
-            </Table.Th>
-            <Table.Th>
               <Text fw={700}>Třída</Text>
             </Table.Th>
             <Table.Th>
@@ -265,6 +259,18 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
             </Table.Th>
             <Table.Th>
               <Text fw={700}>Způsob</Text>
+            </Table.Th>
+            <Table.Th>
+              Deník
+            </Table.Th>
+            <Table.Th>
+              Kontroly
+            </Table.Th>
+            <Table.Th>
+              Označeno
+            </Table.Th>
+            <Table.Th>
+              Rezervováno
             </Table.Th>
             <Table.Th>
               <Text
@@ -313,21 +319,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                 }}
               />
             </Table.Th>
-            <Table.Th></Table.Th>
             <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterYear}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterYear: event.currentTarget.value
-                      ? parseInt(event.currentTarget.value)
-                      : undefined,
-                    page: 1,
-                  });
-                }}
-              />
             </Table.Th>
             <Table.Th>
               <TextInput
@@ -361,6 +353,10 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
             </Table.Th>
             <Table.Th></Table.Th>
             <Table.Th></Table.Th>
+            <Table.Th></Table.Th>
+            <Table.Th></Table.Th>
+            <Table.Th></Table.Th>
+            <Table.Th></Table.Th>
             <Table.Th>
               <Button
                 size="xs"
@@ -371,7 +367,6 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                     filterUserGivenName: "",
                     filterUserSurname: "",
                     filterSet: undefined,
-                    filterYear: undefined,
                     filterCompany: undefined,
                     filterCompanyName: "",
                     filterClassname: "",
@@ -403,17 +398,11 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
           {data &&
             data.data.map((internship) => (
               <Table.Tr key={internship.id}>
-                <Table.Td>
-                  <Text>{internship.user.givenName}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{internship.user.surname}</Text>
+                <Table.Td colSpan={2}>
+                  {internship.user ? <UserAvatar fullname={internship.user.givenName + " " + internship.user.surname} email={internship.user.email} picture={internship.user.image ? "data:image/jpeg;base64, " + internship.user.image : null} /> : null}
                 </Table.Td>
                 <Table.Td>
                   <Text>{internship.set.name}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{internship.set.year}</Text>
                 </Table.Td>
                 <Table.Td>
                   <Text>{internship.classname}</Text>
@@ -424,14 +413,23 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                 <Table.Td>
                   <Text>{getInternshipKindLabel(String(internship.kind))}</Text>
                 </Table.Td>
+                <Table.Td><Text>{internship.diaries ? internship.diaries.length : 0}</Text></Table.Td>
+                <Table.Td><Text>{internship.inspections ? internship.inspections.length : 0}</Text></Table.Td>
+                <Table.Td>{internship.highlighted ? <IconAlertTriangle size={24} color="red" /> : null}</Table.Td>
+                <Table.Td>{internship.reservationUser ? <UserAvatar fullname={internship.reservationUser.givenName + " " + internship.reservationUser.surname} email={internship.reservationUser.email} picture={internship.reservationUser.image ? "data:image/jpeg;base64, " + internship.user.image : null} /> : <IconX />}</Table.Td>
                 <Table.Td>
                   <Text>{new Date(internship.created).toLocaleString()}</Text>
                 </Table.Td>
-                <Table.Td></Table.Td>
+                <Table.Td>
+                  <Link href={`/inspections/${internship.id}`}>
+                    <Button size="xs" variant="light">Detail</Button>
+                  </Link>
+                </Table.Td>
               </Table.Tr>
             ))}
         </Table.Tbody>
       </Table>
+      </Table.ScrollContainer>
       <Flex justify="center">
         <Pagination
           total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}

@@ -148,3 +148,95 @@ export type TextWithAuthor = Prisma.TextGetPayload<{
     };
   };
 }>;
+
+export type InternshipInspectionList = Prisma.InternshipGetPayload<{
+  select: {
+    id: true;
+    classname: true;
+    created: true;
+    kind: true;
+    highlighted: true;
+    user: {
+      select: {
+        id: true;
+        givenName: true;
+        surname: true;
+        email: true;
+        image: true;
+      };
+    };
+    company: {
+      select: {
+        id: true;
+        name: true;
+        companyIdentificationNumber: true;
+        locationId: true;
+      };
+    };
+    location: {
+      select: {
+        id: true;
+        municipality: true;
+        street: true;
+        descNo: true;
+        orientNo: true;
+      };
+    };
+    set: {
+      select: {
+        id: true;
+        name: true;
+        year: true;
+        editable: true;
+        active: true;
+        daysTotal: true;
+        hoursDaily: true;
+        start: true;
+        end: true;
+        continuous: true;
+      };
+    };
+    reservationUser: {
+      select: {
+        id: true;
+        givenName: true;
+        surname: true;
+        email: true;
+        image: true;
+      };
+    };
+    diaries: {
+      select: {
+        id: true;
+        created: true;
+        date: true;
+        text: true;
+        createdBy: {
+          select: {
+            id: true;
+            givenName: true;
+            surname: true;
+            email: true;
+          },
+        },
+      },
+    },
+    inspections: {
+      select: {
+        id: true;
+        date: true;
+        note: true;
+        result: true;
+        kind: true;
+        inspectionUser: {
+          select: {
+            id: true;
+            givenName: true;
+            surname: true;
+            email: true;
+          },
+        },
+      },
+    },
+  };
+}>;

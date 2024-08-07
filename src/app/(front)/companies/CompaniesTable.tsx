@@ -131,7 +131,8 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
 
   return (
     <>
-      <Table>
+    <Table.ScrollContainer minWidth={500}>
+      <Table striped highlightOnHover>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>
@@ -320,12 +321,13 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
             ))}
         </Table.Tbody>
       </Table>
-      <Flex justify="center">
-        <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
-          value={(data?.page ?? 1) + 1}
-          onChange={(page) => /*setPage(page)*/ setPage(page - 1)}
-        />
+    </Table.ScrollContainer>
+    <Flex justify="center">
+      <Pagination
+        total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
+        value={(data?.page ?? 1) + 1}
+        onChange={(page) => /*setPage(page)*/ setPage(page - 1)}
+      />
       </Flex>
     </>
   );

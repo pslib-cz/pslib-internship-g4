@@ -6,6 +6,10 @@ import { Tabs, Breadcrumbs, Anchor, Text } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import isTeacher from "@/hocs/isTeacherClient";
+import {
+  ReservationProvider,
+  ReservationContext,
+} from "@/providers/InternshipReservationProvider";
 
 export const InspectionsLayout = ({ children }: { children: ReactNode }) => {
   let segment = useSelectedLayoutSegment();

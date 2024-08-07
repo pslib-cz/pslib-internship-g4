@@ -1,26 +1,38 @@
 # Správa praxí pro _pslib.cz_
 
-Aplikace slouží pro správu praxí pro potřebu SPŠ a VOŠ Liberec. Umožňuje:
+Aplikace slouží pro správu praxí pro potřebu SPŠ a VOŠ Liberec.
 
-- studentům
-  - [x] vytvářet a registrovat praxe
-  - [ ] upravovat a mazat vytvořené praxe
-  - [ ] tisknout přihlášku k praxi
-  - [ ] vytvářet deník praxe
-- učitelům
-  - [ ] vybírat a registrovat praxe ke kontrole
-  - [ ] vyplňovat zprávu o kontrole
-- třídním učitelům
-  - [ ] kontrolovat, kteří studenti už mají přihlášku
-- administrátorům
-  - [x] vytvářet a spravovat sady praxí
-  - [x] vytvářet a spravovat šablony pro přihlášky
-  - [x] spravovat uživatele
-  - [x] spravovat firmy
-  - [x] spravovat značky pro firmy
-  - [ ] prohlížet a editovat veškerá data v aplikaci
+Aplikace běží na adrese https://praxe.pslib.cz.
 
-Aplikace běží na adrese https://praxe.pslib.cz
+## Instalace
+
+### Lokální prostředí
+
+1. Instalace balíčků navzdory závislostem
+
+```bash
+npm install --force
+```
+
+2. Vygenerování klienta Prisma
+
+```bash
+npx prisma generate
+```
+
+3. Migrace databáze (automaticky proběhne i seed dat)
+
+```bash
+npx prisma migrate dev
+```
+
+4. Konfigurace aplikace v souboru [.env] nebo .env.local vlastními klíči
+
+5. Spuštění aplikace
+
+```bash
+npm run dev
+```
 
 ## Příkazy ve vývojovém prostředí
 
@@ -48,7 +60,7 @@ Build aplikace
 npm run build
 ```
 
-## Databáze
+### Databáze
 
 Vygenerování klienta
 
@@ -80,7 +92,7 @@ Seed databáze
 npx prisma db seed
 ```
 
-## Utility
+### Utility
 
 Prettier
 

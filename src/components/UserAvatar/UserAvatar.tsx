@@ -11,7 +11,7 @@ type UserAvatarProps = {
 export const UserAvatar: React.FC<UserAvatarProps> = ({
   picture = null,
   fullname,
-  email,
+  email = "",
   onClick,
 }) => {
   return (

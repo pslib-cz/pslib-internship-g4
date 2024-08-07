@@ -1,3 +1,5 @@
+const { version } = require('./package.json');
+
 module.exports = {
   webpack(config) {
     // Grab the existing rule that handles SVG imports
@@ -26,6 +28,9 @@ module.exports = {
 
     return config;
   },
-
+  publicRuntimeConfig: {
+    // Will be available on both server and client
+    version,
+  },
   // ...other config
 };

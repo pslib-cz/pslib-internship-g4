@@ -9,12 +9,14 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/tiptap/styles.css";
 
-export const runtime = "nodejs";
-
+// export const runtime = "nodejs";
+ 
 export const metadata: Metadata = {
-  title: "Praxe",
-  description: "Správa praxí pro SPŠ Liberec",
-};
+  title: {
+    template: '%s | Správa praxí pslib.cz',
+    default: 'Správa praxí pslib.cz',
+  },
+}
 
 const RootLayout = ({
   children,

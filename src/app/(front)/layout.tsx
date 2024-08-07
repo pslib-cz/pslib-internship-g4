@@ -13,6 +13,7 @@ import {
   ScrollArea,
   Container,
   Anchor,
+  Text,
   rem,
 } from "@mantine/core";
 import { useDisclosure, useHeadroom } from "@mantine/hooks";
@@ -109,6 +110,7 @@ const FrontLayout = ({ children }: LayoutProps) => {
           <Anchor href="https://www.pslib.cz/" target="_blank">Průmyslová škola Liberec</Anchor>
           <Anchor href="https://github.com/pslib-cz/pslib-internship-g4" target="_blank">GitHub</Anchor>
         </Group>
+        <Text>{process.env.version}</Text>
         <Group>
           <Anchor href="https://www.pslib.cz/" target="_blank">
             <ThemedContent light={<Image src="/images/logos/pslib-large-light.svg" alt="Průmyslová škola Liberec" width={110} height={20} />} dark={<Image src="/images/logos/pslib-large-dark.svg" alt="Průmyslová škola Liberec" width={110} height={20} />} />
