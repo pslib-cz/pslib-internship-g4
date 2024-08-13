@@ -12,12 +12,16 @@ import {
   Alert,
   Pagination,
   Flex,
-  NativeSelect,
+  Group,
+  Drawer,
+  Stack,
+  ScrollArea, 
+  Box,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronUp, IconAlertTriangle, IconInfoCircle, IconMapPinCheck, IconProgressCheck, IconX } from "@tabler/icons-react";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { IconChevronDown, IconChevronUp, IconAlertTriangle, IconAlertTriangleOff, IconInfoSmall, IconMapPinCheck, IconFlag2, IconFlag2Off, IconX } from "@tabler/icons-react";
+import { useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { InternshipInspectionList } from "@/types/entities";
+import { InternshipWithCompanyLocationSetUser, InternshipInspectionList } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { getInternshipKindLabel } from "@/data/lists";
@@ -43,6 +47,8 @@ type TInternshipsTableState = {
 const STORAGE_ID = "inspect-internships-table";
 
 const InternshipsTable: FC = (TInternshipsTableProps) => {
+  const [selected, setSelected] = React.useState<InternshipInspectionList | null>(null);
+  const [onLocation, setOnLocation] = React.useState<InternshipWithCompanyLocationSetUser[] | null>(null);
   const searchParams = useSearchParams();
   const [loadTableState, storeTableState, removeTableState] =
     useSessionStorage<TInternshipsTableState>(STORAGE_ID);
@@ -74,9 +80,8 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       ? parseInt(searchParams.get("size") as string)
       : 10,
   });
-  const [deleteOpened, { open, close }] = useDisclosure(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 50em)");
+  const isTablet = useMediaQuery("(max-width: 992px)");
 
   const fetchData = useCallback(
     (
@@ -121,6 +126,78 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
     },
     [],
   );
+
+  const setHighlighted = useCallback(
+    (id: string, value: boolean) => {
+      fetch(`/api/internships/${id}/highlighted`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ highlighted: value }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Došlo k chybě při zpracovávání dat.");
+          }
+          notifications.show({
+            title: "Změna označení",
+            message: "Označení praxe bylo změněno.",
+            color: "green",
+          });
+          fetchData(
+            state.filterUser,
+            state.filterUserGivenName,
+            state.filterUserSurname,
+            state.filterSet,
+            state.filterCompany,
+            state.filterCompanyName,
+            state.filterClassname,
+            state.filterReservedUser,
+            state.filterKind,
+            state.filterHighlighted,
+            state.order,
+            state.page,
+            state.size,
+          );
+        })
+        .catch((error) => {
+          setError(error.message);
+          notifications.show({
+            title: "Chyba",
+            message: "Změna označení praxe se nepodařila.",
+            color: "red",
+          });
+        })
+        .finally(() => {});
+    },[fetchData, state]);
+
+  const fetchLocationInternships = useCallback( 
+    (locationId: number) => {
+      fetch(`/api/internships?active=true&location=${locationId}&orderBy=surname`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Došlo k chybě při získávání dat.");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setOnLocation(data.data);
+        })
+        .catch((error) => {
+          notifications.show({
+            title: "Chyba",
+            message: "Nepodařilo se načíst seznam praxí v daném místě.",
+            color: "red",
+          });
+        })
+        .finally(() => {});
+    },[]);
 
   useEffect(() => {
     let storedState = loadTableState();
@@ -205,6 +282,12 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       state.size,
     );
   }, [state, fetchData, searchParams, storeTableState]);
+
+  useEffect(() => {
+    if (selected) {
+      fetchLocationInternships(selected.location.id);
+    }
+  }, [selected, fetchLocationInternships]);
 
   return (
     <>
@@ -414,16 +497,18 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                   <Text>{getInternshipKindLabel(String(internship.kind))}</Text>
                 </Table.Td>
                 <Table.Td><Text>{internship.diaries ? internship.diaries.length : 0}</Text></Table.Td>
-                <Table.Td><Text>{internship.inspections ? internship.inspections.length : 0}</Text></Table.Td>
-                <Table.Td>{internship.highlighted ? <IconAlertTriangle size={24} color="red" /> : null}</Table.Td>
+                <Table.Td><Text ta="center">{internship.inspections ? internship.inspections.length : 0}</Text></Table.Td>
+                <Table.Td>{internship.highlighted ? <IconFlag2 size={24} color="red" /> : null}</Table.Td>
                 <Table.Td>{internship.reservationUser ? <UserAvatar fullname={internship.reservationUser.givenName + " " + internship.reservationUser.surname} email={internship.reservationUser.email} picture={internship.reservationUser.image ? "data:image/jpeg;base64, " + internship.user.image : null} /> : <IconX />}</Table.Td>
                 <Table.Td>
                   <Text>{new Date(internship.created).toLocaleString()}</Text>
                 </Table.Td>
                 <Table.Td>
-                  <Link href={`/inspections/${internship.id}`}>
-                    <Button size="xs" variant="light">Detail</Button>
-                  </Link>
+                  <Group gap="sm">
+                    <ActionIcon variant="light" component={Link} href={`/inspections/${internship.id}`}><IconInfoSmall /></ActionIcon>
+                    <ActionIcon variant="light" onClick={() => setSelected(internship)}><IconMapPinCheck /></ActionIcon>
+                    {internship.highlighted ? <ActionIcon variant="light" color="green" onClick={() => {setHighlighted(internship.id, false)}}><IconFlag2Off /></ActionIcon> : <ActionIcon variant="light" color="orange" onClick={() => {setHighlighted(internship.id, true)}}><IconFlag2 /></ActionIcon>}
+                    </Group>
                 </Table.Td>
               </Table.Tr>
             ))}
@@ -439,6 +524,29 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
           }
         />
       </Flex>
+      <Drawer opened={selected != null} onClose={() => setSelected(null)} title="Rezervace ke kontrole" position="right" zIndex={1000} padding="md">
+          
+            <Stack>
+              <Text>Na stejném místě se nacházejí tyto praxe:</Text>
+              <ScrollArea>
+                <Stack>
+              {onLocation && onLocation.map((internship) => (
+                <Box key={internship.id}>
+                <Text size="sm">{internship.user.givenName + " " + internship.user.surname + " (" + internship.classname + ")"}</Text>
+                <Text c="dimmed" size="xs">{internship.company.name}</Text>
+                </Box>
+              ))}
+                </Stack>
+              </ScrollArea>
+              <Button variant="filled" onClick={()=>{
+                setSelected(null);
+              }}>Zarezervovat všechny</Button>
+              <Text>nebo</Text>
+              <Button variant="default" onClick={()=>{
+                setSelected(null);
+              }}>Zarezervovat jen tuto praxi</Button>
+            </Stack>
+      </Drawer>
     </>
   );
 };

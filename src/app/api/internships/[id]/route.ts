@@ -29,7 +29,11 @@ export async function GET(
       include: {
         set: true,
         user: true,
-        company: true,
+        company: {
+          include: {
+            location: true,
+          },
+        },
         location: true,
         reservationUser: true,
       },

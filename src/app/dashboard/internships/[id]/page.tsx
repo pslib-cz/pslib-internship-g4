@@ -200,7 +200,7 @@ const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
   );
 };
 
-const Page = ({ params }: { params: { id: number } }) => {
+const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const [data, setData] = useState<InternshipFullRecord | null>(null);
   const [error, setError] = useState<string | null>(null);

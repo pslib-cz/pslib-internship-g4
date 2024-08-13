@@ -1,12 +1,16 @@
-import isTeacher from "@/hocs/isAuthorized";
+"use client"
+
+import React from "react";
+import { useDisclosure } from "@mantine/hooks";
+import {Drawer} from "@mantine/core";
 import InternshipsTable from "./InternshipsTable";
 
 const Page = () => {
   return (
-    <div>
-      <InternshipsTable />
-    </div>
+    <>
+      <InternshipsTable />    
+    </>
   );
 };
 
-export default isTeacher(Page);
+export default Page;

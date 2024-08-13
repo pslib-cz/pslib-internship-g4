@@ -103,7 +103,6 @@ export async function GET(request: NextRequest) {
       },
     },
   });
-
   let internships: InternshipWithCompanyLocationSetUser[] =
     await prisma.internship.findMany({
       select: {
@@ -199,7 +198,8 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: [
+      orderBy: 
+      [
         {
           created:
             orderBy === "created"
@@ -211,6 +211,12 @@ export async function GET(request: NextRequest) {
             orderBy === "classname"
               ? "asc"
               : orderBy === "classname_desc"
+                ? "desc"
+                : undefined,
+          kind:
+            orderBy === "kind"
+              ? "asc"
+              : orderBy === "kind_desc"
                 ? "desc"
                 : undefined,
         },

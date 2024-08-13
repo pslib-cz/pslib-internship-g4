@@ -2,14 +2,10 @@
 
 import { ReactNode, useState } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
-import { Tabs, Breadcrumbs, Anchor, Text } from "@mantine/core";
+import { Breadcrumbs, Anchor, Text, Button, Group, Tabs } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import isTeacher from "@/hocs/isTeacherClient";
-import {
-  ReservationProvider,
-  ReservationContext,
-} from "@/providers/InternshipReservationProvider";
 
 export const InspectionsLayout = ({ children }: { children: ReactNode }) => {
   let segment = useSelectedLayoutSegment();
@@ -40,7 +36,7 @@ export const InspectionsLayout = ({ children }: { children: ReactNode }) => {
         <Anchor component={Link} href="/">
           Titulní stránka
         </Anchor>
-        <Anchor component={Link} href="/inspections">
+        <Anchor component={Link} href="/inspections" scroll={false}>
           Kontroly
         </Anchor>
         <Text>{text}</Text>
@@ -50,8 +46,8 @@ export const InspectionsLayout = ({ children }: { children: ReactNode }) => {
           <Tabs.Tab
             value="list"
             onClick={() => {
-              router.push("/inspections");
               setActiveTab("list");
+              router.push("/inspections");
             }}
           >
             Seznam
@@ -59,8 +55,8 @@ export const InspectionsLayout = ({ children }: { children: ReactNode }) => {
           <Tabs.Tab
             value="map"
             onClick={() => {
-              router.push("/inspections/map");
               setActiveTab("map");
+              router.push("/inspections/map");
             }}
           >
             Mapa
@@ -68,8 +64,8 @@ export const InspectionsLayout = ({ children }: { children: ReactNode }) => {
           <Tabs.Tab
             value="reservations"
             onClick={() => {
-              router.push("/inspections/reservations");
               setActiveTab("reservations");
+              router.push("/inspections/reservations");
             }}
           >
             Rezervace
@@ -77,11 +73,11 @@ export const InspectionsLayout = ({ children }: { children: ReactNode }) => {
           <Tabs.Tab
             value="overview"
             onClick={() => {
-              router.push("/inspections/overview");
               setActiveTab("overview");
+              router.push("/inspections/overview");
             }}
           >
-            Souhrn
+            Přehled
           </Tabs.Tab>
         </Tabs.List>
       </Tabs>
