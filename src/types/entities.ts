@@ -1,5 +1,15 @@
 import { Prisma } from "@prisma/client";
 
+export type UserWithRole = Prisma.UserGetPayload<{
+  select: {
+    id: true;
+    givenName: true;
+    surname: true;
+    email: true;
+    role: true;
+  };
+}>;
+
 export type CompanyWithLocation = Prisma.CompanyGetPayload<{
   include: { location: true };
 }>;
@@ -217,10 +227,10 @@ export type InternshipInspectionList = Prisma.InternshipGetPayload<{
             givenName: true;
             surname: true;
             email: true;
-          },
-        },
-      },
-    },
+          };
+        };
+      };
+    };
     inspections: {
       select: {
         id: true;
@@ -234,9 +244,9 @@ export type InternshipInspectionList = Prisma.InternshipGetPayload<{
             givenName: true;
             surname: true;
             email: true;
-          },
-        },
-      },
-    },
+          };
+        };
+      };
+    };
   };
 }>;

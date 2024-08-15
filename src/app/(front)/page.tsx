@@ -6,11 +6,11 @@ import ApiOutputsSection from "./ApiOutputsSection";
 import InternshipsSection from "./InternshipsSection";
 import InspectionsSection from "./InspectionsSection";
 import TextsSection from "./TextsSection";
-import { Metadata } from 'next'
- 
+import { Metadata } from "next";
+
 export const metadata: Metadata = {
-  title: 'Titulní stránka',
-}
+  title: "Titulní stránka",
+};
 
 const Page = () => {
   return (

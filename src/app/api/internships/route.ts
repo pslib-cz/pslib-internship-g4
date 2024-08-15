@@ -198,8 +198,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: 
-      [
+      orderBy: [
         {
           created:
             orderBy === "created"

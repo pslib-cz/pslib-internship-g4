@@ -17,18 +17,15 @@ export async function GET(
   }
 
   let internship = await prisma.internship.findFirst({
-      where: { id: id },
-    });
+    where: { id: id },
+  });
 
   if (!internship) {
     return new Response("Not found", {
       status: 404,
     });
   }
-  if (
-    session.user.role !== Role.ADMIN &&
-    session.user.role !== Role.TEACHER
-  ) {
+  if (session.user.role !== Role.ADMIN && session.user.role !== Role.TEACHER) {
     return new Response("Forbidden", {
       status: 403,
     });
@@ -53,29 +50,26 @@ export async function PATCH(
     where: { id: id },
   });
 
-if (!internship) {
-  return new Response("Not found", {
-    status: 404,
-  });
-}
-if (
-  session.user.role !== Role.ADMIN &&
-  session.user.role !== Role.TEACHER
-) {
-  return new Response("Forbidden", {
-    status: 403,
-  });
-}
+  if (!internship) {
+    return new Response("Not found", {
+      status: 404,
+    });
+  }
+  if (session.user.role !== Role.ADMIN && session.user.role !== Role.TEACHER) {
+    return new Response("Forbidden", {
+      status: 403,
+    });
+  }
 
   const body = await request.json();
 
   await prisma.internship.update({
     where: { id: id },
     data: {
-        highlighted: body.highlighted,
+      highlighted: body.highlighted,
     },
   });
-  return new Response(JSON.stringify({body}), {
+  return new Response(JSON.stringify({ body }), {
     status: 200,
   });
 }

@@ -7,18 +7,21 @@ export type ReservationState = {
 };
 
 type ReservationAction =
-  | { type: "SET_OPENED"; opened: boolean } 
+  | { type: "SET_OPENED"; opened: boolean }
   | { type: "SET_INTERNSHIP_ID"; id: string | null }
-  | { type: "SET_LOCATION_ID"; id: number | null }
+  | { type: "SET_LOCATION_ID"; id: number | null };
 
-const reducer = (state: ReservationState, action: ReservationAction): ReservationState => {
+const reducer = (
+  state: ReservationState,
+  action: ReservationAction,
+): ReservationState => {
   switch (action.type) {
     case "SET_OPENED":
       return { ...state, opened: action.opened };
     case "SET_INTERNSHIP_ID":
       return { ...state, internshipId: action.id || null };
     case "SET_LOCATION_ID":
-        return { ...state, locationId: action.id || null };
+      return { ...state, locationId: action.id || null };
     default:
       return state;
   }
@@ -40,7 +43,9 @@ export const ReservationProvider: React.FC<React.PropsWithChildren> = ({
 }) => {
   const state = useReducer(reducer, initialState);
   return (
-    <ReservationContext.Provider value={state}>{children}</ReservationContext.Provider>
+    <ReservationContext.Provider value={state}>
+      {children}
+    </ReservationContext.Provider>
   );
 };
 

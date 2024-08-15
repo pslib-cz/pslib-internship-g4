@@ -1,8 +1,16 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { InternshipFullRecord } from "@/types/entities";
-import { SimpleGrid, Card, Title, Text, Anchor, Alert, Box } from "@mantine/core";
+import {
+  SimpleGrid,
+  Card,
+  Title,
+  Text,
+  Anchor,
+  Alert,
+  Box,
+} from "@mantine/core";
 import Link from "next/link";
 import Address from "@/components/Address/Address";
 import { DateTime, Coordinates } from "@/components";
@@ -41,7 +49,16 @@ const StudentDisplay = ({ data }: { data: InternshipFullRecord }) => {
         )}
       </Text>
       <Text fw={700}>Adresa</Text>
-      <Text><Address municipality={data.user.municipality ?? ""} street={data.user.street ?? "?"} descNum={data.user.descNo} orientNum={data.user.orientNo} country="" postalCode={data.user.postalCode} /></Text>
+      <Text>
+        <Address
+          municipality={data.user.municipality ?? ""}
+          street={data.user.street ?? "?"}
+          descNum={data.user.descNo}
+          orientNum={data.user.orientNo}
+          country=""
+          postalCode={data.user.postalCode}
+        />
+      </Text>
     </>
   );
 };
@@ -53,25 +70,38 @@ const CompanyDisplay = ({ data }: { data: InternshipFullRecord }) => {
       <Text fw={700}>Název</Text>
       <Text>{data.company.name}</Text>
       <Text fw={700}>Adresa</Text>
-      <Text><Address municipality={data.company.location?.municipality ?? ""} street={data.company.location?.street ?? "?"} descNum={data.company.location?.descNo} orientNum={data.company.location?.orientNo} country="" postalCode={data.company.location?.postalCode} /></Text>
+      <Text>
+        <Address
+          municipality={data.company.location?.municipality ?? ""}
+          street={data.company.location?.street ?? "?"}
+          descNum={data.company.location?.descNo}
+          orientNum={data.company.location?.orientNo}
+          country=""
+          postalCode={data.company.location?.postalCode}
+        />
+      </Text>
       {data.company.description ? (
         <>
           <Text fw={700}>Popis</Text>
-          <Box dangerouslySetInnerHTML={{ __html: data.company.description ?? "" }} />
+          <Box
+            dangerouslySetInnerHTML={{ __html: data.company.description ?? "" }}
+          />
         </>
-      ) : null
-      }
+      ) : null}
       {data.company.website ? (
         <>
           <Text fw={700}>Webové stránky</Text>
           <Text>
-            <Anchor component={Link} href={data.company.website} target="_blank">
+            <Anchor
+              component={Link}
+              href={data.company.website}
+              target="_blank"
+            >
               {data.company.website}
             </Anchor>
           </Text>
         </>
-      ) : null
-      }
+      ) : null}
     </>
   );
 };
@@ -137,9 +167,13 @@ const SetDisplay = ({ data }: { data: InternshipFullRecord }) => {
     <>
       <Title order={2}>Termíny</Title>
       <Text fw={700}>Začátek</Text>
-      <Text><DateTime date={data.set.start} locale="cs" /></Text>
+      <Text>
+        <DateTime date={data.set.start} locale="cs" />
+      </Text>
       <Text fw={700}>Konec</Text>
-      <Text><DateTime date={data.set.end} locale="cs" /></Text>
+      <Text>
+        <DateTime date={data.set.end} locale="cs" />
+      </Text>
       <Text fw={700}>Druh</Text>
       <Text>{data.set.continuous ? "průběžná" : "souvislá"}</Text>
       <Text fw={700}>Počet dní celkem</Text>
@@ -148,19 +182,33 @@ const SetDisplay = ({ data }: { data: InternshipFullRecord }) => {
       <Text>{data.set.hoursDaily}</Text>
     </>
   );
-}
+};
 
 const LoacationDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <>
       <Title order={2}>Lokalita</Title>
       <Text fw={700}>Adresa</Text>
-      <Text><Address municipality={data.location.municipality ?? ""} street={data.location.street ?? "?"} descNum={data.location.descNo} orientNum={data.location.orientNo} country="" postalCode={data.location.postalCode} /></Text>
+      <Text>
+        <Address
+          municipality={data.location.municipality ?? ""}
+          street={data.location.street ?? "?"}
+          descNum={data.location.descNo}
+          orientNum={data.location.orientNo}
+          country=""
+          postalCode={data.location.postalCode}
+        />
+      </Text>
       <Text fw={700}>Souřadnice</Text>
-      <Text><Coordinates latitude={data.location.latitude} longitude={data.location.longitude} /></Text>
+      <Text>
+        <Coordinates
+          latitude={data.location.latitude}
+          longitude={data.location.longitude}
+        />
+      </Text>
     </>
   );
-}
+};
 
 const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
@@ -174,7 +222,7 @@ const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
       <Text>{0}</Text>
     </>
   );
-}
+};
 
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
@@ -228,13 +276,13 @@ const Page = ({ params }: { params: { id: string } }) => {
         <StudentDisplay data={data} />
       </Card>
       <Card shadow="sm" padding="lg">
-        <CompanyDisplay data={data} />   
+        <CompanyDisplay data={data} />
       </Card>
       <Card shadow="sm" padding="lg">
-      <ContactsDisplay data={data} />
+        <ContactsDisplay data={data} />
       </Card>
       <Card shadow="sm" padding="lg">
-        <SetDisplay data={data} />  
+        <SetDisplay data={data} />
       </Card>
       <Card shadow="sm" padding="lg">
         <LoacationDisplay data={data} />

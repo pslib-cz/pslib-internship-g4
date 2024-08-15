@@ -34,6 +34,16 @@ const ApiOutputsSection = () => {
           <li>
             <Link href="/api/internships">Praxe</Link>
           </li>
+          <li>
+            <Link href="/api/inspections">Kontroly</Link>
+            <ul>
+              <li>
+                <Link href="/api/inspections/locations/1/reservations">
+                  Rezervace v daném místě
+                </Link>
+              </li>
+            </ul>
+          </li>
         </ul>
       </Container>
     </Box>

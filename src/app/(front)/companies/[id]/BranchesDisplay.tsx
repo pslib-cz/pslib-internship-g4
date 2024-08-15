@@ -68,7 +68,19 @@ const BranchesDisplay = ({
     );
   }
   if (branches?.length === 0) {
-    return <Text>Firma nemá žádné pobočky. Můžete nějakou <Anchor onClick={()=>{switchModeAction("CREATE")}}>přidat</Anchor>.</Text>;
+    return (
+      <Text>
+        Firma nemá žádné pobočky. Můžete nějakou{" "}
+        <Anchor
+          onClick={() => {
+            switchModeAction("CREATE");
+          }}
+        >
+          přidat
+        </Anchor>
+        .
+      </Text>
+    );
   }
   return (
     <>

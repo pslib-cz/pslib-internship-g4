@@ -131,203 +131,207 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
 
   return (
     <>
-    <Table.ScrollContainer minWidth={500}>
-      <Table striped highlightOnHover>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder = order === "name" ? "name_desc" : "name";
-                  setOrder(newOrder);
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Název{" "}
-                {order === "name" ? (
-                  <IconChevronDown size={12} />
-                ) : order === "name_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-            </Table.Th>
-            <Table.Th>
-              <Text fw={700}>IČO</Text>
-            </Table.Th>
-            <Table.Th>
-              <Text fw={700}>Aktivní</Text>
-            </Table.Th>
-            <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    order === "municipality"
-                      ? "municipality_desc"
-                      : "municipality";
-                  setOrder(newOrder);
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Obec{" "}
-                {order === "municipality" ? (
-                  <IconChevronDown size={12} />
-                ) : order === "municipality_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
-            </Table.Th>
-            <Table.Th>Možnosti</Table.Th>
-          </Table.Tr>
-          <Table.Tr>
-            <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterName}
-                onChange={(event) => {
-                  dispatch({
-                    type: "SET_NAME_FILTER",
-                    text: event.currentTarget.value,
-                  });
-                }}
-              />
-            </Table.Th>
-            <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterTaxNum}
-                onChange={(event) => {
-                  dispatch({
-                    type: "SET_TAX_FILTER",
-                    number:
-                      event.currentTarget.value === ""
-                        ? undefined
-                        : Number(event.currentTarget.value),
-                  });
-                }}
-              />
-            </Table.Th>
-            <Table.Th>
-              <NativeSelect
-                size="xs"
-                value={
-                  state.filterActive === undefined
-                    ? ""
-                    : state.filterActive === true
-                      ? "true"
-                      : "false"
-                }
-                onChange={(event) =>
-                  dispatch({
-                    type: "SET_ACTIVE_FILTER",
-                    activity:
-                      event.currentTarget.value === ""
-                        ? undefined
-                        : event.currentTarget.value === "true",
-                  })
-                }
-                data={[
-                  { label: "Vše", value: "" },
-                  { label: "Aktivní", value: "true" },
-                  { label: "Zrušená", value: "false" },
-                ]}
-              />
-            </Table.Th>
-            <Table.Th>
-              <TextInput
-                size="xs"
-                value={state.filterMunicipality}
-                onChange={(event) => {
-                  dispatch({
-                    type: "SET_MUNICIPALITY_FILTER",
-                    text: event.currentTarget.value,
-                  });
-                }}
-              />
-            </Table.Th>
-            <Table.Th>
-              <Button
-                size="xs"
-                onClick={(event) => {
-                  dispatch({ type: "RESET_FILTER" });
-                  setOrder("name");
-                  setPage(1);
-                }}
-              >
-                Vše
-              </Button>
-            </Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {error && (
+      <Table.ScrollContainer minWidth={500}>
+        <Table striped highlightOnHover>
+          <Table.Thead>
             <Table.Tr>
-              <Table.Td colSpan={100}>
-                <Alert color="red">{error}</Alert>
-              </Table.Td>
+              <Table.Th>
+                <Text
+                  fw={700}
+                  onClick={() => {
+                    let newOrder = order === "name" ? "name_desc" : "name";
+                    setOrder(newOrder);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Název{" "}
+                  {order === "name" ? (
+                    <IconChevronDown size={12} />
+                  ) : order === "name_desc" ? (
+                    <IconChevronUp size={12} />
+                  ) : null}
+                </Text>
+              </Table.Th>
+              <Table.Th>
+                <Text fw={700}>IČO</Text>
+              </Table.Th>
+              <Table.Th>
+                <Text fw={700}>Aktivní</Text>
+              </Table.Th>
+              <Table.Th>
+                <Text
+                  fw={700}
+                  onClick={() => {
+                    let newOrder =
+                      order === "municipality"
+                        ? "municipality_desc"
+                        : "municipality";
+                    setOrder(newOrder);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Obec{" "}
+                  {order === "municipality" ? (
+                    <IconChevronDown size={12} />
+                  ) : order === "municipality_desc" ? (
+                    <IconChevronUp size={12} />
+                  ) : null}
+                </Text>
+              </Table.Th>
+              <Table.Th>Možnosti</Table.Th>
             </Table.Tr>
-          )}
-          {data && data.total === 0 && (
             <Table.Tr>
-              <Table.Td colSpan={100}>
-                Žádná firma nevyhovuje podmínkám.
-              </Table.Td>
+              <Table.Th>
+                <TextInput
+                  size="xs"
+                  value={state.filterName}
+                  onChange={(event) => {
+                    dispatch({
+                      type: "SET_NAME_FILTER",
+                      text: event.currentTarget.value,
+                    });
+                  }}
+                />
+              </Table.Th>
+              <Table.Th>
+                <TextInput
+                  size="xs"
+                  value={state.filterTaxNum}
+                  onChange={(event) => {
+                    dispatch({
+                      type: "SET_TAX_FILTER",
+                      number:
+                        event.currentTarget.value === ""
+                          ? undefined
+                          : Number(event.currentTarget.value),
+                    });
+                  }}
+                />
+              </Table.Th>
+              <Table.Th>
+                <NativeSelect
+                  size="xs"
+                  value={
+                    state.filterActive === undefined
+                      ? ""
+                      : state.filterActive === true
+                        ? "true"
+                        : "false"
+                  }
+                  onChange={(event) =>
+                    dispatch({
+                      type: "SET_ACTIVE_FILTER",
+                      activity:
+                        event.currentTarget.value === ""
+                          ? undefined
+                          : event.currentTarget.value === "true",
+                    })
+                  }
+                  data={[
+                    { label: "Vše", value: "" },
+                    { label: "Aktivní", value: "true" },
+                    { label: "Zrušená", value: "false" },
+                  ]}
+                />
+              </Table.Th>
+              <Table.Th>
+                <TextInput
+                  size="xs"
+                  value={state.filterMunicipality}
+                  onChange={(event) => {
+                    dispatch({
+                      type: "SET_MUNICIPALITY_FILTER",
+                      text: event.currentTarget.value,
+                    });
+                  }}
+                />
+              </Table.Th>
+              <Table.Th>
+                <Button
+                  size="xs"
+                  onClick={(event) => {
+                    dispatch({ type: "RESET_FILTER" });
+                    setOrder("name");
+                    setPage(1);
+                  }}
+                >
+                  Vše
+                </Button>
+              </Table.Th>
             </Table.Tr>
-          )}
-          {data &&
-            data.data.map((company) => (
-              <Table.Tr key={company.id}>
-                <Table.Td>
-                  <Text><Anchor href={"/companies/" + company.id}>{company.name}</Anchor></Text>
+          </Table.Thead>
+          <Table.Tbody>
+            {error && (
+              <Table.Tr>
+                <Table.Td colSpan={100}>
+                  <Alert color="red">{error}</Alert>
                 </Table.Td>
-                <Table.Td>
-                  <Text>
-                    {company.companyIdentificationNumber
-                      ? String(company.companyIdentificationNumber).padStart(
-                          8,
-                          "0",
-                        )
-                      : ""}
-                  </Text>
+              </Table.Tr>
+            )}
+            {data && data.total === 0 && (
+              <Table.Tr>
+                <Table.Td colSpan={100}>
+                  Žádná firma nevyhovuje podmínkám.
                 </Table.Td>
-                <Table.Td>
-                  <Text>{company.active ? <IconCheck /> : <IconX />}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{company.location.municipality}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <ActionIcon
-                    variant="light"
-                    component={Link}
-                    href={"/companies/" + company.id}
-                  >
-                    <IconInfoSmall />
-                  </ActionIcon>{" "}
-                  {session?.user ? (
+              </Table.Tr>
+            )}
+            {data &&
+              data.data.map((company) => (
+                <Table.Tr key={company.id}>
+                  <Table.Td>
+                    <Text>
+                      <Anchor href={"/companies/" + company.id}>
+                        {company.name}
+                      </Anchor>
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text>
+                      {company.companyIdentificationNumber
+                        ? String(company.companyIdentificationNumber).padStart(
+                            8,
+                            "0",
+                          )
+                        : ""}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text>{company.active ? <IconCheck /> : <IconX />}</Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text>{company.location.municipality}</Text>
+                  </Table.Td>
+                  <Table.Td>
                     <ActionIcon
                       variant="light"
                       component={Link}
-                      href={"/internships/create?company=" + company.id}
-                      color="green"
-                      aria-label="Založení praxe"
+                      href={"/companies/" + company.id}
                     >
-                      <IconClockPlus />
-                    </ActionIcon>
-                  ) : null}{" "}
-                </Table.Td>
-              </Table.Tr>
-            ))}
-        </Table.Tbody>
-      </Table>
-    </Table.ScrollContainer>
-    <Flex justify="center">
-      <Pagination
-        total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
-        value={(data?.page ?? 1) + 1}
-        onChange={(page) => /*setPage(page)*/ setPage(page - 1)}
-      />
+                      <IconInfoSmall />
+                    </ActionIcon>{" "}
+                    {session?.user ? (
+                      <ActionIcon
+                        variant="light"
+                        component={Link}
+                        href={"/internships/create?company=" + company.id}
+                        color="green"
+                        aria-label="Založení praxe"
+                      >
+                        <IconClockPlus />
+                      </ActionIcon>
+                    ) : null}{" "}
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+          </Table.Tbody>
+        </Table>
+      </Table.ScrollContainer>
+      <Flex justify="center">
+        <Pagination
+          total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
+          value={(data?.page ?? 1) + 1}
+          onChange={(page) => /*setPage(page)*/ setPage(page - 1)}
+        />
       </Flex>
     </>
   );

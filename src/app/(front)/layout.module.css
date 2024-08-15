@@ -30,10 +30,16 @@
   text-align: center;
   font-size: var(--mantine-font-size-xs);
   color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2));
-  background-color: light-dark( var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+  background-color: light-dark(
+    var(--mantine-color-gray-2),
+    var(--mantine-color-dark-5)
+  );
 }
 .pageFooter a {
-  color: light-dark(var(--mantine-color-primary), var(--mantine-color-primary-dark));
+  color: light-dark(
+    var(--mantine-color-primary),
+    var(--mantine-color-primary-dark)
+  );
 }
 .innerFooter {
   display: flex;

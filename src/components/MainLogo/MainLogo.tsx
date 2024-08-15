@@ -6,7 +6,10 @@ import ThemedContent from "../ThemedContent/ThemedContent";
 export const MainLogo: React.FC = () => {
   return (
     <Group>
-      <ThemedContent light={<InternshipLogoLight />} dark={<InternshipLogoDark />} />
+      <ThemedContent
+        light={<InternshipLogoLight />}
+        dark={<InternshipLogoDark />}
+      />
     </Group>
   );
 };

@@ -152,48 +152,48 @@ export async function GET(request: NextRequest) {
           },
         },
         reservationUser: {
-            select: {
-                id: true,
-              givenName: true,
-              surname: true,
-              email: true,
-              image: true,
-            },
+          select: {
+            id: true,
+            givenName: true,
+            surname: true,
+            email: true,
+            image: true,
+          },
         },
         diaries: {
-            select: {
-              id: true,
-              created: true,
-              date: true,
-              text: true,
-              createdById: true,
-              createdBy: {
-                select: {
-                  id: true,
-                  givenName: true,
-                  surname: true,
-                  email: true,
-                },
-              },
-            },
-            },
-          inspections: {
-            select: {
-              id: true,
-              date: true,
-              note: true,
-              result: true,
-              kind: true,
-              inspectionUser: {
-                select: {
-                  id: true,
-                  givenName: true,
-                  surname: true,
-                  email: true,
-                },
+          select: {
+            id: true,
+            created: true,
+            date: true,
+            text: true,
+            createdById: true,
+            createdBy: {
+              select: {
+                id: true,
+                givenName: true,
+                surname: true,
+                email: true,
               },
             },
           },
+        },
+        inspections: {
+          select: {
+            id: true,
+            date: true,
+            note: true,
+            result: true,
+            kind: true,
+            inspectionUser: {
+              select: {
+                id: true,
+                givenName: true,
+                surname: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
       where: {
         setId: {
