@@ -14,9 +14,7 @@ import {
 import { Internship, Diary } from "@prisma/client";
 import {
   InternshipWithCompanyLocationSetUser,
-  InternshipFullRecord,
 } from "@/types/entities";
-import DateTime from "@/components/DateTime/DateTime";
 import Link from "next/link";
 
 const Page = ({ params }: { params: { id: number } }) => {

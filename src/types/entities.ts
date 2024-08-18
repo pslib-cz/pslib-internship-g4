@@ -69,6 +69,7 @@ export type InternshipWithCompanyLocationSetUser = Prisma.InternshipGetPayload<{
         givenName: true;
         surname: true;
         email: true;
+        image: true;
       };
     };
     company: {
@@ -244,6 +245,52 @@ export type InternshipInspectionList = Prisma.InternshipGetPayload<{
             givenName: true;
             surname: true;
             email: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
+
+export type InspectionWithInspectorAndInternship = Prisma.InspectionGetPayload<{
+  select: {
+    id: true;
+    date: true;
+    note: true;
+    result: true;
+    kind: true;
+    inspectionUser: {
+      select: {
+        id: true;
+        givenName: true;
+        surname: true;
+        email: true;
+        image: true;
+      };
+    };
+    internship: {
+      select: {
+        id: true;
+        classname: true;
+        created: true;
+        kind: true;
+        highlighted: true;
+        user: {
+          select: {
+            id: true;
+            givenName: true;
+            surname: true;
+            email: true;
+            image: true;
+          };
+        };
+        company: {
+          select: {
+            id: true;
+            name: true;
+            companyIdentificationNumber: true;
+            locationId: true;
           };
         };
       };

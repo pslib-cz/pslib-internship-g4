@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
-import { Breadcrumbs, Anchor, Text, Button, Group, Tabs } from "@mantine/core";
+import { Breadcrumbs, Anchor, Text, Tabs } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import isTeacher from "@/hocs/isTeacherClient";
@@ -24,6 +24,9 @@ export const InspectionsLayout = ({ children }: { children: ReactNode }) => {
       break;
     case "overview":
       text = "Souhrn";
+      break;
+    case "diary":
+      text = "Deník";
       break;
     default:
       text = "Detail";

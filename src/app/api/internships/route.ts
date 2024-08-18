@@ -122,6 +122,7 @@ export async function GET(request: NextRequest) {
             givenName: true,
             surname: true,
             email: true,
+            image: true,
           },
         },
         company: {

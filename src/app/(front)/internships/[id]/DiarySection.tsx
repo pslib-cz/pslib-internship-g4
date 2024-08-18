@@ -61,7 +61,7 @@ const DiaryRecordPanel: React.FC<{
       StarterKit,
       Placeholder.configure({
         placeholder:
-          "Déšť bubnoval na okno a vytvářel melancholickou symfonii, která dokonale ladila s mým rozpoložením. Právě jsem dokončil další nudný den v práci, když se dveře otevřely a vstoupila ona. Měla na sobě černý kabát a v očích výraz, který říkal, že přináší problémy.",
+          "Déšť bubnoval na okno a vytvářel melancholickou symfonii, která dokonale ladila s mým rozpoložením.",
       }),
       TipLink,
     ],
@@ -237,7 +237,7 @@ const DiaryCreateRecordPanel: React.FC<{
       StarterKit,
       Placeholder.configure({
         placeholder:
-          "Déšť bubnoval na okno a vytvářel melancholickou symfonii, která dokonale ladila s mým rozpoložením. Právě jsem dokončil další nudný den v práci, když se dveře otevřely a vstoupila ona. Měla na sobě černý kabát a v očích výraz, který říkal, že přináší problémy.",
+          "Déšť bubnoval na okno a vytvářel melancholickou symfonii, která dokonale ladila s mým rozpoložením.",
       }),
       TipLink,
     ],
