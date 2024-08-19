@@ -101,6 +101,10 @@ export async function GET(
     `${internship.user.postalCode ?? "?"}`,
   );
   content = content.replace(
+    /{{Student.Address}}/g,
+    `${internship.user.street}${internship.user.street && internship.user.descNo ? " " : null}${internship.user.descNo}${internship.user.descNo && internship.user.orientNo ? "/" : ""}${internship.user.orientNo}, ${internship.user.postalCode} ${internship.user.municipality}`,
+  );
+  content = content.replace(
     /{{Student.Phone}}/g,
     `${internship.user.phone ?? "?"}`,
   );
@@ -116,7 +120,15 @@ export async function GET(
   );
   content = content.replace(
     /{{Set.Continuous}}/g,
-    `${internship.set.continuous ? "Průběžná" : "Souvislá"}`,
+    `${internship.set.continuous ? "průběžná" : "souvislá"}`,
+  );
+  content = content.replace(
+    /{{Set.Start}}/g,
+    `${new Date(internship.set.start).toLocaleDateString()}`,
+  );
+  content = content.replace(
+    /{{Set.End}}/g,
+    `${new Date(internship.set.end).toLocaleDateString()}`,
   );
   content = content.replace(/{{Set.Year}}/g, `${internship.set.year}`);
   content = content.replace(/{{Company.Name}}/g, `${internship.company.name}`);
@@ -125,30 +137,6 @@ export async function GET(
     `${internship.company.companyIdentificationNumber ?? "není"}`,
   );
   content = content.replace(/{{Internship.Kind}}/g, `${internship.kind}`);
-  content = content.replace(
-    /{{Location.Municipality}}/g,
-    `${internship.location.municipality}`,
-  );
-  content = content.replace(
-    /{{Location.Street}}/g,
-    `${internship.location.street}`,
-  );
-  content = content.replace(
-    /{{Location.DescNumber}}/g,
-    `${internship.location.descNo}`,
-  );
-  content = content.replace(
-    /{{Location.OrientNumber}}/g,
-    `${internship.location.orientNo}`,
-  );
-  content = content.replace(
-    /{{Location.Zip}}/g,
-    `${internship.location.postalCode}`,
-  );
-  content = content.replace(
-    /{{Location.Country}}/g,
-    `${internship.location.country}`,
-  );
   content = content.replace(
     /{{Company.RepresentativeName}}/g,
     `${internship.companyRepName ?? "?"}`,
@@ -196,6 +184,38 @@ export async function GET(
   content = content.replace(
     /{{Company.Country}}/g,
     `${internship.company.location.country}`,
+  );
+  content = content.replace(
+    /{{Company.Address}}/g,
+    `${internship.company.location.street}${internship.company.location.street && internship.company.location.descNo ? " " : null}${internship.company.location.descNo}${internship.company.location.descNo && internship.company.location.orientNo ? "/" : ""}${internship.company.location.orientNo}, ${internship.company.location.postalCode} ${internship.company.location.municipality}`,
+  );
+  content = content.replace(
+    /{{Location.Municipality}}/g,
+    `${internship.location.municipality}`,
+  );
+  content = content.replace(
+    /{{Location.Street}}/g,
+    `${internship.location.street}`,
+  );
+  content = content.replace(
+    /{{Location.DescNumber}}/g,
+    `${internship.location.descNo}`,
+  );
+  content = content.replace(
+    /{{Location.OrientNumber}}/g,
+    `${internship.location.orientNo}`,
+  );
+  content = content.replace(
+    /{{Location.Zip}}/g,
+    `${internship.location.postalCode}`,
+  );
+  content = content.replace(
+    /{{Location.Country}}/g,
+    `${internship.location.country}`,
+  );
+  content = content.replace(
+    /{{Location.Address}}/g,
+    `${internship.location.street}${internship.location.street && internship.location.descNo ? " " : null}${internship.location.descNo}${internship.location.descNo && internship.location.orientNo ? "/" : ""}${internship.location.orientNo}, ${internship.location.postalCode} ${internship.location.municipality}`,
   );
   content = content.replace(/{{Description}}/g, `${internship.jobDescription}`);
   content = content.replace(/{{Info}}/g, `${internship.additionalInfo}`);

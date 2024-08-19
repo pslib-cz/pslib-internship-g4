@@ -3,7 +3,7 @@
 import React, { FC, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {Inspection} from "@prisma/client";
+import { Inspection } from "@prisma/client";
 import {
   Table,
   Button,
@@ -31,7 +31,7 @@ import { getInspectionResultLabel, getInternshipKindLabel } from "@/data/lists";
 import { InspectionWithInspectorAndInternship } from "@/types/entities";
 
 type TInspectionsTableProps = {
-    internshipId: string;
+  internshipId: string;
 };
 type TInspectionsTableState = {
   order: string;
@@ -41,13 +41,12 @@ type TInspectionsTableState = {
 
 const STORAGE_ID = "inspect-list-table";
 
-const InspectionsTable: FC<TInspectionsTableProps> = ({internshipId}) => {
+const InspectionsTable: FC<TInspectionsTableProps> = ({ internshipId }) => {
   const searchParams = useSearchParams();
   const [loadTableState, storeTableState, removeTableState] =
     useSessionStorage<TInspectionsTableState>(STORAGE_ID);
-  const [data, setData] = useState<ListResult<InspectionWithInspectorAndInternship> | null>(
-    null,
-  );
+  const [data, setData] =
+    useState<ListResult<InspectionWithInspectorAndInternship> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [state, setState] = useState<TInspectionsTableState>({
     order: searchParams.get("orderBy") ?? "created",
@@ -63,11 +62,7 @@ const InspectionsTable: FC<TInspectionsTableProps> = ({internshipId}) => {
   const isTablet = useMediaQuery("(max-width: 992px)");
 
   const fetchData = useCallback(
-    (
-      orderBy: string,
-      page: number = 1,
-      pageSize: number = 10,
-    ) => {
+    (orderBy: string, page: number = 1, pageSize: number = 10) => {
       setError(null);
       fetch(
         `/api/inspections?internship=${internshipId}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
@@ -97,36 +92,35 @@ const InspectionsTable: FC<TInspectionsTableProps> = ({internshipId}) => {
     [internshipId],
   );
 
-  const deleteInspection = useCallback((id: number) => {
-    fetch(`/api/inspections/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Došlo k chybě při mazání kontroly.");
-        }
-        notifications.show({
-          title: "Úspěch",
-          message: "Kontrola byla úspěšně smazána.",
-          color: "green",
-        });
-        fetchData(
-          state.order,
-          state.page,
-          state.size,
-        );
+  const deleteInspection = useCallback(
+    (id: number) => {
+      fetch(`/api/inspections/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
-      .catch((error) => {
-        notifications.show({
-          title: "Chyba!",
-          message: "Došlo k chybě při mazání kontroly.",
-          color: "red",
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Došlo k chybě při mazání kontroly.");
+          }
+          notifications.show({
+            title: "Úspěch",
+            message: "Kontrola byla úspěšně smazána.",
+            color: "green",
+          });
+          fetchData(state.order, state.page, state.size);
+        })
+        .catch((error) => {
+          notifications.show({
+            title: "Chyba!",
+            message: "Došlo k chybě při mazání kontroly.",
+            color: "red",
+          });
         });
-      });
-  },[state, fetchData]);
+    },
+    [state, fetchData],
+  );
 
   useEffect(() => {
     let storedState = loadTableState();
@@ -152,11 +146,7 @@ const InspectionsTable: FC<TInspectionsTableProps> = ({internshipId}) => {
     params.set("orderBy", state.order);
     window.history.replaceState(null, "", `?${params.toString()}`);
     storeTableState(state);
-    fetchData(
-      state.order,
-      state.page,
-      state.size,
-    );
+    fetchData(state.order, state.page, state.size);
   }, [state, fetchData, searchParams, storeTableState]);
 
   return (
@@ -169,8 +159,7 @@ const InspectionsTable: FC<TInspectionsTableProps> = ({internshipId}) => {
                 <Text
                   fw={700}
                   onClick={() => {
-                    let newOrder =
-                      state.order === "" ? "date_desc" : "date";
+                    let newOrder = state.order === "" ? "date_desc" : "date";
                     setState({ ...state, order: newOrder });
                   }}
                   style={{ cursor: "pointer" }}
@@ -233,7 +222,8 @@ const InspectionsTable: FC<TInspectionsTableProps> = ({internshipId}) => {
                     <DateTime date={inspection.date} locale="cs" />
                   </Table.Td>
                   <Table.Td>
-                    {inspection.inspectionUser.givenName} {inspection.inspectionUser.surname}
+                    {inspection.inspectionUser.givenName}{" "}
+                    {inspection.inspectionUser.surname}
                   </Table.Td>
                   <Table.Td>
                     {getInspectionResultLabel(String(inspection.result))}
@@ -242,20 +232,24 @@ const InspectionsTable: FC<TInspectionsTableProps> = ({internshipId}) => {
                     {getInternshipKindLabel(String(inspection.kind))}
                   </Table.Td>
                   <Table.Td>
-                  <Box
-            dangerouslySetInnerHTML={{ __html: inspection.note ?? "" }}
-          />
+                    <Box
+                      dangerouslySetInnerHTML={{
+                        __html: inspection.note ?? "",
+                      }}
+                    />
                   </Table.Td>
                   <Table.Td>
                     <Group>
-                      {session?.user?.id === inspection.inspectionUser.id &&(
-                        <ActionIcon color="red" onClick={e=>{
-                          deleteInspection(inspection.id);
-                        }}>
-                        <IconTrash />
-                      </ActionIcon>
+                      {session?.user?.id === inspection.inspectionUser.id && (
+                        <ActionIcon
+                          color="red"
+                          onClick={(e) => {
+                            deleteInspection(inspection.id);
+                          }}
+                        >
+                          <IconTrash />
+                        </ActionIcon>
                       )}
-                      
                     </Group>
                   </Table.Td>
                 </Table.Tr>

@@ -5,8 +5,10 @@ import CreateInternshipSection from "./CreateInternshipSection";
 import ApiOutputsSection from "./ApiOutputsSection";
 import InternshipsSection from "./InternshipsSection";
 import InspectionsSection from "./InspectionsSection";
+import TopCompaniesSection from "./TopCompaniesSection";
 import TextsSection from "./TextsSection";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Titulní stránka",
@@ -17,7 +19,9 @@ const Page = () => {
     <>
       <CompaniesSection />
       <TextsSection />
-      <ApiOutputsSection />
+      <Suspense fallback={<div>Loading...</div>}>
+        <TopCompaniesSection />
+      </Suspense>
     </>
   );
 };

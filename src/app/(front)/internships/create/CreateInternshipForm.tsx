@@ -18,11 +18,13 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { Company, Set } from "@prisma/client";
 import { internshipKinds } from "@/data/lists";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const CreateInternshipForm = () => {
   const searchParams = useSearchParams();
   const requestedCompany = searchParams.get("company");
   const requestedSet = searchParams.get("set");
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [companies, setCompanies] = useState([]);
@@ -138,7 +140,7 @@ const CreateInternshipForm = () => {
     extensions: [
       StarterKit,
       Placeholder.configure({
-        placeholder: "Student musí dodržovat naše bezpečnostní předpisy..",
+        placeholder: "Student musí dodržovat naše bezpečnostní předpisy...",
       }),
       TipLink,
     ],
@@ -155,7 +157,7 @@ const CreateInternshipForm = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(values),
+          body: JSON.stringify({ userId: session?.user.id, ...values }),
         })
           .then((response) => {
             if (!response.ok) {

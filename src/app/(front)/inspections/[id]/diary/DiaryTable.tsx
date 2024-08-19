@@ -3,7 +3,7 @@
 import React, { FC, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {Diary} from "@prisma/client";
+import { Diary } from "@prisma/client";
 import {
   Table,
   Button,
@@ -11,12 +11,9 @@ import {
   Alert,
   Pagination,
   Flex,
-  Box
+  Box,
 } from "@mantine/core";
-import {
-  IconChevronDown,
-  IconChevronUp,
-} from "@tabler/icons-react";
+import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { type ListResult } from "@/types/data";
@@ -25,7 +22,7 @@ import { DateTime } from "@/components";
 import { useSession } from "next-auth/react";
 
 type TDiaryTableProps = {
-    internshipId: string;
+  internshipId: string;
 };
 type TDiaryTableState = {
   order: string;
@@ -35,13 +32,11 @@ type TDiaryTableState = {
 
 const STORAGE_ID = "inspect-diary-table";
 
-const DiaryTable: FC<TDiaryTableProps> = ({internshipId}) => {
+const DiaryTable: FC<TDiaryTableProps> = ({ internshipId }) => {
   const searchParams = useSearchParams();
   const [loadTableState, storeTableState, removeTableState] =
     useSessionStorage<TDiaryTableState>(STORAGE_ID);
-  const [data, setData] = useState<ListResult<Diary> | null>(
-    null,
-  );
+  const [data, setData] = useState<ListResult<Diary> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [state, setState] = useState<TDiaryTableState>({
     order: searchParams.get("orderBy") ?? "created",
@@ -57,11 +52,7 @@ const DiaryTable: FC<TDiaryTableProps> = ({internshipId}) => {
   const isTablet = useMediaQuery("(max-width: 992px)");
 
   const fetchData = useCallback(
-    (
-      orderBy: string,
-      page: number = 1,
-      pageSize: number = 10,
-    ) => {
+    (orderBy: string, page: number = 1, pageSize: number = 10) => {
       setError(null);
       fetch(
         `/api/internships/${internshipId}/diary?orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
@@ -115,11 +106,7 @@ const DiaryTable: FC<TDiaryTableProps> = ({internshipId}) => {
     params.set("orderBy", state.order);
     window.history.replaceState(null, "", `?${params.toString()}`);
     storeTableState(state);
-    fetchData(
-      state.order,
-      state.page,
-      state.size,
-    );
+    fetchData(state.order, state.page, state.size);
   }, [state, fetchData, searchParams, storeTableState]);
 
   return (
@@ -132,8 +119,7 @@ const DiaryTable: FC<TDiaryTableProps> = ({internshipId}) => {
                 <Text
                   fw={700}
                   onClick={() => {
-                    let newOrder =
-                      state.order === "" ? "date_desc" : "date";
+                    let newOrder = state.order === "" ? "date_desc" : "date";
                     setState({ ...state, order: newOrder });
                   }}
                   style={{ cursor: "pointer" }}
@@ -190,15 +176,14 @@ const DiaryTable: FC<TDiaryTableProps> = ({internshipId}) => {
                     <DateTime date={diary.date} locale="cs" />
                   </Table.Td>
                   <Table.Td>
-                  <Box
-            dangerouslySetInnerHTML={{ __html: diary.text ?? "" }}
-          />
+                    <Box
+                      dangerouslySetInnerHTML={{ __html: diary.text ?? "" }}
+                    />
                   </Table.Td>
                   <Table.Td>
-                  <DateTime date={diary.created} locale="cs" />
+                    <DateTime date={diary.created} locale="cs" />
                   </Table.Td>
-                  <Table.Td>
-                  </Table.Td>
+                  <Table.Td></Table.Td>
                 </Table.Tr>
               ))}
           </Table.Tbody>

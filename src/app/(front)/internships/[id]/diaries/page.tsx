@@ -12,9 +12,7 @@ import {
   Container,
 } from "@mantine/core";
 import { Internship, Diary } from "@prisma/client";
-import {
-  InternshipWithCompanyLocationSetUser,
-} from "@/types/entities";
+import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 import Link from "next/link";
 
 const Page = ({ params }: { params: { id: number } }) => {

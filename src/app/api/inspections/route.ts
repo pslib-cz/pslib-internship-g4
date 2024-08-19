@@ -25,8 +25,11 @@ export async function GET(request: NextRequest) {
       status: 401,
     });
   }
-  
-  if (session.user?.role !== Role.ADMIN && session.user?.role !== Role.TEACHER) {
+
+  if (
+    session.user?.role !== Role.ADMIN &&
+    session.user?.role !== Role.TEACHER
+  ) {
     return new Response("Forbidden", {
       status: 403,
     });
@@ -41,8 +44,9 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  let inspections: InspectionWithInspectorAndInternship[] = await prisma.inspection.findMany({
-    select: {
+  let inspections: InspectionWithInspectorAndInternship[] =
+    await prisma.inspection.findMany({
+      select: {
         id: true,
         date: true,
         note: true,
@@ -84,17 +88,17 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-    where: {
+      where: {
         internshipId: {
-            equals: internship || undefined,
+          equals: internship || undefined,
         },
-    },
-    orderBy: {
-      date: orderBy === "date" ? "asc" : "desc",
-    },
-    skip: page !== null && size !== null ? page * size : undefined,
-    take: size !== null ? size : undefined,
-  });
+      },
+      orderBy: {
+        date: orderBy === "date" ? "asc" : "desc",
+      },
+      skip: page !== null && size !== null ? page * size : undefined,
+      take: size !== null ? size : undefined,
+    });
   let result: ListResult<InspectionWithInspectorAndInternship> = {
     data: inspections,
     count: inspections.length,
@@ -114,25 +118,31 @@ export async function POST(request: NextRequest) {
       status: 401,
     });
   }
-  
-  if (session.user?.role !== Role.ADMIN && session.user?.role !== Role.TEACHER) {
+
+  if (
+    session.user?.role !== Role.ADMIN &&
+    session.user?.role !== Role.TEACHER
+  ) {
     return new Response("Forbidden", {
       status: 403,
     });
   }
 
-  if (session.user?.role === Role.TEACHER && session.user?.id !== body.inspectionUserId) {
+  if (
+    session.user?.role === Role.TEACHER &&
+    session.user?.id !== body.inspectionUserId
+  ) {
     body.inspectionUserId = session.user?.id;
   }
 
   const inspection = await prisma.inspection.create({
     data: {
-        date: new Date(body.date),
-        note: body.note,
-        result: Number(body.result),
-        kind: Number(body.kind),
-        inspectionUserId: body.inspectionUserId,
-        internshipId: body.internshipId,
+      date: new Date(body.date),
+      note: body.note,
+      result: Number(body.result),
+      kind: Number(body.kind),
+      inspectionUserId: body.inspectionUserId,
+      internshipId: body.internshipId,
     },
   });
   return Response.json(inspection, { status: 201 });

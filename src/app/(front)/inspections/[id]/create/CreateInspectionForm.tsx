@@ -1,6 +1,6 @@
 import React, { useEffect, useState, FC } from "react";
 import { notifications } from "@mantine/notifications";
-import { DateInput } from '@mantine/dates';
+import { DateInput } from "@mantine/dates";
 import {
   TextInput,
   Button,
@@ -21,10 +21,12 @@ import { inspectionResults, inspectionTypes } from "@/data/lists";
 import { useSession } from "next-auth/react";
 
 type CreateInspectionFormProps = {
-    internshipId: string;
-    };
+  internshipId: string;
+};
 
-const CreateInspectionForm: FC<CreateInspectionFormProps> = ({internshipId}) => {
+const CreateInspectionForm: FC<CreateInspectionFormProps> = ({
+  internshipId,
+}) => {
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -37,9 +39,9 @@ const CreateInspectionForm: FC<CreateInspectionFormProps> = ({internshipId}) => 
       date: new Date().toISOString().split("T")[0],
     },
     validate: {
-        result: (value) => (value ? null : "Výsledek kontroly musí být vybrán."),
-        kind: (value) => (value ? null : "Způsob kontroly musí být vybrán."),
-        date: (value) => (value ? null : "Datum kontroly musí být vyplněno."),
+      result: (value) => (value ? null : "Výsledek kontroly musí být vybrán."),
+      kind: (value) => (value ? null : "Způsob kontroly musí být vybrán."),
+      date: (value) => (value ? null : "Datum kontroly musí být vyplněno."),
     },
   });
   const editorNote = useEditor({
@@ -63,7 +65,11 @@ const CreateInspectionForm: FC<CreateInspectionFormProps> = ({internshipId}) => 
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({internshipId: internshipId, inspectionUserId: session?.user.id, ...values}),
+          body: JSON.stringify({
+            internshipId: internshipId,
+            inspectionUserId: session?.user.id,
+            ...values,
+          }),
         })
           .then((response) => {
             if (!response.ok) {
@@ -89,12 +95,12 @@ const CreateInspectionForm: FC<CreateInspectionFormProps> = ({internshipId}) => 
       })}
     >
       <TextInput
-      label="Datum"
-      placeholder="1.1.2025"
-      type="date"
-      withAsterisk
-      {...form.getInputProps("date")}
-    />
+        label="Datum"
+        placeholder="1.1.2025"
+        type="date"
+        withAsterisk
+        {...form.getInputProps("date")}
+      />
       <NativeSelect
         withAsterisk
         label="Výsledek"
@@ -109,10 +115,7 @@ const CreateInspectionForm: FC<CreateInspectionFormProps> = ({internshipId}) => 
         {...form.getInputProps("kind")}
       />
       <Text>Poznámka</Text>
-      <RichTextEditor
-        editor={editorNote}
-        {...form.getInputProps("note")}
-      >
+      <RichTextEditor editor={editorNote} {...form.getInputProps("note")}>
         <RichTextEditor.Toolbar>
           <RichTextEditor.Bold />
           <RichTextEditor.Italic />
@@ -124,7 +127,11 @@ const CreateInspectionForm: FC<CreateInspectionFormProps> = ({internshipId}) => 
       </RichTextEditor>
       <Group justify="flex-start" mt="md">
         <Button type="submit">Vytvořit</Button>
-        <Button component={Link} href={`/inspections/${internshipId}/list`} variant="default">
+        <Button
+          component={Link}
+          href={`/inspections/${internshipId}/list`}
+          variant="default"
+        >
           Storno
         </Button>
       </Group>

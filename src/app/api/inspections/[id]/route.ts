@@ -17,8 +17,11 @@ export async function GET(
       status: 401,
     });
   }
-  
-  if (session.user?.role !== Role.ADMIN && session.user?.role !== Role.TEACHER) {
+
+  if (
+    session.user?.role !== Role.ADMIN &&
+    session.user?.role !== Role.TEACHER
+  ) {
     return new Response("Forbidden", {
       status: 403,
     });
@@ -26,13 +29,29 @@ export async function GET(
 
   let inspection: InspectionWithInspectorAndInternship | null =
     await prisma.inspection.findFirst({
-        select: {
+      select: {
+        id: true,
+        date: true,
+        note: true,
+        result: true,
+        kind: true,
+        inspectionUser: {
+          select: {
             id: true,
-            date: true,
-            note: true,
-            result: true,
+            givenName: true,
+            surname: true,
+            email: true,
+            image: true,
+          },
+        },
+        internship: {
+          select: {
+            id: true,
+            classname: true,
+            created: true,
             kind: true,
-            inspectionUser: {
+            highlighted: true,
+            user: {
               select: {
                 id: true,
                 givenName: true,
@@ -41,33 +60,17 @@ export async function GET(
                 image: true,
               },
             },
-            internship: {
+            company: {
               select: {
                 id: true,
-                classname: true,
-                created: true,
-                kind: true,
-                highlighted: true,
-                user: {
-                  select: {
-                    id: true,
-                    givenName: true,
-                    surname: true,
-                    email: true,
-                    image: true,
-                  },
-                },
-                company: {
-                  select: {
-                    id: true,
-                    name: true,
-                    companyIdentificationNumber: true,
-                    locationId: true,
-                  },
-                },
+                name: true,
+                companyIdentificationNumber: true,
+                locationId: true,
               },
             },
           },
+        },
+      },
       where: { id: id },
     });
   if (!inspection) {
@@ -89,8 +92,11 @@ export async function DELETE(
       status: 401,
     });
   }
-  
-  if (session.user?.role !== Role.ADMIN && session.user?.role !== Role.TEACHER) {
+
+  if (
+    session.user?.role !== Role.ADMIN &&
+    session.user?.role !== Role.TEACHER
+  ) {
     return new Response("Forbidden", {
       status: 403,
     });
@@ -129,7 +135,10 @@ export async function PUT(
     });
   }
 
-  if (session.user?.role !== Role.ADMIN && session.user?.role !== Role.TEACHER) {
+  if (
+    session.user?.role !== Role.ADMIN &&
+    session.user?.role !== Role.TEACHER
+  ) {
     return new Response("Forbidden", {
       status: 403,
     });

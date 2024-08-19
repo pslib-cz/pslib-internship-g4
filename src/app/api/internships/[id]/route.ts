@@ -58,6 +58,7 @@ export async function GET(
             givenName: true,
             surname: true,
             email: true,
+            image: true,
           },
         },
         company: {
@@ -137,6 +138,7 @@ export async function DELETE(
             givenName: true,
             surname: true,
             email: true,
+            image: true,
           },
         },
         company: {
@@ -227,6 +229,7 @@ export async function PUT(
             givenName: true,
             surname: true,
             email: true,
+            image: true,
           },
         },
         company: {

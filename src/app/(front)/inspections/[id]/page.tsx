@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { InspectionWithInspectorAndInternship, InternshipFullRecord } from "@/types/entities";
+import {
+  InspectionWithInspectorAndInternship,
+  InternshipFullRecord,
+} from "@/types/entities";
 import {
   SimpleGrid,
   Card,
@@ -12,7 +15,7 @@ import {
   Box,
   Table,
   Group,
-  Button
+  Button,
 } from "@mantine/core";
 import Link from "next/link";
 import Address from "@/components/Address/Address";
@@ -27,7 +30,7 @@ const StudentDisplay = ({ data }: { data: InternshipFullRecord }) => {
       <Title order={2}>Student</Title>
       <Text fw={700}>Příjmení a jméno</Text>
       <Text>
-          {data.user.surname}, {data.user.givenName}
+        {data.user.surname}, {data.user.givenName}
       </Text>
       <Text fw={700}>Třída</Text>
       <Text>{data.classname ?? "není"}</Text>
@@ -214,8 +217,10 @@ const LoacationDisplay = ({ data }: { data: InternshipFullRecord }) => {
 };
 
 const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
-  const [insp, setInsp] = useState<InspectionWithInspectorAndInternship[] | null>(null);
-  const [res, setRes] = useState<{key: string, count: number}[] | null>(null);
+  const [insp, setInsp] = useState<
+    InspectionWithInspectorAndInternship[] | null
+  >(null);
+  const [res, setRes] = useState<{ key: string; count: number }[] | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
@@ -241,7 +246,10 @@ const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
         const counts = inspectionResults.map((res) => {
           return {
             key: res.value,
-            count: data.data.filter((insp: InspectionWithInspectorAndInternship) => insp.result === Number(res.value)).length,
+            count: data.data.filter(
+              (insp: InspectionWithInspectorAndInternship) =>
+                insp.result === Number(res.value),
+            ).length,
           };
         });
         setRes(counts);
@@ -252,7 +260,7 @@ const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [ data.id ]);
+  }, [data.id]);
   if (loading) {
     return <div>Načítám data...</div>;
   }
@@ -269,23 +277,31 @@ const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
       <Text fw={700}>Počet</Text>
       <Text>{insp?.length ?? 0}</Text>
       <Table>
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Th>Výsledek</Table.Th>
-          <Table.Th>Počet</Table.Th>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>
-        {res?.map((row) => (
-          <Table.Tr key={row.key}>
-            <Table.Td>{inspectionResults.find((res) => res.value === row.key)?.label}</Table.Td>
-            <Table.Td>{row.count}</Table.Td>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Výsledek</Table.Th>
+            <Table.Th>Počet</Table.Th>
           </Table.Tr>
-        ))}
-      </Table.Tbody>
+        </Table.Thead>
+        <Table.Tbody>
+          {res?.map((row) => (
+            <Table.Tr key={row.key}>
+              <Table.Td>
+                {inspectionResults.find((res) => res.value === row.key)?.label}
+              </Table.Td>
+              <Table.Td>{row.count}</Table.Td>
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
       </Table>
       <Group>
-        <Button variant="default" component={Link} href={`/inspections/${data.id}/list`}>Zobrazit seznam</Button>
+        <Button
+          variant="default"
+          component={Link}
+          href={`/inspections/${data.id}/list`}
+        >
+          Zobrazit seznam
+        </Button>
       </Group>
     </>
   );
@@ -307,7 +323,9 @@ const DiaryDisplay = ({ data }: { data: InternshipFullRecord }) => {
         if (!response.ok) {
           setDiary(null);
           if (response.status === 404) {
-            throw new Error("Taková praxe neexistuje nebo se nepodařilo načíst data.");
+            throw new Error(
+              "Taková praxe neexistuje nebo se nepodařilo načíst data.",
+            );
           }
           throw new Error("Při získávání dat došlo k chybě.");
         }
@@ -322,7 +340,7 @@ const DiaryDisplay = ({ data }: { data: InternshipFullRecord }) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [ data.id ]);
+  }, [data.id]);
   if (loading) {
     return <div>Načítám data...</div>;
   }
@@ -335,11 +353,17 @@ const DiaryDisplay = ({ data }: { data: InternshipFullRecord }) => {
       <Text fw={700}>Počet záznamů</Text>
       <Text>{0}</Text>
       <Group mt="sm">
-        <Button variant="default" component={Link} href={`/inspections/${data.id}/diary`}>Zobrazit seznam</Button>
+        <Button
+          variant="default"
+          component={Link}
+          href={`/inspections/${data.id}/diary`}
+        >
+          Zobrazit seznam
+        </Button>
       </Group>
     </>
   );
-}
+};
 
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;

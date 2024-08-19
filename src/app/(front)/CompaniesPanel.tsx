@@ -89,11 +89,6 @@ const CompaniesPanel = () => {
         value={search}
         onChange={setSearch}
       />
-      <Box p="sm">
-        <Anchor component={Link} href="/companies">
-          Seznam firem
-        </Anchor>
-      </Box>
     </Paper>
   );
 };

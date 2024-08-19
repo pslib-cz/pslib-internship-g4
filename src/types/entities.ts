@@ -252,7 +252,6 @@ export type InternshipInspectionList = Prisma.InternshipGetPayload<{
   };
 }>;
 
-
 export type InspectionWithInspectorAndInternship = Prisma.InspectionGetPayload<{
   select: {
     id: true;

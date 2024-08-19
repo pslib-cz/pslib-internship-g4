@@ -464,40 +464,40 @@ const ReservationsTable: FC<TInternshipsTableProps> = () => {
                   <Table.Td>
                     <Group gap="sm">
                       <Tooltip label="Podrobnosti">
-                      <ActionIcon
-                        variant="light"
-                        component={Link}
-                        href={`/inspections/${internship.id}`}
-                      >
-                        <IconInfoSmall />
-                      </ActionIcon>
+                        <ActionIcon
+                          variant="light"
+                          component={Link}
+                          href={`/inspections/${internship.id}`}
+                        >
+                          <IconInfoSmall />
+                        </ActionIcon>
                       </Tooltip>
                       <Tooltip label="Deník">
-                      <ActionIcon
-                        variant="light"
-                        component={Link}
-                        href={`/inspections/${internship.id}/diary`}
-                      >
-                        <IconCalendarEvent />
-                      </ActionIcon>
+                        <ActionIcon
+                          variant="light"
+                          component={Link}
+                          href={`/inspections/${internship.id}/diary`}
+                        >
+                          <IconCalendarEvent />
+                        </ActionIcon>
                       </Tooltip>
                       <Tooltip label="Kontroly">
-                      <ActionIcon
-                        variant="light"
-                        component={Link}
-                        href={`/inspections/${internship.id}/list`}
-                      >
-                        <IconListCheck />
-                      </ActionIcon>
+                        <ActionIcon
+                          variant="light"
+                          component={Link}
+                          href={`/inspections/${internship.id}/list`}
+                        >
+                          <IconListCheck />
+                        </ActionIcon>
                       </Tooltip>
                       <Tooltip label="Nová kontrola">
-                      <ActionIcon
-                        variant="light"
-                        component={Link}
-                        href={`/inspections/${internship.id}/create`}
-                      >
-                        <IconPlus />
-                      </ActionIcon>
+                        <ActionIcon
+                          variant="light"
+                          component={Link}
+                          href={`/inspections/${internship.id}/create`}
+                        >
+                          <IconPlus />
+                        </ActionIcon>
                       </Tooltip>
                     </Group>
                   </Table.Td>

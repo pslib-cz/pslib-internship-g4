@@ -1,0 +1,242 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type="text/css">
+      html {
+        font-family: Arial, sans-serif;
+        font-size: 9pt;
+        width: 210mm;
+      }
+      body {
+        margin: 1.6cm;
+      }
+      h1 {
+        margin-top: 35px;
+        font-size: 18pt;
+        text-align: center;
+        font-weight: normal;
+        padding: 0;
+        margin: 0;
+        margin-top: 0.5em;
+      }
+      h3 {
+        font-size: 12pt;
+        font-weight: normal;
+        padding: 0;
+        margin: 0;
+        margin-top: 0.5em;
+      }
+      .label {
+        font-weight: bold;
+        display: inline-block;
+        width: 100px;
+      }
+      .value {
+        display: inline-block;
+      }
+      section.container {
+        margin-top: 10px;
+      }
+      section.container {
+        display: grid;
+      }
+      @media print {
+        @page {
+          margin: 0;
+          size: A4;
+          margin-bottom: 1cm;
+          @top-right {
+            content: "Strana " counter(pageNumber);
+          }
+        }
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+          page-break-after: avoid;
+        }
+        section {
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header id="document-title">
+      <h1>Dohoda o výrobní praxi</h1>
+    </header>
+    <section>
+      <p>{{School.Name}}</p>
+    </section>
+    <section id="company" class="container">
+      <div class="label name-label">Společnost:</div>
+      <div class="value name-value">{{Company.Name}}</div>
+      <div class="label address-label">Sídlo:</div>
+      <div class="value address-value">
+        {{Company.Address}}, {{School.RepresentativePhone}},
+        {{School.RepresentativeEmail}}
+      </div>
+      <div class="after-block">
+        <p>
+          uzavírají smlouvu, která je založena na základě následující dohody o
+          odborné praxi a podmínkách pro její konání (podle § 65 odst. 2
+          školského zákona č. 561/2004 Sb. a § 12 vyhlášky č. 13/2005 Sb.).
+        </p>
+      </div>
+    </section>
+    <section id="student" class="container">
+      <div class="before-block">
+        <p>Předmětem dohody je zajištění odborné praxe žáka</p>
+      </div>
+      <div class="label name-label">Jméno:</div>
+      <div class="value name-value">{{Student.GivenName}}</div>
+      <div class="label surname-label">Přijmení:</div>
+      <div class="value surname-value">{{Student.Surname}}</div>
+      <div class="label class-label">Třída:</div>
+      <div class="value class-value">{{Student.Classname}}</div>
+      <div class="label birthdate-label">Datum narození:</div>
+      <div class="value birthdate-value">{{Student.BirthDate}}</div>
+      <div class="label phone-label">Telefon:</div>
+      <div class="value phone-value">{{Student.Phone}}</div>
+      <div class="label address-label">Bydliště:</div>
+      <div class="value address-value">{{Student.Address}}</div>
+    </section>
+    <section id="representatives" class="container">
+      <div class="before-block">
+        <p>Vedením odborné praxe jsou pověřeni</p>
+      </div>
+      <div class="label school-representative-label">Za školu:</div>
+      <div class="value school-representative-value">
+        {{School.RepresentativeName}}, tel: {{School.RepresentativePhone}},
+        email: {{School.RepresentativeEmail}}
+      </div>
+      <div class="label company-mentor-label">Za organizaci:</div>
+      <div class="value company-mentor-value">
+        {{Company.MentorName}}, tel: {{Company.MentorPhone}}, email:
+        {{Company.MentorEmail}}
+      </div>
+    </section>
+    <section id="set" class="container">
+      <p>
+        Praxe je {{Set.Continuous}} o délce {{Set.DaysTotal}} dní a
+        {{Set.HoursDaily}} hodin denně.
+      </p>
+    </section>
+    <section id="place" class="container">
+      <div class="label place-label">Místo výkonu:</div>
+      <div class="value place-value">{{Location.Address}}</div>
+    </section>
+    <section id="description" class="container">
+      <div class="label description-label">Popis praxe:</div>
+      <div class="value description-value">{{Description}}</div>
+    </section>
+    <section id="agreement" class="container">
+      <h3>Ustanovení dohody</h3>
+      <p class="ustanoveni">
+        Praktické činnosti, které bude žák vykonávat, budou v souladu s oborem a
+        jeho zaměřením.
+      </p>
+      <p class="ustanoveni">
+        Smluvní organizace poskytne pro praktikujícího žáka potřebné vybavení
+        včetně ochranných pomůcek. Každý žák SPŠSE a VOŠ je proškolen z předpisů
+        BOZP v rámci své činnosti ve škole při vykonávání praxe v dílnách školy.
+        BOZ a PO pro odbornou praxi zajistí organizace (seznámení s
+        bezpečnostními a požárními předpisy).
+      </p>
+      <p class="ustanoveni">
+        Žák je povinen dodržovat všechna pravidla BOZ a PO, se kterými byl
+        seznámen.
+      </p>
+      <p class="ustanoveni">
+        Náklady spojené s praktickou činností žáka půjdou na vrub organizace.
+      </p>
+      <p class="ustanoveni">
+        Způsob dopravy do zaměstnání bude volen individuálně dle možností
+        dopravní obslužnosti nebo podle vzájemné dohody žáka a organizace.
+      </p>
+      <p class="ustanoveni">
+        S ohledem na skutečnost, že žáci nebudou při odborné praxi vykonávat
+        produktivní práci, nebude žák odměňován firmou (podnikatelem) podle §
+        122 odst. 1 zákona č. 561/2004 Sb.
+      </p>
+      <p class="ustanoveni">
+        Uzavírá-li škola jakoukoli smlouvu (nájemní smlouvu, smlouvu o dílo,
+        smlouvu o poskytnutí služeb, nepojmenovanou smlouvu apod.), k jejímuž
+        plnění je zapotřebí druhé smluvní straně poskytnout osobní údaje, škola
+        vždy a bezpodmínečně bude trvat na tom, aby ve smlouvě byla druhé
+        smluvní straně uložena povinnost:
+      </p>
+      <ul class="ustanoveni">
+        <li>
+          přijmout všechna bezpečnostní, technická, organizační a jiná opatření
+          s přihlédnutím ke stavu techniky, povaze zpracování, rozsahu
+          zpracování, kontextu zpracování a účelům zpracování k zabránění
+          jakéhokoli narušení poskytnutých osobních údajů;
+        </li>
+        <li>
+          nezapojit do zpracování žádné další osoby bez předchozího písemného
+          souhlasu školy;
+        </li>
+        <li>
+          zpracovávat osobní údaje pouze pro plnění smlouvy(vč.předání údajů do
+          třetích zemí a mezinárodním organizacím); výjimkou jsou pouze případy,
+          kdy jsou určité povinnosti uloženy přímo právním předpisem;
+        </li>
+        <li>
+          zajistit, aby se osoby oprávněné zpracovávat osobní údaje u dodavatele
+          byly zavázány k mlčenlivosti nebo aby se na ně vztahovala zákonná
+          povinnost mlčenlivosti;
+        </li>
+        <li>
+          zajistit, že dodavatel bude škole bez zbytečného odkladu nápomocen při
+          plnění povinností školy, zejména povinnosti reagovat na žádosti o
+          výkon práv subjektů údajů, povinnosti ohlašovat případy porušení
+          zabezpečení osobních údajů dozorovému úřadu dle čl. 33, Obecné
+          nařízení EU o ochraně osobních údajů(GDPR) - dále jen „nařízení
+        </li>
+        <li>
+          povinnosti oznamovat případy porušení zabezpečení osobních údajů
+          subjektu údajů dle čl. 34 tohoto nařízení, povinnosti posoudit vliv na
+          ochranu osobních údajů dle čl. 35 tohoto nařízení a povinnosti
+          provádět předchozí konzultace dle čl. 36 tohoto nařízení, a že za
+          tímto účelem zajistí nebo přijme vhodná technická a organizační
+          opatření, o kterých ihned informuje školu;
+        </li>
+        <li>
+          po ukončení smlouvy řádně naložit se zpracovávanými osobními údaji,
+          např., že všechny osobní údaje vymaže, nebo je vrátí škole a vymaže
+          existující kopie apod.,
+        </li>
+        <li>
+          poskytnout škole veškeré informace potřebné k doložení toho, že byly
+          splněny povinnosti stanovené škole právními předpisy;
+        </li>
+        <li>
+          umožnit kontrolu, audit či inspekci prováděné školou nebo příslušným
+          orgánem dle právních předpisů;
+        </li>
+        <li>
+          poskytnout bez zbytečného odkladu nebo ve lhůtě, kterou stanoví škola,
+          součinnost potřebnou pro plnění zákonných povinností školy spojených s
+          ochranou osobních údajů, jejich zpracováním;
+        </li>
+        <li>poskytnuté osobní údaje chránit v souladu s právními předpisy;</li>
+      </ul>
+    </section>
+    <section id="appendix" class="container">{{Appendix}}</section>
+    <section id="signatures" class="container">
+      <div class="signature">
+        <header>V Liberci, dne {{Date}}</header>
+        <p>Podpis zástupce školy</p>
+      </div>
+      <div class="signature">
+        <header>V</header>
+        <p>Podpis zástupce organizace</p>
+      </div>
+    </section>
+  </body>
+</html>
