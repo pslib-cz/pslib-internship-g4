@@ -35,16 +35,11 @@ export async function POST(request: NextRequest) {
   }
   if (process.env.GEOCODING_ENGINE === "mapy.cz") {
     try {
-      console.log(
-        `https://api.mapy.cz/v1/geocode?query=${body.street ? body.street : ""} ${body.descNumber ? body.descNumber : ""}/${body.orientNumber ? body.orientNumber : ""}, ${body.municipality ? body.municipality : ""}, ${body.postalCode ? body.postalCode : ""}&limit=1&apikey=${process.env.NEXT_PUBLIC_MAPY_CZ_KEY}`,
-      );
       const response = await fetch(
         `https://api.mapy.cz/v1/geocode?query=${body.street ? body.street : ""} ${body.descNumber ? body.descNumber : ""}/${body.orientNumber ? body.orientNumber : ""}, ${body.municipality ? body.municipality : ""}, ${body.postalCode ? body.postalCode : ""}&limit=1&apikey=${process.env.NEXT_PUBLIC_MAPY_CZ_KEY}`,
       );
-      console.log(response);
       if (response && response.ok) {
         const data = await response.json();
-        console.log(response);
         if (data.length === 0) {
           return new Response("No data found", { status: 404 });
         }
