@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, Suspense, FC, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  Suspense,
+  FC,
+  useCallback,
+  useRef,
+} from "react";
 import {
   Title,
   Box,
@@ -131,49 +138,55 @@ const FilesDisplay: FC<
       })
       .catch((error) => {
         setError(error);
-      }); 
+      });
   }, [internship]);
   const contentRef = useRef<HTMLDivElement>(null);
-  const handlePrint = useReactToPrint({ 
+  const handlePrint = useReactToPrint({
     content: useCallback(() => contentRef.current, []),
     documentTitle: "Smlouva o praxi",
     removeAfterPrint: true,
-   });
+  });
   return (
     <>
-    <Card shadow="sm" padding="lg">
-      <Title order={2}>Smlouva o praxi</Title>
-      {error && <Alert color="red">{error.message}</Alert>}
-      <Box>
-        <Group mt="1em">
-        <Button variant="filled" leftSection={<IconPrinter />} onClick={async ()=>{
-          handleOnBeforeGetContent();
-          handlePrint()
-        }
-           
-          }>Tisk</Button>
-          <Button
-            leftSection={<IconDownload />}
-            onClick={(e) => {
-              e.preventDefault();
-              window.open(
-                `/api/internships/${internship.id}/agreement`,
-                "_blank",
-              );
+      <Card shadow="sm" padding="lg">
+        <Title order={2}>Smlouva o praxi</Title>
+        {error && <Alert color="red">{error.message}</Alert>}
+        <Box>
+          <Group mt="1em">
+            <Button
+              variant="filled"
+              leftSection={<IconPrinter />}
+              onClick={async () => {
+                handleOnBeforeGetContent();
+                handlePrint();
+              }}
+            >
+              Tisk
+            </Button>
+            <Button
+              leftSection={<IconDownload />}
+              onClick={(e) => {
+                e.preventDefault();
+                window.open(
+                  `/api/internships/${internship.id}/agreement`,
+                  "_blank",
+                );
+              }}
+              variant="default"
+            >
+              .html
+            </Button>
+          </Group>
+        </Box>
+        <div style={{ height: 0, overflow: "hidden", width: 0 }}>
+          <div
+            ref={contentRef}
+            dangerouslySetInnerHTML={{
+              __html: content,
             }}
-            variant="default"
-          >
-            .html
-          </Button>
-        </Group>
-      </Box>
-      <div style={{height: 0, overflow: "hidden", width: 0}}>
-        <div ref={contentRef} dangerouslySetInnerHTML={{
-            __html: content,
-          }}
-        />
+          />
         </div>
-    </Card>
+      </Card>
     </>
   );
 };

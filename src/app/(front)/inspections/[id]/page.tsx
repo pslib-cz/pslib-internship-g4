@@ -313,7 +313,7 @@ const DiaryDisplay = ({ data }: { data: InternshipFullRecord }) => {
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     setLoading(true);
-    fetch("/api/diary/?internship=" + data.id, {
+    fetch("/api/diaries?internship=" + data.id + "&orderBy=date", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -350,6 +350,8 @@ const DiaryDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <>
       <Title order={2}>Deník</Title>
+      <Text fw={700}>Veřejný deník pro kontrolu</Text>
+      <Anchor href={"/diary/" + data.id}>{"/diary/" + data.id}</Anchor>
       <Text fw={700}>Počet záznamů</Text>
       <Text>{0}</Text>
       <Group mt="sm">

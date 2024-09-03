@@ -77,7 +77,7 @@ const DataDisplay = ({ id }: { id: number }) => {
           />
         </>
       )}
-      {company?.locationId && (
+      {company?.location && (
         <>
           <Text fw={700}>Adresa</Text>
           <Address
