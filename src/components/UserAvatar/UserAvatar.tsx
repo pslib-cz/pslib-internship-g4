@@ -22,8 +22,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       onClick={onClick}
       style={{ cursor: onClick ? "pointer" : "default" }}
     >
-      {picture && <Avatar src={picture} radius={40} size={40} />}
-      <Box visibleFrom="md">
+      {picture && <Avatar visibleFrom="md" src={picture} radius={40} size={40} />}
+      <Box>
         <Text fz="sm" fw={500}>
           {fullname}
         </Text>

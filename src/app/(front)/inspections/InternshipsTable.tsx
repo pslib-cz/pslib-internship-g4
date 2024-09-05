@@ -651,7 +651,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                       <IconFlag2 size={24} color="red" />
                     ) : null}
                   </Table.Td>
-                  <Table.Td>
+                  <Table.Td ta="left">
                     {internship.reservationUser ? (
                       <UserAvatar
                         fullname={
@@ -662,7 +662,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                         email={internship.reservationUser.email}
                         picture={
                           internship.reservationUser.image
-                            ? "data:image/jpeg;base64, " + internship.user.image
+                            ? "data:image/jpeg;base64, " + internship.reservationUser.image
                             : null
                         }
                       />
