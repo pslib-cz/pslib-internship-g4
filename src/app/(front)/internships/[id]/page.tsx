@@ -1,13 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  Suspense,
-  FC,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
   Title,
   Box,
@@ -16,184 +9,204 @@ import {
   Breadcrumbs,
   Anchor,
   LoadingOverlay,
-  Container,
-  SimpleGrid,
   Card,
-  Button,
-  Group,
+  SimpleGrid,
 } from "@mantine/core";
-import { IconDownload, IconPrinter } from "@tabler/icons-react";
-import {
-  InternshipWithCompanyLocationSetUser,
-  InternshipFullRecord,
-} from "@/types/entities";
+import { InternshipFullRecord } from "@/types/entities";
 import DateTime from "@/components/DateTime/DateTime";
 import Link from "next/link";
 import { getInternshipKindLabel } from "@/data/lists";
-import LocationPanel from "./LocationPanel";
-import DiarySection from "./DiarySection";
-import { useReactToPrint } from "react-to-print";
+import Address from "@/components/Address/Address";
 
-const StudentDisplay: FC<
-  InternshipFullRecord | InternshipWithCompanyLocationSetUser
-> = (internship) => {
+const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <Card shadow="sm" padding="lg">
-      <Title order={2}>Student</Title>
-      <Text fw={700}>Jméno a příjmení</Text>
+      <Title order={3}>Základní údaje</Title>
+      <Text fw={700}>Student</Text>
       <Text>
-        {internship.user.givenName} {internship.user.surname}
+        {data.user.surname}, {data.user.givenName}
       </Text>
-      <Text fw={700}>Email</Text>
-      <Text>{internship.user.email}</Text>
-      <Text fw={700}>Třída</Text>
-      <Text>{internship.classname}</Text>
-    </Card>
-  );
-};
-
-const SetDisplay: FC<
-  InternshipFullRecord | InternshipWithCompanyLocationSetUser
-> = (internship) => {
-  return (
-    <Card shadow="sm" padding="lg">
-      <Title order={2}>Sada</Title>
+      <Text fw={700}>Firma</Text>
+      <Text>
+        <Anchor component={Link} href={`/companies/${data.companyId}`}>
+          {data.company.name}
+        </Anchor>
+      </Text>
       <Text fw={700}>Termín</Text>
       <Text>
-        <DateTime date={internship.set.start} locale="cs" /> &ndash;{" "}
-        <DateTime date={internship.set.end} locale="cs" />
+        {<DateTime date={data.set.start} locale="cs" />} -{" "}
+        {<DateTime date={data.set.end} locale="cs" />}
       </Text>
+      <Text fw={700}>Sada</Text>
+      <Text>{data.set.name}</Text>
       <Text fw={700}>Počet dní</Text>
-      <Text>{internship.set.daysTotal}</Text>
-      <Text fw={700}>Počet hodin denně</Text>
-      <Text>{internship.set.hoursDaily}</Text>
+      <Text>{data.set.daysTotal}</Text>
+      <Text fw={700}>Hodiny denně</Text>
+      <Text>{data.set.hoursDaily}</Text>
       <Text fw={700}>Druh</Text>
-      <Text>{internship.set.continuous ? "Průběžná" : "Souvislá"}</Text>
-      <Text fw={700}>Rok</Text>
-      <Text>{internship.set.year}</Text>
+      <Text>{data.set.continuous ? "Průběžná" : "Souvislá"}</Text>
+      <Text fw={700}>Způsob</Text>
+      <Text>{getInternshipKindLabel(String(data.kind))}</Text>
     </Card>
   );
 };
 
-const CompanyDisplay: FC<
-  InternshipFullRecord | InternshipWithCompanyLocationSetUser
-> = (internship) => {
+const ContactsDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <Card shadow="sm" padding="lg">
-      <Title order={2}>Firma</Title>
-      <Text fw={700}>Název</Text>
-      <Text>{internship.company.name}</Text>
-      <Text fw={700}>IČO</Text>
-      <Text>{internship.company.companyIdentificationNumber ?? "není"}</Text>
-      <Text fw={700}>Druh praxe</Text>
-      <Text>{getInternshipKindLabel(String(internship.kind))}</Text>
+      <Title order={3}>Kontakty</Title>
+      <Title order={4}>Zástupce firmy</Title>
+      <Text>Člověk zastupující firmu a podepisující za ní smlouvu</Text>
+      <Text fw={700}>Jméno a příjmení</Text>
+      <Text>{data.companyRepName}</Text>
+      <Text fw={700}>Email</Text>
+      <Text>
+        {data.companyRepEmail ? (
+          <Anchor component={Link} href={`mailto:${data.companyRepEmail}`}>
+            {data.companyRepEmail}
+          </Anchor>
+        ) : (
+          "není"
+        )}
+      </Text>
+      <Text fw={700}>Telefon</Text>
+      <Text>
+        {data.companyRepPhone ? (
+          <Anchor component={Link} href={`tel:${data.companyRepPhone}`}>
+            {data.companyRepPhone}
+          </Anchor>
+        ) : (
+          "není"
+        )}
+      </Text>
+      <Title order={4}>Kontaktní osoba</Title>
+      <Text>Osoba řídící praxi studenta</Text>
+      <Text fw={700}>Jméno a příjmení</Text>
+      <Text>{data.companyMentorName}</Text>
+      <Text fw={700}>Email</Text>
+      <Text>
+        {data.companyMentorEmail ? (
+          <Anchor component={Link} href={`mailto:${data.companyMentorEmail}`}>
+            {data.companyMentorEmail}
+          </Anchor>
+        ) : (
+          "není"
+        )}
+      </Text>
+      <Text fw={700}>Telefon</Text>
+      <Text>
+        {data.companyMentorPhone ? (
+          <Anchor component={Link} href={`tel:${data.companyMentorPhone}`}>
+            {data.companyMentorPhone}
+          </Anchor>
+        ) : (
+          "není"
+        )}
+      </Text>
     </Card>
   );
 };
 
-const DescriptionDisplay: FC<
-  InternshipFullRecord | InternshipWithCompanyLocationSetUser
-> = (internship) => {
+const InternshipDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <Card shadow="sm" padding="lg">
-      <Title order={2}>Textové informace</Title>
-      <Text fw={700}>Popis práce</Text>
+      <Title order={3}>Praxe</Title>
+      <Text fw={700}>Popis</Text>
+      {data.jobDescription ? (
+        <Box dangerouslySetInnerHTML={{ __html: data.jobDescription ?? "" }} />
+      ) : (
+        <Text>není</Text>
+      )}
+      <Text fw={700}>Další informace k praxi</Text>
+      {data.additionalInfo ? (
+        <Box dangerouslySetInnerHTML={{ __html: data.additionalInfo ?? "" }} />
+      ) : (
+        <Text>není</Text>
+      )}
+      <Text fw={700}>Dodatky ke smlouvě</Text>
+      {data.appendixText ? (
+        <Box dangerouslySetInnerHTML={{ __html: data.appendixText ?? "" }} />
+      ) : (
+        <Text>není</Text>
+      )}
+    </Card>
+  );
+};
+
+const StudentDisplay = ({ data }: { data: InternshipFullRecord }) => {
+  return (
+    <Card shadow="sm" padding="lg">
+      <Title order={3}>Student</Title>
+      <Text fw={700}>Příjmení a jméno</Text>
       <Text>
-        <Box
-          dangerouslySetInnerHTML={{
-            __html: internship.jobDescription ?? "není",
-          }}
-        />
+        {data.user.surname}, {data.user.givenName}
       </Text>
-      <Text fw={700}>Další informace</Text>
+      <Text fw={700}>Třída</Text>
+      <Text>{data.classname ?? "není"}</Text>
+      <Text fw={700}>Email</Text>
       <Text>
-        <Box
-          dangerouslySetInnerHTML={{
-            __html: internship.additionalInfo ?? "není",
-          }}
-        />
+        {data.user.email ? (
+          <Anchor component={Link} href={`mailto:${data.user.email}`}>
+            {data.user.email}
+          </Anchor>
+        ) : (
+          "není"
+        )}
       </Text>
-      <Text fw={700}>Doplňky ke smlouvě</Text>
+      <Text fw={700}>Telefon</Text>
       <Text>
-        <Box
-          dangerouslySetInnerHTML={{
-            __html: internship.appendixText ?? "není",
-          }}
-        />
+        {data.user.phone ? (
+          <Anchor component={Link} href={`tel:${data.user.phone}`}>
+            {data.user.phone}
+          </Anchor>
+        ) : (
+          "není"
+        )}
       </Text>
     </Card>
   );
 };
 
-const FilesDisplay: FC<
-  InternshipFullRecord | InternshipWithCompanyLocationSetUser
-> = (internship) => {
-  const [content, setContent] = useState<string>("");
-  const [error, setError] = useState<Error | null>(null);
-  const handleOnBeforeGetContent = useCallback(() => {
-    fetch(`/api/internships/${internship.id}/agreement`)
-      .then((response) => response.text())
-      .then((data) => {
-        setContent(data);
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, [internship]);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const handlePrint = useReactToPrint({
-    content: useCallback(() => contentRef.current, []),
-    documentTitle: "Smlouva o praxi",
-    removeAfterPrint: true,
-  });
+const LocationDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
-    <>
-      <Card shadow="sm" padding="lg">
-        <Title order={2}>Smlouva o praxi</Title>
-        {error && <Alert color="red">{error.message}</Alert>}
-        <Box>
-          <Group mt="1em">
-            <Button
-              variant="filled"
-              leftSection={<IconPrinter />}
-              onClick={async () => {
-                handleOnBeforeGetContent();
-                handlePrint();
-              }}
-            >
-              Tisk
-            </Button>
-            <Button
-              leftSection={<IconDownload />}
-              onClick={(e) => {
-                e.preventDefault();
-                window.open(
-                  `/api/internships/${internship.id}/agreement`,
-                  "_blank",
-                );
-              }}
-              variant="default"
-            >
-              .html
-            </Button>
-          </Group>
-        </Box>
-        <div style={{ height: 0, overflow: "hidden", width: 0 }}>
-          <div
-            ref={contentRef}
-            dangerouslySetInnerHTML={{
-              __html: content,
-            }}
-          />
-        </div>
-      </Card>
-    </>
+    <Card shadow="sm" padding="lg">
+      <Title order={3}>Místo</Title>
+      <Text fw={700}>Adresa</Text>
+      <Address
+        country={data.location.country ?? ""}
+        municipality={data.location.municipality ?? ""}
+        street={data.location.street}
+        postalCode={data.location.postalCode}
+        descNum={data.location.descNo}
+        orientNum={data.location.orientNo}
+      />
+    </Card>
+  );
+};
+
+const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
+  return (
+    <Card shadow="sm" padding="lg">
+      <Title order={3}>Nastavení kontrol</Title>
+      <Text fw={700}>Důležitost provedení kontroly</Text>
+      <Text>{data.highlighted ? "nutná" : "normální"}</Text>
+      <Text fw={700}>Rezervováno</Text>
+      {data.reservationUserId ? (
+        <Text>
+          {data.reservationUser?.surname}, {data.reservationUser?.givenName}
+        </Text>
+      ) : (
+        <Text>není</Text>
+      )}
+    </Card>
   );
 };
 
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
-  const loadData = useCallback(() => {
+  const [data, setData] = useState<InternshipFullRecord | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
     fetch(`/api/internships/${id}`, {
       method: "GET",
       headers: {
@@ -215,14 +228,7 @@ const Page = ({ params }: { params: { id: string } }) => {
         setError(error.message);
       })
       .finally(() => {});
-  }, []);
-  const [data, setData] = useState<InternshipWithCompanyLocationSetUser | null>(
-    null,
-  );
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  }, [id]);
 
   if (error) {
     return <Alert color="red">{error}</Alert>;
@@ -241,38 +247,28 @@ const Page = ({ params }: { params: { id: string } }) => {
         </Anchor>
         <Text>Detail</Text>
       </Breadcrumbs>
-      <Container>
-        {error ? (
-          <Alert color="red">{error}</Alert>
-        ) : (
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
-            <Suspense fallback={<LoadingOverlay />}>
-              <StudentDisplay {...data} />
-            </Suspense>
-            <Suspense fallback={<LoadingOverlay />}>
-              <SetDisplay {...data} />
-            </Suspense>
-            <Suspense fallback={<LoadingOverlay />}>
-              <CompanyDisplay {...data} />
-            </Suspense>
-            <Suspense fallback={<LoadingOverlay />}>
-              <LocationPanel
-                internship={data}
-                reloadInternshipCallback={loadData}
-              />
-            </Suspense>
-            <Suspense fallback={<LoadingOverlay />}>
-              <DescriptionDisplay {...data} />
-            </Suspense>
-            <Suspense fallback={<LoadingOverlay />}>
-              <FilesDisplay {...data} />
-            </Suspense>
-          </SimpleGrid>
-        )}
+      <Title order={2}>Obecné informace</Title>
+      <SimpleGrid cols={2} spacing="lg">
         <Suspense fallback={<LoadingOverlay />}>
-          <DiarySection id={id} editable={data.set.active} />
+          <DataDisplay data={data} />
         </Suspense>
-      </Container>
+        <Suspense fallback={<LoadingOverlay />}>
+          <ContactsDisplay data={data} />
+        </Suspense>
+        <Suspense fallback={<LoadingOverlay />}>
+          <InternshipDisplay data={data} />
+        </Suspense>
+        <Suspense fallback={<LoadingOverlay />}>
+          <StudentDisplay data={data} />
+        </Suspense>
+        <Suspense fallback={<LoadingOverlay />}>
+          <InspectionsDisplay data={data} />
+        </Suspense>
+        <Suspense fallback={<LoadingOverlay />}>
+          <LocationDisplay data={data} />
+        </Suspense>
+      </SimpleGrid>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
     </>
   );
 };

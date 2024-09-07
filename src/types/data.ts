@@ -49,3 +49,12 @@ export enum PublicationTarget {
   NONE = 0,
   FRONT = 1,
 }
+
+export enum InternshipState {
+  FOUNDED = 0,
+  APPROVED = 1,
+  DELIVERED = 2,
+  DENIED = 3,
+  CANCELLED = 4,
+  COMPLETED = 5,
+}

@@ -53,6 +53,7 @@ export async function GET(
         jobDescription: true,
         appendixText: true,
         additionalInfo: true,
+        state: true,
         user: {
           select: {
             givenName: true,
@@ -133,6 +134,7 @@ export async function DELETE(
         jobDescription: true,
         appendixText: true,
         additionalInfo: true,
+        state: true,
         user: {
           select: {
             givenName: true,
@@ -224,6 +226,7 @@ export async function PUT(
         jobDescription: true,
         appendixText: true,
         additionalInfo: true,
+        state: true,
         user: {
           select: {
             givenName: true,
@@ -286,6 +289,7 @@ export async function PUT(
   if (session.user.role !== Role.ADMIN && session.user.role !== Role.TEACHER) {
     body.reservationUserId = undefined;
     body.highlighted = undefined;
+    body.status = undefined;
   }
 
   let changed: Internship = body || internship;

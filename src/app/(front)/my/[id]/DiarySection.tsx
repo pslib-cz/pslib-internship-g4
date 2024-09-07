@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { use, useCallback, useEffect, useState } from "react";
 import {
   Title,
   Table,
@@ -25,6 +25,7 @@ import { RichTextEditor, Link as TipLink } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import { useSession } from "next-auth/react";
 
 enum DisplayMode {
   DISPLAY,
@@ -42,6 +43,7 @@ const DiaryRecordPanel: React.FC<{
   reloadAction: () => void;
 }> = ({ record, editable, reloadAction }) => {
   const [mode, setMode] = useState<DisplayMode>(DisplayMode.DISPLAY);
+  const { data: session, status } = useSession();
   const form = useForm<{
     date: DateTime;
     text: string;
@@ -138,6 +140,7 @@ const DiaryRecordPanel: React.FC<{
                 let data = {
                   date: values.date,
                   text: values.text,
+                  userId: session?.user.id,
                 };
                 fetch(
                   `/api/internships/${record.internshipId}/diary/${record.id}`,
@@ -246,6 +249,7 @@ const DiaryCreateRecordPanel: React.FC<{
       form.setValues({ text: editor.getHTML() });
     },
   });
+  const { data: session, status } = useSession();
   return (
     <TableTr>
       <TableTd colSpan={3}>
@@ -256,6 +260,7 @@ const DiaryCreateRecordPanel: React.FC<{
               internshipId: internshipId,
               date: values.date,
               text: values.text,
+              userId: session?.user.id,
             };
             fetch(`/api/internships/${internshipId}/diary`, {
               method: "POST",

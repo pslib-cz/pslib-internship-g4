@@ -33,48 +33,46 @@ const Page = () => {
         </Anchor>
         <Text>Firmy</Text>
       </Breadcrumbs>
-      <Container>
-        <Title my="lg" order={2}>
-          Seznam firem
-        </Title>
-        <Flex my={10} gap="sm" wrap="wrap">
-          {status === "authenticated" &&
-            (session?.user.role === "admin" ||
-              session?.user.role === "teacher" ||
-              session?.user.role === "student") && (
-              <>
-                <Button
-                  variant="filled"
-                  component={Link}
-                  href="/companies/import"
-                  leftSection={<IconHomePlus />}
-                >
-                  Importovat firmu přes ARES
-                </Button>
-                <Button
-                  component={Link}
-                  href="/companies/create"
-                  variant="default"
-                >
-                  Přidat firmu ručně
-                </Button>
-              </>
-            )}
-          <Button
-            onClick={(e) => dispatch({ type: "SET_OPENED", opened: true })}
-            variant="default"
-          >
-            Rozšířený filtr
-          </Button>
-          <Button component={Link} href="/companies/map" variant="default">
-            Mapa
-          </Button>
-        </Flex>
-        <Box pos="relative"></Box>
-        <Suspense fallback={<Loader />}>
-          <CompaniesTable />
-        </Suspense>
-      </Container>
+      <Title my="lg" order={2}>
+        Seznam firem
+      </Title>
+      <Flex my={10} gap="sm" wrap="wrap">
+        {status === "authenticated" &&
+          (session?.user.role === "admin" ||
+            session?.user.role === "teacher" ||
+            session?.user.role === "student") && (
+            <>
+              <Button
+                variant="filled"
+                component={Link}
+                href="/companies/import"
+                leftSection={<IconHomePlus />}
+              >
+                Importovat firmu přes ARES
+              </Button>
+              <Button
+                component={Link}
+                href="/companies/create"
+                variant="default"
+              >
+                Přidat firmu ručně
+              </Button>
+            </>
+          )}
+        <Button
+          onClick={(e) => dispatch({ type: "SET_OPENED", opened: true })}
+          variant="default"
+        >
+          Rozšířený filtr
+        </Button>
+        <Button component={Link} href="/companies/map" variant="default">
+          Mapa
+        </Button>
+      </Flex>
+      <Box pos="relative"></Box>
+      <Suspense fallback={<Loader />}>
+        <CompaniesTable />
+      </Suspense>
     </>
   );
 };

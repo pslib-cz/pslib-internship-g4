@@ -1,17 +1,16 @@
+"use client";
+
+import Link from "next/link";
 import {
-  Box,
-  Button,
-  Text,
-  Anchor,
-  Breadcrumbs,
   ScrollArea,
   Title,
-  Container,
+  Box,
+  Button,
+  Breadcrumbs,
+  Anchor,
+  Text,
 } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
-import Link from "next/link";
-import isAuthorized from "@/hocs/isAuthorized";
-import InternshipsList from "./InternshipsList";
+import InternshipsTable from "./InternshipsTable";
 
 const Page = () => {
   return (
@@ -20,16 +19,14 @@ const Page = () => {
         <Anchor component={Link} href="/">
           Titulní stránka
         </Anchor>
-        <Text>Moje praxe</Text>
+        <Text>Praxe</Text>
       </Breadcrumbs>
-      <Container>
-        <Title order={2}>Moje praxe</Title>
-        <ScrollArea type="auto">
-          <InternshipsList />
-        </ScrollArea>
-      </Container>
+      <Title order={2}>Seznam praxí</Title>
+      <ScrollArea type="auto">
+        <InternshipsTable />
+      </ScrollArea>
     </>
   );
 };
 
-export default isAuthorized(Page);
+export default Page;

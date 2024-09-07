@@ -64,6 +64,7 @@ export type InternshipWithCompanyLocationSetUser = Prisma.InternshipGetPayload<{
     jobDescription: true;
     additionalInfo: true;
     appendixText: true;
+    state: true;
     user: {
       select: {
         givenName: true;
@@ -167,6 +168,7 @@ export type InternshipInspectionList = Prisma.InternshipGetPayload<{
     created: true;
     kind: true;
     highlighted: true;
+    state: true;
     user: {
       select: {
         id: true;

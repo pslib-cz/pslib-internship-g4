@@ -182,6 +182,7 @@ model Internship {
   kind                         Int             @default(0)
   highlighted                  Boolean         @default(false)
   conclusion                   String?         //@db.Text
+  state                        Int             @default(0)
   inspections                  Inspection[]
   diaries                      Diary[]
 }

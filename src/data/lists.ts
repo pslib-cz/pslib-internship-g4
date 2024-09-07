@@ -3,6 +3,7 @@ import {
   InspectionResult,
   InspectionType,
   PublicationTarget,
+  InternshipState,
   SelectItem,
 } from "@/types/data";
 
@@ -78,4 +79,18 @@ export const publicationTargets: SelectItem[] = [
 export function getPublicationTargetLabel(value: string): string | undefined {
   const target = publicationTargets.find((target) => target.value === value);
   return target ? target.label : undefined;
+}
+
+export const internshipStates: SelectItem[] = [
+  { value: String(InternshipState.FOUNDED), label: "Založená" },
+  { value: String(InternshipState.APPROVED), label: "Schválena" },
+  { value: String(InternshipState.DELIVERED), label: "Vrácena" },
+  { value: String(InternshipState.COMPLETED), label: "Absolvovaná" },
+  { value: String(InternshipState.DENIED), label: "Zamítnutá" },
+  { value: String(InternshipState.CANCELLED), label: "Zrušená" },
+];
+
+export function getInternshipStateLabel(value: string): string | undefined {
+  const state = internshipStates.find((state) => state.value === value);
+  return state ? state.label : undefined;
 }

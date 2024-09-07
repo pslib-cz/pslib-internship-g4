@@ -58,9 +58,9 @@ const FrontLayout = ({ children }: LayoutProps) => {
             visibleFrom="sm"
             className={styles.navigation}
           >
-            {session && (
-              <Link href="/internships" className={styles.link}>
-                Praxe
+            {session && session?.user.role == Role.STUDENT && (
+              <Link href="/my" className={styles.link}>
+                Moje praxe
               </Link>
             )}
             <Link href="/companies" className={styles.link}>
@@ -69,9 +69,14 @@ const FrontLayout = ({ children }: LayoutProps) => {
             {session &&
               (session?.user.role == Role.ADMIN ||
                 session?.user.role == Role.TEACHER) && (
-                <Link href="/inspections" className={styles.link}>
-                  Kontroly
-                </Link>
+                <>
+                  <Link href="/internships" className={styles.link}>
+                    Praxe
+                  </Link>
+                  <Link href="/inspections" className={styles.link}>
+                    Kontroly
+                  </Link>
+                </>
               )}
             {session && session?.user.role == Role.ADMIN && (
               <Link href="/dashboard" className={styles.link}>

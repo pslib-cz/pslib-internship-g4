@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
   const inspectorId = searchParams.get("inspector");
   const classname = searchParams.get("class");
   const kind = searchParams.get("kind");
-  const reservationUserId = searchParams.get("reservationUser");
+  const state = searchParams.get("state");
   const active = searchParams.get("active");
   const orderBy = searchParams.get("orderBy");
   const page: number | null =
@@ -76,6 +76,9 @@ export async function GET(request: NextRequest) {
       kind: {
         equals: kind ? Number(kind) : undefined,
       },
+      state: {
+        equals: state ? Number(state) : undefined,
+      },
       user: {
         givenName: {
           contains: givenName ? givenName : undefined,
@@ -117,6 +120,7 @@ export async function GET(request: NextRequest) {
         jobDescription: true,
         additionalInfo: true,
         appendixText: true,
+        state: true,
         user: {
           select: {
             givenName: true,
@@ -172,6 +176,9 @@ export async function GET(request: NextRequest) {
         },
         kind: {
           equals: kind ? Number(kind) : undefined,
+        },
+        state: {
+          equals: state ? Number(state) : undefined,
         },
         user: {
           givenName: {

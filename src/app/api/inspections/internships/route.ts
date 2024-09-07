@@ -111,6 +111,7 @@ export async function GET(request: NextRequest) {
         created: true,
         kind: true,
         highlighted: true,
+        state: true,
         user: {
           select: {
             id: true,

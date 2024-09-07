@@ -9,22 +9,16 @@ import {
   ActionIcon,
   Text,
   TextInput,
-  Modal,
-  Group,
   Alert,
   Pagination,
   Flex,
-  NativeSelect,
 } from "@mantine/core";
 import {
   IconInfoSmall,
-  IconTrash,
-  IconEdit,
   IconChevronDown,
   IconChevronUp,
 } from "@tabler/icons-react";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
+import { useMediaQuery } from "@mantine/hooks";
 import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
@@ -46,7 +40,7 @@ type TInternshipsTableState = {
   size: number;
 };
 
-const STORAGE_ID = "internships-table";
+const STORAGE_ID = "users-internships-table";
 
 const InternshipsTable: FC = (TInternshipsTableProps) => {
   const searchParams = useSearchParams();
@@ -81,8 +75,6 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       ? parseInt(searchParams.get("size") as string)
       : 10,
   });
-  const [deleteOpened, { open, close }] = useDisclosure(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 50em)");
 
   const fetchData = useCallback(
@@ -379,6 +371,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                     filterCompany: undefined,
                     filterCompanyName: "",
                     filterClassname: "",
+                    filterState: undefined,
                     order: "created",
                     page: 1,
                   });
@@ -440,26 +433,9 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                   <ActionIcon
                     variant="light"
                     component={Link}
-                    href={"/dashboard/internships/" + internship.id}
+                    href={"/internships/" + internship.id}
                   >
                     <IconInfoSmall />
-                  </ActionIcon>{" "}
-                  <ActionIcon
-                    variant="light"
-                    color="red"
-                    onClick={() => {
-                      setDeleteId(internship.id);
-                      open();
-                    }}
-                  >
-                    <IconTrash />
-                  </ActionIcon>{" "}
-                  <ActionIcon
-                    variant="light"
-                    component={Link}
-                    href={"/dashboard/internships/" + internship.id + "/edit"}
-                  >
-                    <IconEdit />
                   </ActionIcon>
                 </Table.Td>
               </Table.Tr>
@@ -475,70 +451,6 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
           }
         />
       </Flex>
-      <Modal
-        opened={deleteOpened}
-        centered
-        onClose={close}
-        size="auto"
-        title="Odstranění praxe"
-        fullScreen={isMobile}
-        transitionProps={{ transition: "fade", duration: 200 }}
-      >
-        <Text>Opravdu si přejete tuto praxi odstranit?</Text>
-        <Text fw={700}>Data pak už nebude možné obnovit.</Text>
-        <Group mt="xl">
-          <Button
-            onClick={() => {
-              if (deleteId !== null) {
-                fetch("/api/internships/" + deleteId, {
-                  method: "DELETE",
-                })
-                  .then((response) => {
-                    if (!response.ok) {
-                      throw new Error("Network response was not ok");
-                    }
-                    notifications.show({
-                      title: "Povedlo se!",
-                      message: "Praxe byla odstraněna.",
-                      color: "lime",
-                    });
-                    fetchData(
-                      state.filterUser,
-                      state.filterUserGivenName,
-                      state.filterUserSurname,
-                      state.filterSet,
-                      state.filterYear,
-                      state.filterCompany,
-                      state.filterCompanyName,
-                      state.filterClassname,
-                      state.filterState,
-                      state.order,
-                      state.page,
-                      state.size,
-                    );
-                  })
-                  .catch((error) => {
-                    notifications.show({
-                      title: "Chyba!",
-                      message: "Smazání praxe nebylo úspěšné.",
-                      color: "red",
-                    });
-                  })
-                  .finally(() => {
-                    close();
-                  });
-              }
-            }}
-            color="red"
-            leftSection={<IconTrash />}
-          >
-            Smazat
-          </Button>
-          <Button onClick={close} variant="default">
-            Storno
-          </Button>
-        </Group>
-      </Modal>
     </>
   );
 };

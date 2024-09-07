@@ -662,7 +662,8 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                         email={internship.reservationUser.email}
                         picture={
                           internship.reservationUser.image
-                            ? "data:image/jpeg;base64, " + internship.reservationUser.image
+                            ? "data:image/jpeg;base64, " +
+                              internship.reservationUser.image
                             : null
                         }
                       />
