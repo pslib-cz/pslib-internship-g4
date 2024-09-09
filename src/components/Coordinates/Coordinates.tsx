@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Prisma } from "@prisma/client";
 import { IconMapPin } from "@tabler/icons-react";
-import { Flex, Text } from "@mantine/core";
+import { Flex, Text, Anchor } from "@mantine/core";
 
 type CoordinatesProps = {
   latitude: Prisma.Decimal | number | null;
@@ -16,14 +16,14 @@ export const Coordinates: React.FC<CoordinatesProps> = ({
     return <span>neznámé</span>;
   }
   return (
-    <Link href={`/companies/map?lon=${longitude}&lat=${latitude}`}>
+    <Anchor href={`/companies/map?lon=${longitude}&lat=${latitude}`}>
       <Flex align="center">
         <Text>
           {String(latitude)} s.š., {String(longitude)} v.d.
         </Text>
         <IconMapPin size="1em" color="orange" />
       </Flex>
-    </Link>
+    </Anchor>
   );
 };
 

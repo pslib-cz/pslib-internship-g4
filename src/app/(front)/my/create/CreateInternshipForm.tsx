@@ -171,7 +171,7 @@ const CreateInternshipForm = () => {
               message: "Praxe byla vytvořena.",
               color: "lime",
             });
-            router.push("/internships/" + data.id, { scroll: false });
+            router.push("/my/" + data.id, { scroll: false });
           })
           .catch((error) => {
             notifications.show({
@@ -299,7 +299,7 @@ const CreateInternshipForm = () => {
       />
       <Group justify="flex-start" mt="md">
         <Button type="submit">Vytvořit</Button>
-        <Button component={Link} href="/internships" variant="default">
+        <Button component={Link} href="/my" variant="default">
           Storno
         </Button>
       </Group>

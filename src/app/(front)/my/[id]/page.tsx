@@ -236,8 +236,8 @@ const Page = ({ params }: { params: { id: string } }) => {
         <Anchor component={Link} href="/">
           Titulní stránka
         </Anchor>
-        <Anchor component={Link} href="/internships">
-          Praxe
+        <Anchor component={Link} href="/my">
+          Moje praxe
         </Anchor>
         <Text>Detail</Text>
       </Breadcrumbs>
