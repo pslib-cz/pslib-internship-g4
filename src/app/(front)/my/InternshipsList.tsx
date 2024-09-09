@@ -171,7 +171,7 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
         <Group>
           <Button
             component={Link}
-            href="/internships/create"
+            href="/my/create"
             variant="filled"
             leftSection={<IconPlus />}
           >
@@ -249,14 +249,14 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
               key={index}
               internship={internship}
               onClick={(int) => {
-                router.push("/internships/" + int.id);
+                router.push("/my/" + int.id);
               }}
               onDeleteClick={(int) => {
                 setDeleteId(int.id);
                 open();
               }}
               onEditClick={(int) => {
-                router.push("/internships/" + int.id + "/edit");
+                router.push("/my/" + int.id + "/edit");
               }}
             />
           ))}
