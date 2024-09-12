@@ -285,11 +285,12 @@ export async function PUT(
   }
   const body = await request.json();
   body.kind = Number(body.kind);
+  body.state = Number(body.state);
 
   if (session.user.role !== Role.ADMIN && session.user.role !== Role.TEACHER) {
     body.reservationUserId = undefined;
     body.highlighted = undefined;
-    body.status = undefined;
+    body.state = undefined;
   }
 
   let changed: Internship = body || internship;

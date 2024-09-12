@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import React, { FC, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
@@ -28,7 +28,7 @@ import { notifications } from "@mantine/notifications";
 import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { getInternshipKindLabel, getInternshipStateLabel } from "@/data/lists";
+import { getInternshipKindLabel, getInternshipStateLabel, internshipKinds, internshipStates } from "@/data/lists";
 
 type TInternshipsTableProps = {};
 type TInternshipsTableState = {
@@ -362,7 +362,26 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                 }}
               />
             </Table.Th>
-            <Table.Th></Table.Th>
+            <Table.Th>
+              <NativeSelect
+                size="xs"
+                value={state.filterState}
+                onChange={(event) => {
+                  setState({
+                    ...state,
+                    filterState: event.currentTarget.value
+                      ? parseInt(event.currentTarget.value)
+                      : undefined,
+                    page: 1,
+                  });
+                }}
+              >
+                <option value="">Vše</option>
+                <option value="0">Nevyřízená</option>
+                <option value="1">Schválená</option>
+                <option value="2">Zamítnutá</option>
+              </NativeSelect>
+            </Table.Th>
             <Table.Th></Table.Th>
             <Table.Th></Table.Th>
             <Table.Th>

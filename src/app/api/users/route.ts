@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       status: 401,
     });
   }
-  if (!(session.user.role in [Role.ADMIN, Role.TEACHER])) {
+  if ((session.user.role !== Role.ADMIN) && (session.user.role !== Role.TEACHER)) { 
     return new Response("Forbidden", {
       status: 403,
     });

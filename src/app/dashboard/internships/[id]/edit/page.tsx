@@ -89,7 +89,7 @@ const Page = ({ params }: { params: { id: string } }) => {
         setLoading(false);
       });
     setLoading(true);
-    fetch("/api/users?role=student&orderBy=surname")
+    fetch("/api/users?orderBy=surname")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Při komunikaci se serverem došlo k chybě.");
@@ -239,6 +239,7 @@ const Page = ({ params }: { params: { id: string } }) => {
           setId: data.setId,
           reservationUserId: data.reservationUserId,
           kind: String(data.kind),
+          state: String(data.state),
           highlight: data.highlight,
         });
       })
