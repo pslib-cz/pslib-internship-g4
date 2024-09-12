@@ -83,8 +83,9 @@ export function getPublicationTargetLabel(value: string): string | undefined {
 
 export const internshipStates: SelectItem[] = [
   { value: String(InternshipState.FOUNDED), label: "Založená" },
-  { value: String(InternshipState.APPROVED), label: "Schválena" },
-  { value: String(InternshipState.DELIVERED), label: "Vrácena" },
+  { value: String(InternshipState.APPROVED), label: "Schválená" },
+  { value: String(InternshipState.CONFIRMED), label: "Potvrzená" },
+  { value: String(InternshipState.IN_PROGRESS), label: "Probíhající" },
   { value: String(InternshipState.COMPLETED), label: "Absolvovaná" },
   { value: String(InternshipState.DENIED), label: "Zamítnutá" },
   { value: String(InternshipState.CANCELLED), label: "Zrušená" },
@@ -93,4 +94,27 @@ export const internshipStates: SelectItem[] = [
 export function getInternshipStateLabel(value: string): string | undefined {
   const state = internshipStates.find((state) => state.value === value);
   return state ? state.label : undefined;
+}
+
+export function isValidInternshipState(value: number): boolean {
+  return value in InternshipState;
+}
+
+export const internshipStateTransitions = {
+  [InternshipState.FOUNDED]: [{state: InternshipState.APPROVED, priviledged: false}],
+  [InternshipState.APPROVED]: [{state: InternshipState.CONFIRMED, priviledged: false}, {state: InternshipState.DENIED, priviledged: false}],
+  [InternshipState.CONFIRMED]: [{state: InternshipState.IN_PROGRESS, priviledged: false}, {state: InternshipState.CANCELLED, priviledged: false}, {state: InternshipState.DENIED, priviledged: false}],
+  [InternshipState.IN_PROGRESS]: [{state: InternshipState.COMPLETED, priviledged: true}, {state: InternshipState.CANCELLED, priviledged: true}],
+  [InternshipState.COMPLETED]: [],
+  [InternshipState.DENIED]: [],
+  [InternshipState.CANCELLED]: [],
+};
+
+export function canTransition(currentState: InternshipState, proposedState: InternshipState, isPrivileged: boolean): boolean {
+  const transitions = internshipStateTransitions[currentState];
+  if (!transitions) return false;
+
+  return transitions.some(transition => 
+    transition.state === proposedState && (!transition.priviledged || isPrivileged)
+  );
 }

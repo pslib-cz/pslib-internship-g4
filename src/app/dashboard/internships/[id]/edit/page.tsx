@@ -23,7 +23,7 @@ import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Location, Company, User, Set } from "@prisma/client";
-import { internshipKinds } from "@/data/lists";
+import { internshipKinds, internshipStates } from "@/data/lists";
 
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
@@ -186,6 +186,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       reservationUserId: undefined || null,
       kind: "0",
       highlight: false,
+      state: "0"
     },
     validate: {
       companyRepName: (value) =>
@@ -203,6 +204,7 @@ const Page = ({ params }: { params: { id: string } }) => {
         value ? null : "Adresa místa praxe musí být vybrána.",
       setId: (value) => (value ? null : "Sada praxí musí být vybrána."),
       kind: (value) => (value ? null : "Způsob praxe musí být vybrán."),
+      state: (value) => (value ? null : "Stav praxe musí být vybrán."),
     },
   });
   useEffect(() => {
@@ -400,6 +402,12 @@ const Page = ({ params }: { params: { id: string } }) => {
             description={`Povaha přítomnosti studenta na praxi..`}
             data={[{ label: "--", value: "" }, ...internshipKinds]}
             {...form.getInputProps("kind")}
+          />
+          <NativeSelect
+            withAsterisk
+            label="Stav praxe"
+            data={[{ label: "--", value: "" }, ...internshipStates]}
+            {...form.getInputProps("state")}
           />
           <Text>Pokyny ke kontaktu</Text>
           <RichTextEditor

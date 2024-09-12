@@ -37,6 +37,11 @@ export async function GET(request: NextRequest) {
       status: 401,
     });
   }
+  if (!(session.user.role in [Role.ADMIN, Role.TEACHER])) {
+    return new Response("Forbidden", {
+      status: 403,
+    });
+  }
 
   let roleWhere;
   switch (role) {

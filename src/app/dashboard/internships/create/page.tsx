@@ -23,7 +23,7 @@ import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Location, Company, User, Set } from "@prisma/client";
-import { internshipKinds } from "@/data/lists";
+import { internshipKinds, internshipStates } from "@/data/lists";
 
 const Page = () => {
   const router = useRouter();
@@ -184,6 +184,7 @@ const Page = () => {
       reservationUserId: undefined,
       highlighted: false,
       kind: "0",
+      state: "0"
     },
     validate: {
       companyRepName: (value) =>
@@ -201,6 +202,7 @@ const Page = () => {
         value ? null : "Adresa místa praxe musí být vybrána.",
       setId: (value) => (value ? null : "Sada praxí musí být vybrána."),
       kind: (value) => (value ? null : "Způsob praxe musí být vybrán."),
+      state: (value) => (value ? null : "Stav praxe musí být vybrán."),
     },
   });
   const editorDescription = useEditor({
@@ -335,6 +337,12 @@ const Page = () => {
             description={`Povaha přítomnosti studenta na praxi..`}
             data={[{ label: "--", value: "" }, ...internshipKinds]}
             {...form.getInputProps("kind")}
+          />
+          <NativeSelect
+            withAsterisk
+            label="Stav praxe"
+            data={[{ label: "--", value: "" }, ...internshipStates]}
+            {...form.getInputProps("state")}
           />
           <Text>Pokyny ke kontaktu</Text>
           <RichTextEditor

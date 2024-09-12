@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { Role } from "../src/types/auth";
+import { Role } from "../../src/types/auth"; // <-- Change this to your own path
 const prisma = new PrismaClient();
 
 async function main() {

@@ -15,7 +15,7 @@ import {
 import { InternshipFullRecord } from "@/types/entities";
 import DateTime from "@/components/DateTime/DateTime";
 import Link from "next/link";
-import { getInternshipKindLabel } from "@/data/lists";
+import { getInternshipKindLabel, getInternshipStateLabel } from "@/data/lists";
 
 const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
@@ -55,6 +55,8 @@ const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
       <Text>{data.set.continuous ? "Průběžná" : "Souvislá"}</Text>
       <Text fw={700}>Způsob</Text>
       <Text>{getInternshipKindLabel(String(data.kind))}</Text>
+      <Text fw={700}>Stav</Text>
+      <Text>{getInternshipStateLabel(String(data.state))}</Text>
     </Card>
   );
 };

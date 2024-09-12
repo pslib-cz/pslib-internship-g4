@@ -51,10 +51,11 @@ export enum PublicationTarget {
 }
 
 export enum InternshipState {
-  FOUNDED = 0,
-  APPROVED = 1,
-  DELIVERED = 2,
-  DENIED = 3,
-  CANCELLED = 4,
-  COMPLETED = 5,
+  FOUNDED = 0, // čerstvě založená praxe
+  APPROVED = 1, // schválená učitelem
+  CONFIRMED = 2, // potvrzená firmou, přihláška ve firmě a ve škole
+  IN_PROGRESS = 3, // probíhající praxe
+  DENIED = 4, // firma nebo vyučující praxi zamítli
+  CANCELLED = 5, // praxe byla zrušena firmou, studentem nebo školou
+  COMPLETED = 6, // praxe byla úspěšně absolvována
 }
