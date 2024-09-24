@@ -101,20 +101,38 @@ export function isValidInternshipState(value: number): boolean {
 }
 
 export const internshipStateTransitions = {
-  [InternshipState.FOUNDED]: [{state: InternshipState.APPROVED, priviledged: false}],
-  [InternshipState.APPROVED]: [{state: InternshipState.CONFIRMED, priviledged: false}, {state: InternshipState.DENIED, priviledged: false}],
-  [InternshipState.CONFIRMED]: [{state: InternshipState.IN_PROGRESS, priviledged: false}, {state: InternshipState.CANCELLED, priviledged: false}, {state: InternshipState.DENIED, priviledged: false}],
-  [InternshipState.IN_PROGRESS]: [{state: InternshipState.COMPLETED, priviledged: true}, {state: InternshipState.CANCELLED, priviledged: true}],
+  [InternshipState.FOUNDED]: [
+    { state: InternshipState.APPROVED, priviledged: false },
+  ],
+  [InternshipState.APPROVED]: [
+    { state: InternshipState.CONFIRMED, priviledged: false },
+    { state: InternshipState.DENIED, priviledged: false },
+  ],
+  [InternshipState.CONFIRMED]: [
+    { state: InternshipState.IN_PROGRESS, priviledged: false },
+    { state: InternshipState.CANCELLED, priviledged: false },
+    { state: InternshipState.DENIED, priviledged: false },
+  ],
+  [InternshipState.IN_PROGRESS]: [
+    { state: InternshipState.COMPLETED, priviledged: true },
+    { state: InternshipState.CANCELLED, priviledged: true },
+  ],
   [InternshipState.COMPLETED]: [],
   [InternshipState.DENIED]: [],
   [InternshipState.CANCELLED]: [],
 };
 
-export function canTransition(currentState: InternshipState, proposedState: InternshipState, isPrivileged: boolean): boolean {
+export function canTransition(
+  currentState: InternshipState,
+  proposedState: InternshipState,
+  isPrivileged: boolean,
+): boolean {
   const transitions = internshipStateTransitions[currentState];
   if (!transitions) return false;
 
-  return transitions.some(transition => 
-    transition.state === proposedState && (!transition.priviledged || isPrivileged)
+  return transitions.some(
+    (transition) =>
+      transition.state === proposedState &&
+      (!transition.priviledged || isPrivileged),
   );
 }

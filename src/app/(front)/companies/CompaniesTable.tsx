@@ -17,6 +17,8 @@ import {
   Flex,
   NativeSelect,
   Anchor,
+  Tooltip,
+  Group,
 } from "@mantine/core";
 import {
   IconInfoSmall,
@@ -302,24 +304,30 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
                     <Text>{company.location.municipality}</Text>
                   </Table.Td>
                   <Table.Td>
-                    <ActionIcon
-                      variant="light"
-                      component={Link}
-                      href={"/companies/" + company.id}
-                    >
-                      <IconInfoSmall />
-                    </ActionIcon>{" "}
-                    {session?.user ? (
-                      <ActionIcon
-                        variant="light"
-                        component={Link}
-                        href={"/internships/create?company=" + company.id}
-                        color="green"
-                        aria-label="Založení praxe"
-                      >
-                        <IconClockPlus />
-                      </ActionIcon>
-                    ) : null}{" "}
+                    <Group>
+                      <Tooltip label="Podrobnosti o firmě">
+                        <ActionIcon
+                          variant="light"
+                          component={Link}
+                          href={"/companies/" + company.id}
+                        >
+                          <IconInfoSmall />
+                        </ActionIcon>
+                      </Tooltip>{" "}
+                      {session?.user ? (
+                        <Tooltip label="Založení praxe">
+                          <ActionIcon
+                            variant="light"
+                            component={Link}
+                            href={"/internships/create?company=" + company.id}
+                            color="green"
+                            aria-label="Založení praxe"
+                          >
+                            <IconClockPlus />
+                          </ActionIcon>
+                        </Tooltip>
+                      ) : null}{" "}
+                    </Group>
                   </Table.Td>
                 </Table.Tr>
               ))}
@@ -330,7 +338,7 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
         <Pagination
           total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
           value={(data?.page ?? 1) + 1}
-          onChange={(page) => /*setPage(page)*/ setPage(page - 1)}
+          onChange={(page) => /*setPage(page)*/ setPage(page)}
         />
       </Flex>
     </>

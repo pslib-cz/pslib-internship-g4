@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { FC, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
@@ -28,7 +28,12 @@ import { notifications } from "@mantine/notifications";
 import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { getInternshipKindLabel, getInternshipStateLabel, internshipKinds, internshipStates } from "@/data/lists";
+import {
+  getInternshipKindLabel,
+  getInternshipStateLabel,
+  internshipKinds,
+  internshipStates,
+} from "@/data/lists";
 
 type TInternshipsTableProps = {};
 type TInternshipsTableState = {

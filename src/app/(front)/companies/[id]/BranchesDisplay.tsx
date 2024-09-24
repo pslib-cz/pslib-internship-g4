@@ -71,16 +71,17 @@ const BranchesDisplay = ({
     return (
       <Text>
         Firma nemá žádné pobočky. Můžete nějakou{" "}
-        {session?.user ? (<Anchor
-          onClick={() => {
-            switchModeAction("CREATE");
-          }}
-        >
-          přidat
-        </Anchor>)
-        :
-        "přidat hned po přihlášení."
-  }
+        {session?.user ? (
+          <Anchor
+            onClick={() => {
+              switchModeAction("CREATE");
+            }}
+          >
+            přidat
+          </Anchor>
+        ) : (
+          "přidat hned po přihlášení."
+        )}
         .
       </Text>
     );
@@ -133,7 +134,7 @@ const BranchesDisplay = ({
           ))}
         </TableTbody>
       </Table>
-      {(session?.user !== null) && (
+      {session?.user !== null && (
         <Box mt="10">
           <Button onClick={() => switchModeAction("CREATE")}>
             Přidat pobočku

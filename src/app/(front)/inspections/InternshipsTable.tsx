@@ -17,6 +17,7 @@ import {
   Stack,
   ScrollArea,
   Box,
+  Tooltip,
 } from "@mantine/core";
 import {
   IconChevronDown,
@@ -676,39 +677,47 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                   </Table.Td>
                   <Table.Td>
                     <Group gap="sm">
-                      <ActionIcon
-                        variant="light"
-                        component={Link}
-                        href={`/inspections/${internship.id}`}
-                      >
-                        <IconInfoSmall />
-                      </ActionIcon>
-                      <ActionIcon
-                        variant="light"
-                        onClick={() => setSelected(internship)}
-                      >
-                        <IconMapPinCheck />
-                      </ActionIcon>
+                      <Tooltip label="Podrobnosti">
+                        <ActionIcon
+                          variant="light"
+                          component={Link}
+                          href={`/inspections/${internship.id}`}
+                        >
+                          <IconInfoSmall />
+                        </ActionIcon>
+                      </Tooltip>
+                      <Tooltip label="Zarezervovat ke kontrole">
+                        <ActionIcon
+                          variant="light"
+                          onClick={() => setSelected(internship)}
+                        >
+                          <IconMapPinCheck />
+                        </ActionIcon>
+                      </Tooltip>
                       {internship.highlighted ? (
-                        <ActionIcon
-                          variant="light"
-                          color="green"
-                          onClick={() => {
-                            setHighlighted(internship.id, false);
-                          }}
-                        >
-                          <IconFlag2Off />
-                        </ActionIcon>
+                        <Tooltip label="Zrušit doporučení">
+                          <ActionIcon
+                            variant="light"
+                            color="green"
+                            onClick={() => {
+                              setHighlighted(internship.id, false);
+                            }}
+                          >
+                            <IconFlag2Off />
+                          </ActionIcon>
+                        </Tooltip>
                       ) : (
-                        <ActionIcon
-                          variant="light"
-                          color="orange"
-                          onClick={() => {
-                            setHighlighted(internship.id, true);
-                          }}
-                        >
-                          <IconFlag2 />
-                        </ActionIcon>
+                        <Tooltip label="Doporučit ke kontrole">
+                          <ActionIcon
+                            variant="light"
+                            color="orange"
+                            onClick={() => {
+                              setHighlighted(internship.id, true);
+                            }}
+                          >
+                            <IconFlag2 />
+                          </ActionIcon>
+                        </Tooltip>
                       )}
                     </Group>
                   </Table.Td>

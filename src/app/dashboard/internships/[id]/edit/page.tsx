@@ -186,7 +186,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       reservationUserId: undefined || null,
       kind: "0",
       highlight: false,
-      state: "0"
+      state: "0",
     },
     validate: {
       companyRepName: (value) =>

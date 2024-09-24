@@ -12,6 +12,8 @@ import {
   Alert,
   Pagination,
   Flex,
+  Group,
+  Tooltip,
 } from "@mantine/core";
 import {
   IconInfoSmall,
@@ -430,13 +432,17 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                   <Text>{new Date(internship.created).toLocaleString()}</Text>
                 </Table.Td>
                 <Table.Td>
-                  <ActionIcon
-                    variant="light"
-                    component={Link}
-                    href={"/internships/" + internship.id}
-                  >
-                    <IconInfoSmall />
-                  </ActionIcon>
+                  <Group>
+                    <Tooltip label="Podrobnosti">
+                      <ActionIcon
+                        variant="light"
+                        component={Link}
+                        href={"/internships/" + internship.id}
+                      >
+                        <IconInfoSmall />
+                      </ActionIcon>
+                    </Tooltip>
+                  </Group>
                 </Table.Td>
               </Table.Tr>
             ))}
