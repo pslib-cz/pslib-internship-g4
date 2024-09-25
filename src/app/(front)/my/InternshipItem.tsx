@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Paper, Title, Text, Box, Button } from "@mantine/core";
+import { Paper, Title, Text, Box, Button, Tooltip } from "@mantine/core";
 import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 import styles from "./InternshipItem.module.css";
 import { DateTime } from "@/components";
@@ -65,15 +65,17 @@ const InternshipItem: FC<TInternshipItemProps> = ({
           </Button>
         ) : null}
         {internship.set.editable ? (
-          <Button
-            color="red"
-            variant="default"
-            size="xs"
-            onClick={(e) => onDeleteClick(internship)}
-            leftSection={<IconTrash />}
-          >
-            Odstranit
-          </Button>
+          <Tooltip label="Odstranit praxi" position="left">
+            <Button
+              color="red"
+              variant="default"
+              size="xs"
+              onClick={(e) => onDeleteClick(internship)}
+              leftSection={<IconTrash />}
+            >
+              Odstranit
+            </Button>
+          </Tooltip>
         ) : null}
       </Box>
     </Paper>

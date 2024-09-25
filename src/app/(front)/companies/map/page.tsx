@@ -53,7 +53,7 @@ const Page = () => {
           <IconFilter />
         </ActionIcon>
       </Flex>
-      <Box>
+      <Box p="sm">
         <Suspense fallback={<LoadingOverlay />}>
           <MapDisplay />
         </Suspense>

@@ -17,14 +17,12 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   return (
     <Flex
       gap="sm"
-      justify="center"
+      justify="left"
       align="center"
       onClick={onClick}
       style={{ cursor: onClick ? "pointer" : "default" }}
     >
-      {picture && (
-        <Avatar visibleFrom="md" src={picture} radius={40} size={40} />
-      )}
+      <Avatar visibleFrom="md" src={picture} radius={40} size={40} />
       <Box>
         <Text fz="sm" fw={500}>
           {fullname}

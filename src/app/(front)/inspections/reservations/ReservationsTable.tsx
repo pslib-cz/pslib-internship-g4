@@ -38,7 +38,7 @@ import {
 } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { getInternshipKindLabel } from "@/data/lists";
+import { getInternshipKindLabel, getInternshipStateLabel } from "@/data/lists";
 import { UserAvatar } from "@/components";
 import { useSession } from "next-auth/react";
 
@@ -283,6 +283,7 @@ const ReservationsTable: FC<TInternshipsTableProps> = () => {
               <Table.Th>
                 <Text fw={700}>Způsob</Text>
               </Table.Th>
+              <Table.Th>Stav</Table.Th>
               <Table.Th>Deník</Table.Th>
               <Table.Th>Kontroly</Table.Th>
               <Table.Th>Označeno</Table.Th>
@@ -369,6 +370,7 @@ const ReservationsTable: FC<TInternshipsTableProps> = () => {
               <Table.Th></Table.Th>
               <Table.Th></Table.Th>
               <Table.Th></Table.Th>
+              <Table.Th></Table.Th>
               <Table.Th>
                 <Button
                   size="xs"
@@ -439,6 +441,11 @@ const ReservationsTable: FC<TInternshipsTableProps> = () => {
                   <Table.Td>
                     <Text>
                       {getInternshipKindLabel(String(internship.kind))}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text>
+                      {getInternshipStateLabel(String(internship.state))}
                     </Text>
                   </Table.Td>
                   <Table.Td>

@@ -17,6 +17,7 @@ import {
   Pagination,
   ScrollArea,
   Flex,
+  Tooltip,
 } from "@mantine/core";
 import {
   IconInfoSmall,
@@ -397,30 +398,38 @@ const UsersTable: FC = (TUsersTableProps) => {
                     <Text>{user.department}</Text>
                   </Table.Td>
                   <Table.Td>
-                    <ActionIcon
-                      variant="light"
-                      component={Link}
-                      href={"/dashboard/users/" + user.id}
-                    >
-                      <IconInfoSmall />
-                    </ActionIcon>{" "}
-                    <ActionIcon
-                      variant="light"
-                      color="red"
-                      onClick={() => {
-                        setDeleteId(user.id);
-                        open();
-                      }}
-                    >
-                      <IconTrash />
-                    </ActionIcon>{" "}
-                    <ActionIcon
-                      variant="light"
-                      component={Link}
-                      href={"/dashboard/users/" + user.id + "/edit"}
-                    >
-                      <IconEdit />
-                    </ActionIcon>
+                    <Group gap="sm">
+                      <Tooltip label="Podrobné informace">
+                        <ActionIcon
+                          variant="light"
+                          component={Link}
+                          href={"/dashboard/users/" + user.id}
+                        >
+                          <IconInfoSmall />
+                        </ActionIcon>
+                      </Tooltip>{" "}
+                      <Tooltip label="Smazání">
+                        <ActionIcon
+                          variant="light"
+                          color="red"
+                          onClick={() => {
+                            setDeleteId(user.id);
+                            open();
+                          }}
+                        >
+                          <IconTrash />
+                        </ActionIcon>
+                      </Tooltip>{" "}
+                      <Tooltip label="Editace">
+                        <ActionIcon
+                          variant="light"
+                          component={Link}
+                          href={"/dashboard/users/" + user.id + "/edit"}
+                        >
+                          <IconEdit />
+                        </ActionIcon>
+                      </Tooltip>
+                    </Group>
                   </Table.Td>
                 </Table.Tr>
               ))}

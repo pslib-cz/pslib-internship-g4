@@ -268,7 +268,6 @@ const Page = ({ params }: { params: { id: string } }) => {
           <LocationDisplay data={data} />
         </Suspense>
       </SimpleGrid>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
     </>
   );
 };

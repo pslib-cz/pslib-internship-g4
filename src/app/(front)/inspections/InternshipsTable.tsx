@@ -18,6 +18,7 @@ import {
   ScrollArea,
   Box,
   Tooltip,
+  Anchor,
 } from "@mantine/core";
 import {
   IconChevronDown,
@@ -38,7 +39,7 @@ import {
 } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { getInternshipKindLabel } from "@/data/lists";
+import { getInternshipKindLabel, getInternshipStateLabel } from "@/data/lists";
 import { UserAvatar } from "@/components";
 
 type TInternshipsTableProps = {};
@@ -475,6 +476,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
               <Table.Th>
                 <Text fw={700}>Způsob</Text>
               </Table.Th>
+              <Table.Th>Stav</Table.Th>
               <Table.Th>Deník</Table.Th>
               <Table.Th>Kontroly</Table.Th>
               <Table.Th>Označeno</Table.Th>
@@ -563,6 +565,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
               <Table.Th></Table.Th>
               <Table.Th></Table.Th>
               <Table.Th></Table.Th>
+              <Table.Th></Table.Th>
               <Table.Th>
                 <Button
                   size="xs"
@@ -637,14 +640,29 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                   </Table.Td>
                   <Table.Td>
                     <Text>
-                      {internship.diaries ? internship.diaries.length : 0}
+                      {getInternshipStateLabel(String(internship.state))}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text>
+                      {internship.diaries ? (
+                        <Anchor href={`/inspections/${internship.id}/diary`}>
+                          {internship.diaries.length}
+                        </Anchor>
+                      ) : (
+                        0
+                      )}
                     </Text>
                   </Table.Td>
                   <Table.Td>
                     <Text ta="center">
-                      {internship.inspections
-                        ? internship.inspections.length
-                        : 0}
+                      {internship.inspections ? (
+                        <Anchor href={`/inspections/${internship.id}/list`}>
+                          {internship.inspections.length}
+                        </Anchor>
+                      ) : (
+                        0
+                      )}
                     </Text>
                   </Table.Td>
                   <Table.Td>
@@ -662,7 +680,8 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                         }
                         email={internship.reservationUser.email}
                         picture={
-                          internship.reservationUser.image
+                          internship.reservationUser.image !== null &&
+                          internship.reservationUser.image !== undefined
                             ? "data:image/jpeg;base64, " +
                               internship.reservationUser.image
                             : null
