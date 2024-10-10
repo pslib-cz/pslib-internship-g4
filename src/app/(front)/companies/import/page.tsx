@@ -114,8 +114,8 @@ const CompanyDisplay = ({ id }: { id: string }) => {
   }, [id]);
   const form = useForm({
     initialValues: {
-      description: "Popis" || undefined,
-      website: "" || undefined,
+      description: "",
+      website: "",
     },
     validate: {},
   });

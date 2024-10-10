@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
   Box,
   Text,
@@ -20,6 +20,7 @@ import Address from "@/components/Address/Address";
 import { useMediaQuery } from "@mantine/hooks";
 import BranchesSwitch from "./BranchesSwitch";
 import Coordinates from "@/components/Coordinates/Coordinates";
+const CompaniesTags = React.lazy(() => import("@/components/CompaniesTags/CompaniesTags"));
 
 const DataDisplay = ({ id }: { id: number }) => {
   const [company, setCompany] = useState<CompanyWithLocation | null>(null);
@@ -128,15 +129,6 @@ const DataDisplay = ({ id }: { id: number }) => {
   );
 };
 
-const TagsDisplay = ({ id }: { id: number }) => {
-  const [tags, setTags] = useState<CompanyBranchWithLocation[] | null>(null);
-  const [error, setError] = useState<Error | null>(null);
-  if (tags?.length === 0) {
-    return <Text>Firma nemá přiřazené žádné značky.</Text>;
-  }
-  return <Text>...</Text>;
-};
-
 const Page = ({ params }: { params: { id: number } }) => {
   const id = params.id;
   const mobile = useMediaQuery("(max-width: 640px)");
@@ -163,9 +155,9 @@ const Page = ({ params }: { params: { id: number } }) => {
           </Grid.Col>
           <Grid.Col span={mobile ? 12 : 6}>
             <Card shadow="xs" p="xl" h="100%">
-              <Title order={2}>Přiřazené značky</Title>
+              <Title order={2} mb="sm">Přiřazené značky</Title>
               <Suspense fallback={<Loader />}>
-                <TagsDisplay id={Number(id)} />
+                <CompaniesTags companyId={Number(id)} editable={false} />
               </Suspense>
             </Card>
           </Grid.Col>
