@@ -47,6 +47,9 @@ export async function GET(
         },
       },
     },
+    orderBy: {
+      text: "asc",
+    },
   });
 
   return Response.json(tags);
@@ -82,7 +85,7 @@ export async function POST(
   let data = await request.json();
   let tag: Tag | null = await prisma.tag.findFirst({
     where: {
-      id: data.id,
+      id: data.tagId,
     },
   });
   if (!tag) {
@@ -93,7 +96,7 @@ export async function POST(
   let companyTag = await prisma.companyTag.create({
     data: {
       companyId: id,
-      tagId: data.id,
+      tagId: data.tagId,
       created: new Date(),
       creatorId: session.user.id,
     },

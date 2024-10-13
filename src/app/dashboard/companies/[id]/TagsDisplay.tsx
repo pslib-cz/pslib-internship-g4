@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import CompaniesTags from "@/components/CompaniesTags/CompaniesTags";
 
 const TagDisplay = ({ id }: { id: number }) => {

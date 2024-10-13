@@ -82,7 +82,7 @@ export async function DELETE(
       status: 404,
     });
   }
-  return new Response("Deleted", {
+  return new Response(JSON.stringify({ tagId: id }), {
     status: 200,
   });
 }

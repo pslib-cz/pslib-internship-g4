@@ -36,10 +36,10 @@ const Page = ({ params }: { params: { id: string } }) => {
   const form = useForm({
     initialValues: {
       name: "",
-      companyIdentificationNumber: "" || undefined,
+      companyIdentificationNumber: "",
       active: false,
       description: "",
-      website: "" || undefined,
+      website: "",
       locationId: undefined,
     },
     validate: {

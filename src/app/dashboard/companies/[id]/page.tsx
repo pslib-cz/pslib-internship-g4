@@ -19,7 +19,9 @@ import Coordinates from "@/components/Coordinates/Coordinates";
 import { useMediaQuery } from "@mantine/hooks";
 import DateTime from "@/components/DateTime/DateTime";
 import BranchesSwitch from "./BranchesSwitch";
-const CompaniesTags = React.lazy(() => import("@/components/CompaniesTags/CompaniesTags"));
+const CompaniesTags = React.lazy(
+  () => import("@/components/CompaniesTags/CompaniesTags"),
+);
 
 const DataDisplay = ({ id }: { id: number }) => {
   const [company, setCompany] = useState<CompanyWithLocationAndCreator | null>(
@@ -130,7 +132,9 @@ const Page = ({ params }: { params: { id: number } }) => {
         </Grid.Col>
         <Grid.Col span={mobile ? 12 : 6}>
           <Card shadow="sm" padding="lg" h="100%">
-            <Title order={2} mb="sm">Značky</Title>
+            <Title order={2} mb="sm">
+              Značky
+            </Title>
             <Suspense fallback={<Loader />}>
               <CompaniesTags companyId={id} editable={true} />
             </Suspense>

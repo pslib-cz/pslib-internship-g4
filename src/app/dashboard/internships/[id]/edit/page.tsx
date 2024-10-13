@@ -183,7 +183,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       companyId: undefined,
       locationId: undefined,
       setId: undefined,
-      reservationUserId: undefined || null,
+      reservationUserId: null,
       kind: "0",
       highlight: false,
       state: "0",

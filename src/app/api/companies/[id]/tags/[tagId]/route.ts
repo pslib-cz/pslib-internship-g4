@@ -55,7 +55,7 @@ export async function DELETE(
   await prisma.companyTag.delete({
     where: { companyId_tagId: { companyId: id, tagId: tag } },
   });
-  return new Response("Deleted", {
+  return new Response(JSON.stringify({ companyId: id, tagId: tag }), {
     status: 200,
   });
 }

@@ -27,12 +27,12 @@ const Page = () => {
     initialValues: {
       name: "",
       companyIdentificationNumber: 0 || undefined,
-      description: "Popis" || undefined,
-      website: "" || undefined,
-      street: "" || undefined,
+      description: "",
+      website: "",
+      street: "",
       descNum: 0 || undefined,
-      orientNum: "" || undefined,
-      municipality: "Liberec" || undefined,
+      orientNum: "",
+      municipality: "Liberec",
       country: "Česká republika",
       postalCode: 0 || undefined,
     },
@@ -74,7 +74,6 @@ const Page = () => {
         <Title order={2}>Vytvoření nové firmy</Title>
         <form
           onSubmit={form.onSubmit(async (values) => {
-            if (values.website === "") values.website = undefined;
             let placeLatitude = null;
             let placeLongitude = null;
             // Geocoding
