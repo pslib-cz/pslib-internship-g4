@@ -49,7 +49,6 @@ const RootLayout = ({
         <meta name="msapplication-TileColor" content="#ff1493" />
         <meta name="theme-color" content="#ffffff"></meta>
         <ColorSchemeScript />
-        <ClarityAnalytics />
       </head>
       <body>
         <SessionProvider>

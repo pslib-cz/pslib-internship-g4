@@ -109,7 +109,9 @@ const Page = ({ params }: { params: { id: string } }) => {
               })
                 .then((response) => {
                   if (!response.ok) {
-                    throw new Error("Network response was not ok");
+                    throw new Error(
+                      "Došlo k chybě při ukládání dat: " + response.statusText,
+                    );
                   }
                   notifications.show({
                     title: "Povedlo se!",

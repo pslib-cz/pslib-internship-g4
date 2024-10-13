@@ -79,6 +79,7 @@ export async function PUT(
     });
   }
   const body = await request.json();
+  body.type = Number(body.type);
   let tag = await prisma.tag.update({
     where: {
       id: Number(id),

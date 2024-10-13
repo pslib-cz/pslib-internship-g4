@@ -705,14 +705,16 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                           <IconInfoSmall />
                         </ActionIcon>
                       </Tooltip>
-                      <Tooltip label="Zarezervovat ke kontrole">
-                        <ActionIcon
-                          variant="light"
-                          onClick={() => setSelected(internship)}
-                        >
-                          <IconMapPinCheck />
-                        </ActionIcon>
-                      </Tooltip>
+                      {internship.reservationUser ? (
+                        <Tooltip label="Zarezervovat ke kontrole">
+                          <ActionIcon
+                            variant="light"
+                            onClick={() => setSelected(internship)}
+                          >
+                            <IconMapPinCheck />
+                          </ActionIcon>
+                        </Tooltip>
+                      ) : null}
                       {internship.highlighted ? (
                         <Tooltip label="Zrušit doporučení">
                           <ActionIcon

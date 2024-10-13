@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import React, { useState, useEffect, Suspense } from "react";
+import { useSession } from "next-auth/react";
 import {
   Box,
   Text,
@@ -134,6 +135,7 @@ const DataDisplay = ({ id }: { id: number }) => {
 const Page = ({ params }: { params: { id: number } }) => {
   const id = params.id;
   const mobile = useMediaQuery("(max-width: 640px)");
+  const { data: session } = useSession();
   return (
     <>
       <Breadcrumbs separatorMargin="md" my="xs">
@@ -161,7 +163,10 @@ const Page = ({ params }: { params: { id: number } }) => {
                 Přiřazené značky
               </Title>
               <Suspense fallback={<Loader />}>
-                <CompaniesTags companyId={Number(id)} editable={false} />
+                <CompaniesTags
+                  companyId={Number(id)}
+                  editable={session?.user !== null}
+                />
               </Suspense>
             </Card>
           </Grid.Col>
