@@ -141,6 +141,65 @@ export type LocationForComaniesAndBranches = Prisma.LocationGetPayload<{
   };
 }>;
 
+export type LocationWithInternships = Prisma.LocationGetPayload<{
+  select: {
+    id: true;
+    municipality: true;
+    latitude: true;
+    longitude: true;
+    internships: {
+      select: {
+        id: true;
+        classname: true;
+        created: true;
+        kind: true;
+        highlighted: true;
+        state: true;
+        user: {
+          select: {
+            id: true;
+            givenName: true;
+            surname: true;
+            email: true;
+            image: true;
+          };
+        };
+        company: {
+          select: {
+            id: true;
+            name: true;
+            companyIdentificationNumber: true;
+            locationId: true;
+          };
+        };
+        set: {
+          select: {
+            id: true;
+            name: true;
+            year: true;
+            editable: true;
+            active: true;
+            daysTotal: true;
+            hoursDaily: true;
+            start: true;
+            end: true;
+            continuous: true;
+          };
+        };
+        reservationUser: {
+          select: {
+            id: true;
+            givenName: true;
+            surname: true;
+            email: true;
+            image: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
 export type TextWithAuthor = Prisma.TextGetPayload<{
   select: {
     id: true;

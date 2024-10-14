@@ -160,12 +160,12 @@ const Page = ({ params }: { params: { id: number } }) => {
           <Grid.Col span={mobile ? 12 : 6}>
             <Card shadow="xs" p="xl" h="100%">
               <Title order={2} mb="sm">
-                Přiřazené značky
+                Značky
               </Title>
               <Suspense fallback={<Loader />}>
                 <CompaniesTags
                   companyId={Number(id)}
-                  editable={session?.user !== null}
+                  editable={session !== null}
                 />
               </Suspense>
             </Card>

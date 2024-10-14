@@ -705,7 +705,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                           <IconInfoSmall />
                         </ActionIcon>
                       </Tooltip>
-                      {internship.reservationUser ? (
+                      {!internship.reservationUser ? (
                         <Tooltip label="Zarezervovat ke kontrole">
                           <ActionIcon
                             variant="light"

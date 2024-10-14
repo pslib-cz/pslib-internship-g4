@@ -1,8 +1,7 @@
 "use client";
 
-import { useContext, useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { LoadingOverlay } from "@mantine/core";
-import { FilterContext } from "@/providers/CompanyFilterProvider";
 import {
   MapContainer,
   TileLayer,
@@ -13,7 +12,7 @@ import {
 } from "react-leaflet";
 import { Icon } from "leaflet";
 import { useSearchParams } from "next/navigation";
-import { LocationForComaniesAndBranches } from "@/types/entities";
+import { LocationWithInternships } from "@/types/entities";
 import Link from "next/link";
 import styles from "./MapDisplay.module.css";
 import "leaflet/dist/leaflet.css";
@@ -75,29 +74,17 @@ const MapDisplay = () => {
     iconAnchor: [0, 16],
     popupAnchor: [16, -16],
   });
-  const [state, dispatch] = useContext(FilterContext);
-
-  const [points, setPoints] = useState<LocationForComaniesAndBranches[]>([]);
+  const [points, setPoints] = useState<LocationWithInternships[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [set, setSet] = useState<number | undefined>(undefined);
+  const [active, setActive] = useState<boolean | undefined>(undefined);
 
   const fetchData = useCallback(
-    (
-      name: string | undefined,
-      tax: number | undefined,
-      active: boolean | undefined,
-      municipality: string | undefined,
-    ) => {
+    (set: number | undefined, active: boolean | undefined) => {
       setLoading(true);
       fetch(
-        "/api/maps/companies?name=" +
-          name +
-          "&municipality=" +
-          municipality +
-          "&taxNum=" +
-          (tax ? tax : "") +
-          "&active=" +
-          (active ? active : ""),
+        "/api/maps/companies?set=" + set + "&active=" + (active ? active : ""),
         {
           method: "GET",
           headers: {
@@ -121,13 +108,8 @@ const MapDisplay = () => {
   );
 
   useEffect(() => {
-    fetchData(
-      state.filterName,
-      state.filterTaxNum,
-      state.filterActive,
-      state.filterMunicipality,
-    );
-  }, [state, fetchData]);
+    fetchData(set, active);
+  }, [set, active, fetchData]);
 
   return (
     <>
@@ -146,31 +128,13 @@ const MapDisplay = () => {
             icon={ico}
           >
             <Popup>
-              {point.companies.length > 0 ? (
+              {point.internships.length > 0 ? (
                 <>
-                  <h3>Sídla firem</h3>
+                  <h3>Praxe</h3>
                   <ul>
-                    {point.companies.map((company, index) => (
-                      <li key={company.id}>
-                        <Link href={`/companies/${company.id}`}>
-                          {company.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : null}
-              {point.companyBranches.length > 0 ? (
-                <>
-                  <h3>Pobočky</h3>
-                  <ul>
-                    {point.companyBranches.map((branch, index) => (
-                      <li key={index}>
-                        <Link href={`/companies/${branch.companyId}`}>
-                          {branch.name
-                            ? branch.name + " (" + branch.company.name + ")"
-                            : branch.company.name}
-                        </Link>
+                    {point.internships.map((intern, index) => (
+                      <li key={intern.id}>
+                        {intern.user.givenName + " " + intern.user.surname}
                       </li>
                     ))}
                   </ul>

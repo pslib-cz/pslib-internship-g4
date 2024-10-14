@@ -147,6 +147,11 @@ export async function GET(request: NextRequest) {
           },
         ],
       },
+      orderBy: orderBy
+        ? {
+            [orderBy]: "asc",
+          }
+        : undefined,
       skip: page !== null && size !== null ? page * size : undefined,
       take: size !== null ? size : undefined,
     });
