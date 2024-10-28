@@ -9,13 +9,13 @@ export async function GET(request: NextRequest) {
   const session = await auth();
   const searchParams = request.nextUrl.searchParams;
   const active: boolean | null =
-    searchParams.get("active") !== null
-      ? searchParams.get("active") === "true"
-      : null;
+    searchParams.get("active") === ""
+      ? null
+      : searchParams.get("active") !== "false";
   const set: number | null =
-    searchParams.get("set") !== null
-      ? parseInt(searchParams.get("set") ?? "")
-      : null;
+    searchParams.get("set") === ""
+      ? null
+      : parseInt(searchParams.get("set") ?? "");
   const orderBy = searchParams.get("orderBy");
   const page: number | null =
     searchParams.get("page") !== null

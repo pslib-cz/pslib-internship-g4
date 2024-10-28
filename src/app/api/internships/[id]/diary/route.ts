@@ -12,8 +12,8 @@ export async function GET(
   const id = params.id;
   const session = await auth();
   const searchParams = request.nextUrl.searchParams;
-  const date = searchParams.get("date");
-  const orderBy = searchParams.get("orderBy");
+  const date = searchParams.get("date") ?? "";
+  const orderBy = searchParams.get("orderBy") ?? "";
   const page: number | null =
     searchParams.get("page") !== null
       ? parseInt(searchParams.get("page") ?? "")

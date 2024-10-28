@@ -16,6 +16,7 @@ import {
   Table,
   Group,
   Button,
+  Tooltip,
 } from "@mantine/core";
 import Link from "next/link";
 import Address from "@/components/Address/Address";
@@ -271,7 +272,7 @@ const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
     <>
       <Title order={2}>Kontroly</Title>
       <Text fw={700}>Rezervace</Text>
-      <Text>{data.reservationUserId}</Text>
+      <Text>{data.reservationUserId ?? "nikdo"}</Text>
       <Text fw={700}>Žádoucí</Text>
       <Text>{data.highlighted ? "ano" : "ne"}</Text>
       <Text fw={700}>Počet</Text>
@@ -294,14 +295,16 @@ const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
           ))}
         </Table.Tbody>
       </Table>
-      <Group>
-        <Button
-          variant="default"
-          component={Link}
-          href={`/inspections/${data.id}/list`}
-        >
-          Zobrazit seznam
-        </Button>
+      <Group justify="center" mt="sm">
+        <Tooltip label="Zobrazení všech záznamů o kontrolách">
+          <Button
+            variant="default"
+            component={Link}
+            href={`/inspections/${data.id}/list`}
+          >
+            Zobrazit seznam
+          </Button>
+        </Tooltip>
       </Group>
     </>
   );
@@ -313,7 +316,7 @@ const DiaryDisplay = ({ data }: { data: InternshipFullRecord }) => {
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     setLoading(true);
-    fetch("/api/diaries?internship=" + data.id + "&orderBy=date", {
+    fetch("/api/internships/" + data.id + "/diary?orderBy=date", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -351,17 +354,21 @@ const DiaryDisplay = ({ data }: { data: InternshipFullRecord }) => {
     <>
       <Title order={2}>Deník</Title>
       <Text fw={700}>Veřejný deník pro kontrolu</Text>
-      <Anchor href={"/diary/" + data.id}>{"/diary/" + data.id}</Anchor>
+      <Tooltip label="Odkaz na veřejný deník - lze zaslat firmě ke kontrole">
+        <Anchor href={"/diary/" + data.id}>{"/diary/" + data.id}</Anchor>
+      </Tooltip>
       <Text fw={700}>Počet záznamů</Text>
       <Text>{0}</Text>
-      <Group mt="sm">
-        <Button
-          variant="default"
-          component={Link}
-          href={`/inspections/${data.id}/diary`}
-        >
-          Zobrazit seznam
-        </Button>
+      <Group mt="sm" justify="center">
+        <Tooltip label="Zobrazení všech záznamů">
+          <Button
+            variant="default"
+            component={Link}
+            href={`/inspections/${data.id}/diary`}
+          >
+            Zobrazit seznam
+          </Button>
+        </Tooltip>
       </Group>
     </>
   );

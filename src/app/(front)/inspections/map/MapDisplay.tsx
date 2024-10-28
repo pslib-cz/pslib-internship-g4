@@ -84,7 +84,10 @@ const MapDisplay = () => {
     (set: number | undefined, active: boolean | undefined) => {
       setLoading(true);
       fetch(
-        "/api/maps/companies?set=" + set + "&active=" + (active ? active : ""),
+        "/api/maps/internships?set=" +
+          (set ?? "") +
+          "&active=" +
+          (active ?? ""),
         {
           method: "GET",
           headers: {
