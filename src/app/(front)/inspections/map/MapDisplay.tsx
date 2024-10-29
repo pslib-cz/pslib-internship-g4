@@ -1,7 +1,21 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { LoadingOverlay } from "@mantine/core";
+import {
+  LoadingOverlay,
+  Drawer,
+  Flex,
+  Stack,
+  Text,
+  Anchor,
+  ScrollArea,
+  Group,
+  Button,
+  Card,
+  ActionIcon,
+} from "@mantine/core";
+import { IconInfoCircle } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 import {
   MapContainer,
   TileLayer,
@@ -79,6 +93,10 @@ const MapDisplay = () => {
   const [error, setError] = useState(null);
   const [set, setSet] = useState<number | undefined>(undefined);
   const [active, setActive] = useState<boolean | undefined>(undefined);
+  const [selected, setSelected] = useState<LocationWithInternships | null>(
+    null,
+  );
+  const router = useRouter();
 
   const fetchData = useCallback(
     (set: number | undefined, active: boolean | undefined) => {
@@ -129,24 +147,62 @@ const MapDisplay = () => {
             key={point.id}
             position={[Number(point.latitude), Number(point.longitude)]}
             icon={ico}
-          >
-            <Popup>
-              {point.internships.length > 0 ? (
-                <>
-                  <h3>Praxe</h3>
-                  <ul>
-                    {point.internships.map((intern, index) => (
-                      <li key={intern.id}>
-                        {intern.user.givenName + " " + intern.user.surname}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : null}
-            </Popup>
-          </Marker>
+            eventHandlers={{
+              click: () => {
+                setSelected(point);
+              },
+            }}
+          ></Marker>
         ))}
       </MapContainer>
+      <Drawer
+        opened={selected != null}
+        onClose={() => setSelected(null)}
+        title="Rezervace ke kontrole"
+        position="right"
+        zIndex={1000}
+        padding="md"
+      >
+        <Stack>
+          <Text>Na stejném místě se nacházejí tyto praxe:</Text>
+          <ScrollArea>
+            {selected && selected.internships.length > 0 ? (
+              selected.internships.map((intern, index) => (
+                <Card key={intern.id} shadow="xs" padding="sm" mb="sm">
+                  <Group justify="space-between">
+                    <Text fw={500}>
+                      {intern.user.givenName + " " + intern.user.surname} (
+                      {intern.classname ?? "?"})
+                    </Text>
+                    <ActionIcon
+                      variant="light"
+                      aria-label="Detail"
+                      onClick={(e) => {
+                        router.push("/inspections/" + intern.id, {
+                          scroll: false,
+                        });
+                      }}
+                    >
+                      <IconInfoCircle
+                        style={{ width: "70%", height: "70%" }}
+                        stroke={1.5}
+                      />
+                    </ActionIcon>
+                  </Group>
+                  <Text size="sm" c="dimmed">
+                    {intern.company.name}
+                  </Text>
+                </Card>
+              ))
+            ) : (
+              <Text>Žádné praxe</Text>
+            )}
+          </ScrollArea>
+          <Group justify="center" mt="sm">
+            <Button>Test</Button>
+          </Group>
+        </Stack>
+      </Drawer>
     </>
   );
 };

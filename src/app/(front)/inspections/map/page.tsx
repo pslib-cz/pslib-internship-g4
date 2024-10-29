@@ -1,7 +1,7 @@
 "use client";
 
-import { useContext, Suspense, useMemo } from "react";
-import { Anchor, LoadingOverlay, Box, ActionIcon, Flex } from "@mantine/core";
+import { Suspense, useMemo } from "react";
+import { Anchor, LoadingOverlay, Box } from "@mantine/core";
 import dynamic from "next/dynamic";
 
 const Page = () => {

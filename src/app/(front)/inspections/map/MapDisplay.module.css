@@ -1,5 +1,8 @@
 .map {
-  height: calc(100vh - 260px);
+  height: calc(100vh - 240px);
+  @media (max-width: $mantine-breakpoint-xs) {
+    height: calc(100vh - 300px);
+  }
 }
 .map p {
   font-weight: bold;

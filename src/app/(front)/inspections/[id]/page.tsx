@@ -358,7 +358,7 @@ const DiaryDisplay = ({ data }: { data: InternshipFullRecord }) => {
         <Anchor href={"/diary/" + data.id}>{"/diary/" + data.id}</Anchor>
       </Tooltip>
       <Text fw={700}>Počet záznamů</Text>
-      <Text>{0}</Text>
+      <Text>{diary ? diary.length : 0}</Text>
       <Group mt="sm" justify="center">
         <Tooltip label="Zobrazení všech záznamů">
           <Button
