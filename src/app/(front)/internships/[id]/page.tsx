@@ -17,6 +17,7 @@ import DateTime from "@/components/DateTime/DateTime";
 import Link from "next/link";
 import { getInternshipKindLabel } from "@/data/lists";
 import Address from "@/components/Address/Address";
+import SwitchInternshipState from "@/components/SwitchInternshipState/SwitchInternshipState";
 
 const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
@@ -202,11 +203,26 @@ const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
   );
 };
 
+const StateDisplay = ({
+  data,
+  reloadData,
+}: {
+  data: InternshipFullRecord;
+  reloadData: () => void;
+}) => {
+  return (
+    <Card shadow="sm" padding="lg">
+      <Title order={3}>Stav</Title>
+      <SwitchInternshipState internship={data} afterStateChange={reloadData} />
+    </Card>
+  );
+};
+
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const [data, setData] = useState<InternshipFullRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
+  const fetchData = (id: string) => {
     fetch(`/api/internships/${id}`, {
       method: "GET",
       headers: {
@@ -228,6 +244,9 @@ const Page = ({ params }: { params: { id: string } }) => {
         setError(error.message);
       })
       .finally(() => {});
+  };
+  useEffect(() => {
+    fetchData(id);
   }, [id]);
 
   if (error) {
@@ -266,6 +285,14 @@ const Page = ({ params }: { params: { id: string } }) => {
         </Suspense>
         <Suspense fallback={<LoadingOverlay />}>
           <LocationDisplay data={data} />
+        </Suspense>
+        <Suspense fallback={<LoadingOverlay />}>
+          <StateDisplay
+            data={data}
+            reloadData={() => {
+              fetchData(id);
+            }}
+          />
         </Suspense>
       </SimpleGrid>
     </>

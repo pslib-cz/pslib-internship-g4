@@ -103,6 +103,23 @@ export async function GET(request: NextRequest) {
               image: true,
             },
           },
+          inspections: {
+            select: {
+              id: true,
+              date: true,
+              note: true,
+              result: true,
+              kind: true,
+              inspectionUser: {
+                select: {
+                  id: true,
+                  givenName: true,
+                  surname: true,
+                  email: true,
+                },
+              },
+            },
+          },
         },
       },
     },

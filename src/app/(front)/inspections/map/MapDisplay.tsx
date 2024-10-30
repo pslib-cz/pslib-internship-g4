@@ -14,12 +14,12 @@ import {
   Card,
   ActionIcon,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import {
   MapContainer,
   TileLayer,
-  useMap,
   Marker,
   Popup,
   useMapEvents,
@@ -132,6 +132,42 @@ const MapDisplay = () => {
     fetchData(set, active);
   }, [set, active, fetchData]);
 
+  const makeReservationsForUnreservedInLocation = useCallback(
+    (locationId: number) => {
+      setError(null);
+      fetch(
+        `/api/inspections/locations/${locationId}/reservations?active=true`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Došlo k chybě při zpracovávání dat.");
+          }
+          notifications.show({
+            title: "Rezervace",
+            message: "Praxe byly zarezervovány.",
+            color: "green",
+          });
+          fetchData(set, active);
+        })
+        .catch((error) => {
+          setError(error.message);
+          notifications.show({
+            title: "Chyba",
+            message: "Při rezervaci praxí došlo k nějaké chybě.",
+            color: "red",
+          });
+        })
+        .finally(() => {});
+    },
+    [fetchData, set, active],
+  );
+
   return (
     <>
       <LoadingOverlay visible={loading} />
@@ -164,7 +200,7 @@ const MapDisplay = () => {
         padding="md"
       >
         <Stack>
-          <Text>Na stejném místě se nacházejí tyto praxe:</Text>
+          <Text>Na tomto místě se nacházejí praxe:</Text>
           <ScrollArea>
             {selected && selected.internships.length > 0 ? (
               selected.internships.map((intern, index) => (
@@ -192,6 +228,19 @@ const MapDisplay = () => {
                   <Text size="sm" c="dimmed">
                     {intern.company.name}
                   </Text>
+                  {intern.reservationUser && (
+                    <Text
+                      size="sm"
+                      c={intern.inspections.length === 0 ? "red" : "green"}
+                    >
+                      {intern.inspections.length === 0
+                        ? "Rezervováno: "
+                        : "Zkontrolováno: "}
+                      {intern.reservationUser?.givenName +
+                        " " +
+                        intern.reservationUser?.surname}
+                    </Text>
+                  )}
                 </Card>
               ))
             ) : (
@@ -199,7 +248,17 @@ const MapDisplay = () => {
             )}
           </ScrollArea>
           <Group justify="center" mt="sm">
-            <Button>Test</Button>
+            <Button
+              onClick={(e) => {
+                if (selected) {
+                  makeReservationsForUnreservedInLocation(selected.id);
+                  setSelected(null);
+                  fetchData(set, active);
+                }
+              }}
+            >
+              Zarezervovat
+            </Button>
           </Group>
         </Stack>
       </Drawer>
