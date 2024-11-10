@@ -4,6 +4,7 @@ import {
   FilterContext,
 } from "@/providers/CompanyFilterProvider";
 import React, { FC, useEffect, useState, useCallback, useContext } from "react";
+import { AccountDrawerContext } from "@/providers/AccountDrawerProvider";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -40,6 +41,7 @@ const STORAGE_ID = "user-companies-table";
 
 export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
   const searchParams = useSearchParams();
+  const { pageSize: generalPageSize } = useContext(AccountDrawerContext);
   const [state, dispatch] = useContext(FilterContext);
   const { data: session } = useSession();
   const [order, setOrder] = useState(searchParams.get("orderBy") ?? "name");
@@ -49,7 +51,7 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
   const [size, setSize] = useState<number>(
     searchParams.get("size")
       ? parseInt(searchParams.get("size") as string)
-      : 10,
+      : generalPageSize,
   );
   const [data, setData] = useState<ListResult<CompanyWithLocation> | null>(
     null,
@@ -102,11 +104,15 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
       : 1;
     const paginationSize = searchParams.get("size")
       ? parseInt(searchParams.get("size") as string)
-      : 10;
+      : generalPageSize;
     setOrder(orderBy);
     setPage(paginationPage);
     setSize(paginationSize);
-  }, [searchParams]);
+  }, [searchParams, generalPageSize]);
+
+  useEffect(() => {
+    setSize(generalPageSize);
+  }, [generalPageSize]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());

@@ -24,6 +24,7 @@ import { DateTime, Coordinates } from "@/components";
 import { useMediaQuery } from "@mantine/hooks";
 import { inspectionResults } from "@/data/lists";
 import { Diary } from "@prisma/client";
+import SwitchInternshipState from "@/components/SwitchInternshipState/SwitchInternshipState";
 
 const StudentDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
@@ -374,6 +375,21 @@ const DiaryDisplay = ({ data }: { data: InternshipFullRecord }) => {
   );
 };
 
+const StateDisplay = ({
+  data,
+  reloadData,
+}: {
+  data: InternshipFullRecord;
+  reloadData: () => void;
+}) => {
+  return (
+    <Card shadow="sm" padding="lg">
+      <Title order={3}>Stav</Title>
+      <SwitchInternshipState internship={data} afterStateChange={reloadData} />
+    </Card>
+  );
+};
+
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const [data, setData] = useState<InternshipFullRecord | null>(null);
@@ -442,6 +458,14 @@ const Page = ({ params }: { params: { id: string } }) => {
       </Card>
       <Card shadow="sm" padding="lg">
         <DiaryDisplay data={data} />
+      </Card>
+      <Card shadow="sm" padding="lg">
+        <StateDisplay
+          data={data}
+          reloadData={() => {
+            loaddata();
+          }}
+        />
       </Card>
     </SimpleGrid>
   );

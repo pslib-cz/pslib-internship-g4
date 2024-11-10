@@ -1,6 +1,14 @@
 "use client";
 
-import React, { FC, useEffect, useState, useCallback } from "react";
+import React, {
+  FC,
+  useEffect,
+  useState,
+  useCallback,
+  useContext,
+  use,
+} from "react";
+import { AccountDrawerContext } from "@/providers/AccountDrawerProvider";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -62,6 +70,7 @@ type TInternshipsTableState = {
 const STORAGE_ID = "inspect-internships-table";
 
 const InternshipsTable: FC = (TInternshipsTableProps) => {
+  const { pageSize: generalPageSize } = useContext(AccountDrawerContext);
   const [selected, setSelected] =
     React.useState<InternshipInspectionList | null>(null);
   const [onLocation, setOnLocation] = React.useState<
@@ -102,7 +111,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       : 1,
     size: searchParams.get("size")
       ? parseInt(searchParams.get("size") as string)
-      : 10,
+      : generalPageSize,
   });
   const isMobile = useMediaQuery("(max-width: 50em)");
   const isTablet = useMediaQuery("(max-width: 992px)");
@@ -350,7 +359,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       : 1;
     const paginationSize = searchParams.get("size")
       ? parseInt(searchParams.get("size") as string)
-      : 10;
+      : generalPageSize;
     let URLState: TInternshipsTableState = {
       filterUser: searchedUser,
       filterUserGivenName: searchedGivenName,
@@ -372,7 +381,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       size: paginationSize,
     };
     setState({ ...URLState });
-  }, [searchParams, loadTableState]);
+  }, [searchParams, loadTableState, generalPageSize]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());

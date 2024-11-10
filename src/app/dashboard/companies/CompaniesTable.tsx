@@ -1,6 +1,7 @@
 "use client";
 
-import React, { FC, useEffect, useState, useCallback } from "react";
+import React, { FC, useEffect, useState, useCallback, useContext } from "react";
+import { AccountDrawerContext } from "@/providers/AccountDrawerProvider";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -47,6 +48,7 @@ const STORAGE_ID = "companies-table";
 
 const CompaniesTable: FC = (TCompaniesTableProps) => {
   const searchParams = useSearchParams();
+  const { pageSize: generalPageSize } = useContext(AccountDrawerContext);
   const [loadTableState, storeTableState, removeTableState] =
     useSessionStorage<TCompaniesTableState>(STORAGE_ID);
   const [data, setData] = useState<ListResult<CompanyWithLocation> | null>(
@@ -70,7 +72,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
       : 1,
     size: searchParams.get("size")
       ? parseInt(searchParams.get("size") as string)
-      : 10,
+      : generalPageSize,
   });
   const [deleteOpened, { open, close }] = useDisclosure(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -133,7 +135,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
       : 1;
     const paginationSize = searchParams.get("size")
       ? parseInt(searchParams.get("size") as string)
-      : 10;
+      : generalPageSize;
     let URLState: TCompaniesTableState = {
       filterName: searchedName,
       filterTax: searchedTax,
@@ -145,7 +147,7 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
       size: paginationSize,
     };
     setState({ ...URLState });
-  }, [searchParams /*loadTableState*/]);
+  }, [searchParams /*loadTableState*/, generalPageSize]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());

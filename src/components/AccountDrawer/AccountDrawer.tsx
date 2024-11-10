@@ -8,6 +8,7 @@ import {
   Group,
   ScrollArea,
   LoadingOverlay,
+  NativeSelect,
   Title,
 } from "@mantine/core";
 import React, { useContext, useEffect, useState } from "react";
@@ -16,7 +17,8 @@ import { useForm } from "@mantine/form";
 import "dayjs/locale/cs";
 
 export const AccountDrawer = () => {
-  const { opened, close, open } = useContext(AccountDrawerContext);
+  const { opened, close, open, pageSize, setPageSize, pageSizeOptions } =
+    useContext(AccountDrawerContext);
   const [loading, setLoading] = useState(true);
   const form = useForm({
     initialValues: {
@@ -197,6 +199,15 @@ export const AccountDrawer = () => {
             </Button>
           </Group>
         </form>
+        <Title order={2} mt="sm">
+          Nastavení
+        </Title>
+        <NativeSelect
+          label="Počet položek na stránku"
+          data={pageSizeOptions.map((value) => value.toString())}
+          value={pageSize.toString()}
+          onChange={(event) => setPageSize(parseInt(event.currentTarget.value))}
+        />
       </ScrollArea>
     </Drawer>
   );
