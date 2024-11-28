@@ -94,7 +94,34 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: {
-        date: orderBy === "date" ? "asc" : "desc",
+        date:
+          orderBy === "date"
+            ? "asc"
+            : orderBy === "date_desc"
+              ? "desc"
+              : undefined,
+        internship: {
+          classname:
+            orderBy === "classname"
+              ? "asc"
+              : orderBy === "classname_desc"
+                ? "desc"
+                : undefined,
+          user: {
+            givenName:
+              orderBy === "givenName"
+                ? "asc"
+                : orderBy === "givenName_desc"
+                  ? "desc"
+                  : undefined,
+            surname:
+              orderBy === "surname"
+                ? "asc"
+                : orderBy === "surname_desc"
+                  ? "desc"
+                  : undefined,
+          },
+        },
       },
       skip: page !== null && size !== null ? page * size : undefined,
       take: size !== null ? size : undefined,

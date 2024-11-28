@@ -103,6 +103,16 @@ export async function GET(request: NextRequest) {
     },
   });
 
+  const order: any[] = [];
+  if (orderBy === "created") order.push({ created: "asc" });
+  if (orderBy === "created_desc") order.push({ created: "desc" });
+  if (orderBy === "classname") order.push({ classname: "asc" });
+  if (orderBy === "classname_desc") order.push({ classname: "desc" });
+  if (orderBy === "givenName") order.push({ user: { givenName: "asc" } });
+  if (orderBy === "givenName_desc") order.push({ user: { givenName: "desc" } });
+  if (orderBy === "surname") order.push({ user: { surname: "asc" } });
+  if (orderBy === "surname_desc") order.push({ user: { surname: "desc" } });
+
   let internships: InternshipInspectionList[] =
     await prisma.internship.findMany({
       select: {
@@ -244,22 +254,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: [
-        {
-          created:
-            orderBy === "created"
-              ? "asc"
-              : orderBy === "created_desc"
-                ? "desc"
-                : undefined,
-          classname:
-            orderBy === "classname"
-              ? "asc"
-              : orderBy === "classname_desc"
-                ? "desc"
-                : undefined,
-        },
-      ],
+      orderBy: order,
       skip: page !== null && size !== null ? page * size : undefined,
       take: size !== null ? size : undefined,
     });

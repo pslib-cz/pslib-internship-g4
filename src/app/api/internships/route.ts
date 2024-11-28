@@ -226,6 +226,20 @@ export async function GET(request: NextRequest) {
               : orderBy === "kind_desc"
                 ? "desc"
                 : undefined,
+          user: {
+            givenName:
+              orderBy === "givenName"
+                ? "asc"
+                : orderBy === "givenName_desc"
+                  ? "desc"
+                  : undefined,
+            surname:
+              orderBy === "surname"
+                ? "asc"
+                : orderBy === "surname_desc"
+                  ? "desc"
+                  : undefined,
+          },
         },
       ],
       skip: page !== null && size !== null ? page * size : undefined,
