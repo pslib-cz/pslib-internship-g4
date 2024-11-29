@@ -1,8 +1,11 @@
+import {Container} from "@mantine/core"
+import OverviewContainer from "./OverviewContainer";
+
 const Page = () => {
   return (
-    <div>
-      <p>Zde bude souhrn všech praxí.</p>
-    </div>
+    <Container>
+      <OverviewContainer />
+    </Container>
   );
 };
 

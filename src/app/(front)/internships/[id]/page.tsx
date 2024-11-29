@@ -18,6 +18,7 @@ import Link from "next/link";
 import { getInternshipKindLabel } from "@/data/lists";
 import Address from "@/components/Address/Address";
 import SwitchInternshipState from "@/components/SwitchInternshipState/SwitchInternshipState";
+import { AgreementDownload } from "@/components";
 
 const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
@@ -294,6 +295,9 @@ const Page = ({ params }: { params: { id: string } }) => {
             }}
           />
         </Suspense>
+        <Card shadow="sm" padding="lg">
+          <AgreementDownload internshipId={data.id} />
+        </Card>
       </SimpleGrid>
     </>
   );

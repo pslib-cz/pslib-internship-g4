@@ -247,7 +247,6 @@ const MapDisplay = () => {
               <Text>Žádné praxe</Text>
             )}
           </ScrollArea>
-          <Group justify="center" mt="sm">
             <Button
               onClick={(e) => {
                 if (selected) {
@@ -259,7 +258,6 @@ const MapDisplay = () => {
             >
               Zarezervovat
             </Button>
-          </Group>
         </Stack>
       </Drawer>
     </>

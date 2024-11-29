@@ -809,7 +809,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
           </Button>
           <Text>nebo</Text>
           <Button
-            variant="default"
+            variant="default" 
             onClick={() => {
               if (selected != null) {
                 makeOneReservationForSelf(selected.id);

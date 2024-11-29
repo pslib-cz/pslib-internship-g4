@@ -20,7 +20,7 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import Address from "@/components/Address/Address";
-import { DateTime, Coordinates } from "@/components";
+import { DateTime, Coordinates, AgreementDownload } from "@/components";
 import { useMediaQuery } from "@mantine/hooks";
 import { inspectionResults } from "@/data/lists";
 import { Diary } from "@prisma/client";
@@ -383,10 +383,10 @@ const StateDisplay = ({
   reloadData: () => void;
 }) => {
   return (
-    <Card shadow="sm" padding="lg">
+    <>
       <Title order={3}>Stav</Title>
       <SwitchInternshipState internship={data} afterStateChange={reloadData} />
-    </Card>
+    </>
   );
 };
 
@@ -466,6 +466,9 @@ const Page = ({ params }: { params: { id: string } }) => {
             loaddata();
           }}
         />
+      </Card>
+      <Card shadow="sm" padding="lg">
+        <AgreementDownload internshipId={data.id} />
       </Card>
     </SimpleGrid>
   );

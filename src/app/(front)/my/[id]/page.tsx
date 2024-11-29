@@ -33,6 +33,7 @@ import { getInternshipKindLabel } from "@/data/lists";
 import LocationPanel from "./LocationPanel";
 import DiarySection from "./DiarySection";
 import { useReactToPrint } from "react-to-print";
+import { AgreementDownload } from "@/components";
 
 const StudentDisplay: FC<
   InternshipFullRecord | InternshipWithCompanyLocationSetUser
@@ -125,72 +126,6 @@ const DescriptionDisplay: FC<
   );
 };
 
-const FilesDisplay: FC<
-  InternshipFullRecord | InternshipWithCompanyLocationSetUser
-> = (internship) => {
-  const [content, setContent] = useState<string>("");
-  const [error, setError] = useState<Error | null>(null);
-  const handleOnBeforeGetContent = useCallback(() => {
-    fetch(`/api/internships/${internship.id}/agreement`)
-      .then((response) => response.text())
-      .then((data) => {
-        setContent(data);
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, [internship]);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const handlePrint = useReactToPrint({
-    content: useCallback(() => contentRef.current, []),
-    documentTitle: "Smlouva o praxi",
-    removeAfterPrint: true,
-  });
-  return (
-    <>
-      <Card shadow="sm" padding="lg">
-        <Title order={2}>Smlouva o praxi</Title>
-        {error && <Alert color="red">{error.message}</Alert>}
-        <Box>
-          <Group mt="1em">
-            <Button
-              variant="filled"
-              leftSection={<IconPrinter />}
-              onClick={async () => {
-                handleOnBeforeGetContent();
-                handlePrint();
-              }}
-            >
-              Tisk
-            </Button>
-            <Button
-              leftSection={<IconDownload />}
-              onClick={(e) => {
-                e.preventDefault();
-                window.open(
-                  `/api/internships/${internship.id}/agreement`,
-                  "_blank",
-                );
-              }}
-              variant="default"
-            >
-              .html
-            </Button>
-          </Group>
-        </Box>
-        <div style={{ height: 0, overflow: "hidden", width: 0 }}>
-          <div
-            ref={contentRef}
-            dangerouslySetInnerHTML={{
-              __html: content,
-            }}
-          />
-        </div>
-      </Card>
-    </>
-  );
-};
-
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const loadData = useCallback(() => {
@@ -265,7 +200,7 @@ const Page = ({ params }: { params: { id: string } }) => {
               <DescriptionDisplay {...data} />
             </Suspense>
             <Suspense fallback={<LoadingOverlay />}>
-              <FilesDisplay {...data} />
+              <AgreementDownload internshipId={id} />
             </Suspense>
           </SimpleGrid>
         )}

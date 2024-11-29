@@ -44,6 +44,16 @@ export async function GET(request: NextRequest) {
     },
   });
 
+  const order: any[] = [];
+  if (orderBy === "date") order.push({ date: "asc" });
+  if (orderBy === "date_desc") order.push({ date: "desc" });
+  if (orderBy === "classname") order.push({ classname: "asc" });
+  if (orderBy === "classname_desc") order.push({ classname: "desc" });
+  if (orderBy === "givenName") order.push({ internship: {user: { givenName: "asc" } }});
+  if (orderBy === "givenName_desc") order.push({ internship: {user: { givenName: "desc" } }});
+  if (orderBy === "surname") order.push({ internship: {user: { surname: "asc" } }});
+  if (orderBy === "surname_desc") order.push({ internship: {user: { surname: "desc" } }});
+
   let inspections: InspectionWithInspectorAndInternship[] =
     await prisma.inspection.findMany({
       select: {
@@ -93,36 +103,7 @@ export async function GET(request: NextRequest) {
           equals: internship || undefined,
         },
       },
-      orderBy: {
-        date:
-          orderBy === "date"
-            ? "asc"
-            : orderBy === "date_desc"
-              ? "desc"
-              : undefined,
-        internship: {
-          classname:
-            orderBy === "classname"
-              ? "asc"
-              : orderBy === "classname_desc"
-                ? "desc"
-                : undefined,
-          user: {
-            givenName:
-              orderBy === "givenName"
-                ? "asc"
-                : orderBy === "givenName_desc"
-                  ? "desc"
-                  : undefined,
-            surname:
-              orderBy === "surname"
-                ? "asc"
-                : orderBy === "surname_desc"
-                  ? "desc"
-                  : undefined,
-          },
-        },
-      },
+      orderBy: order,
       skip: page !== null && size !== null ? page * size : undefined,
       take: size !== null ? size : undefined,
     });

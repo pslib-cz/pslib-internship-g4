@@ -16,6 +16,7 @@ import { InternshipFullRecord } from "@/types/entities";
 import DateTime from "@/components/DateTime/DateTime";
 import Link from "next/link";
 import { getInternshipKindLabel, getInternshipStateLabel } from "@/data/lists";
+import { AgreementDownload } from "@/components";
 
 const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
@@ -263,6 +264,9 @@ const Page = ({ params }: { params: { id: string } }) => {
         <Suspense fallback={<LoadingOverlay />}>
           <InspectionsDisplay data={data} />
         </Suspense>
+        <Card shadow="sm" padding="lg">
+          <AgreementDownload internshipId={id} />
+        </Card>
       </SimpleGrid>
     </>
   );
