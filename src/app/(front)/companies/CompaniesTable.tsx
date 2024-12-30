@@ -68,9 +68,11 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
       orderBy: string,
       page: number = 1,
       pageSize: number = 10,
+      tags: number[] = [],
     ) => {
+      const tagsParam = tags.length > 0 ? `&tag=${tags.join(",")}` : "";
       fetch(
-        `/api/companies?name=${name}&taxNum=${tax !== undefined ? tax : ""}&active=${active !== undefined ? active : ""}&municipality=${municipality}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
+        `/api/companies?name=${name}&taxNum=${tax !== undefined ? tax : ""}&active=${active !== undefined ? active : ""}&municipality=${municipality}${tagsParam}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
         {
           method: "GET",
           headers: {
@@ -122,6 +124,9 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
     state.filterActive === undefined
       ? params.set("active", "")
       : params.set("active", state.filterActive === true ? "true" : "false");
+    state.filterTags.length > 0 ?
+      params.set("tag", state.filterTags.join(","))
+      : params.delete("tag");
     params.set("page", page.toString());
     params.set("size", size.toString());
     params.set("orderBy", order);
@@ -134,6 +139,7 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
       order,
       page,
       size,
+      state.filterTags,
     );
   }, [state, order, page, size, fetchData, searchParams]);
 

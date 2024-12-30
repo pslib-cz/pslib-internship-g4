@@ -4,10 +4,8 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   LoadingOverlay,
   Drawer,
-  Flex,
   Stack,
   Text,
-  Anchor,
   ScrollArea,
   Group,
   Button,
@@ -82,7 +80,7 @@ const MapDisplay = () => {
       ? Number(searchParams.get("zoom"))
       : Number(process.env.NEXT_PUBLIC_MAP_DEFAULT_ZOOM),
   });
-  let ico = new Icon({
+  let defaultIcon = new Icon({
     iconUrl: "/images/pins/Map-Pin.svg",
     iconSize: [32, 32],
     iconAnchor: [0, 16],
@@ -97,6 +95,29 @@ const MapDisplay = () => {
     null,
   );
   const router = useRouter();
+
+  const icons = {
+    students: new Icon({
+      iconUrl: "/images/pins/Map-Internship.svg",
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+    }),
+    reserved: new Icon({
+      iconUrl: "/images/pins/Map-Reserved.svg",
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+    }),
+    inspected: new Icon({
+      iconUrl: "/images/pins/Map-Inspected.svg",
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+    }),
+    completed: new Icon({
+      iconUrl: "/images/pins/Map-InspectedAll.svg",
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+    }),
+  };
 
   const fetchData = useCallback(
     (set: number | undefined, active: boolean | undefined) => {
@@ -127,6 +148,19 @@ const MapDisplay = () => {
     },
     [],
   );
+
+  const determinePinState = (point: LocationWithInternships) => {
+    if (point.internships.every((i) => i.inspections.some((ins) => ins.result !== null))) {
+      return "completed";
+    }
+    if (point.internships.some((i) => i.inspections.length > 0)) {
+      return "inspected";
+    }
+    if (point.internships.some((i) => i.reservationUser !== null)) {
+      return "reserved";
+    }
+    return "students";
+  };
 
   useEffect(() => {
     fetchData(set, active);
@@ -178,7 +212,9 @@ const MapDisplay = () => {
         className={styles.map}
       >
         <MapLayer mapState={mapState} setMapState={setMapState} />
-        {points.map((point, index) => (
+        {points.map((point, index) => {
+          const ico = icons[determinePinState(point)];
+          return (
           <Marker
             key={point.id}
             position={[Number(point.latitude), Number(point.longitude)]}
@@ -188,8 +224,8 @@ const MapDisplay = () => {
                 setSelected(point);
               },
             }}
-          ></Marker>
-        ))}
+          ></Marker>);
+        })}
       </MapContainer>
       <Drawer
         opened={selected != null}

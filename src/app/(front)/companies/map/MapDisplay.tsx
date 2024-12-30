@@ -87,17 +87,14 @@ const MapDisplay = () => {
       tax: number | undefined,
       active: boolean | undefined,
       municipality: string | undefined,
+      tags: number[] = [],
     ) => {
       setLoading(true);
+      const tagsParam = tags.length > 0 ? `&tag=${tags.join(",")}` : "";
       fetch(
-        "/api/maps/companies?name=" +
-          name +
-          "&municipality=" +
-          municipality +
-          "&taxNum=" +
-          (tax ? tax : "") +
-          "&active=" +
-          (active ? active : ""),
+        `/api/maps/companies?name=${name ?? ""}&municipality=${municipality ?? ""}&taxNum=${
+        tax ?? ""
+      }&active=${active ?? ""}${tagsParam}`,
         {
           method: "GET",
           headers: {
@@ -126,6 +123,7 @@ const MapDisplay = () => {
       state.filterTaxNum,
       state.filterActive,
       state.filterMunicipality,
+      state.filterTags,
     );
   }, [state, fetchData]);
 

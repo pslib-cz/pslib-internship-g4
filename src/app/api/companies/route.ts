@@ -1,5 +1,10 @@
 import { type NextRequest } from "next/server";
 import prisma from "@/utils/db";
+import { auth } from "@/auth";
+import { CompanyWithLocation } from "@/types/entities";
+import { type ListResult } from "@/types/data";
+import { Role } from "@/types/auth";
+import { Company } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -52,7 +57,7 @@ export async function GET(request: NextRequest) {
   });
 
   // Načtení dat
-  const companies = await prisma.company.findMany({
+  const companies: CompanyWithLocation[] = await prisma.company.findMany({
     include: {
       location: true,
     },
@@ -71,4 +76,45 @@ export async function GET(request: NextRequest) {
     size: size ?? null,
   };
   return Response.json(result);
+}
+
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const session = await auth();
+
+  if (!session) {
+    return new Response("Unauthorized", {
+      status: 401,
+    });
+  }
+  /*
+  if (session.user?.role !== Role.ADMIN) {
+    return new Response("Forbidden", {
+      status: 403,
+    });
+  }
+    */
+  if (body.companyIdentificationNumber !== undefined) {
+    let existingcompany: Company | null = await prisma.company.findFirst({
+      where: { companyIdentificationNumber: body.companyIdentificationNumber },
+    });
+    if (existingcompany) {
+      return new Response("Company already exists.", {
+        status: 400,
+      });
+    }
+  }
+  const company = await prisma.company.create({
+    data: {
+      name: body.name,
+      companyIdentificationNumber: body.companyIdentificationNumber,
+      active: body.active,
+      description: body.description,
+      website: body.website,
+      created: new Date(),
+      creatorId: session.user.id,
+      locationId: Number(body.locationId),
+    },
+  });
+  return Response.json(company, { status: 201 });
 }

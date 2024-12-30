@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Group,
   Drawer,
@@ -10,6 +10,7 @@ import {
   Button,
   TextInput,
   NumberInput,
+  MultiSelect,
 } from "@mantine/core";
 import {
   FilterProvider,
@@ -25,6 +26,32 @@ const FilterDrawer = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(max-width: 992px)");
   const [state, dispatch] = useContext(FilterContext);
+  const [tags, setTags] = useState<{ value: string; label: string }[]>([]);
+  const fetchtags = async () => {
+    try {
+      const response = await fetch("/api/tags");
+      if (!response.ok) {
+        throw new Error(`Chyba při načítání značek: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+  
+      const formattedTags = data.data.map((tag: any) => ({
+        value: String(tag.id),
+        label: tag.text,
+      }));
+  
+      setTags(formattedTags);
+    } catch (error) {
+      console.error("Chyba při načítání značek:", error);
+      setTags([]); // Nastavení prázdného seznamu při chybě
+    }
+  };
+  
+  useEffect(() => {
+    fetchtags();
+    console.log("Tags fetched", tags);
+  }, []);
   return (
     <Drawer
       opened={state.opened}
@@ -99,6 +126,18 @@ const FilterDrawer = () => {
               Vše
             </Button>
           </Button.Group>
+        </Grid.Col>
+        <Grid.Col span={isMobile ? 12 : isTablet ? 6 : 4}>
+        <MultiSelect
+          comboboxProps={{ zIndex: 1000 }}
+          label="Značky"
+          data={tags}
+          value={state.filterTags.map(String)}
+          onChange={(selected) =>
+            dispatch({ type: "SET_TAGS_FILTER", tags: selected.map(Number) })
+          }
+          placeholder="Vyberte značky"
+          />
         </Grid.Col>
       </Grid>
       <Group my="sm">

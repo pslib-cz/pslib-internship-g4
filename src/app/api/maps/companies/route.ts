@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
   const mun = searchParams.get("municipality");
   const taxNum = Number(searchParams.get("taxNum"));
   const act = searchParams.get("active");
+  const tagIds = searchParams.get("tag")?.split(",").map(Number) || [];
   const orderBy = searchParams.get("orderBy");
   const page: number | null =
     searchParams.get("page") !== null
@@ -34,50 +35,65 @@ export async function GET(request: NextRequest) {
       })
     }
 */
-  let summary = await prisma.location.aggregate({
-    _count: true,
-    where: {
-      OR: [
-        {
-          companies: {
-            some: {
+let summary = await prisma.location.aggregate({
+  _count: true,
+  where: {
+    OR: [
+      {
+        companies: {
+          some: {
+            name: {
+              contains: name || undefined,
+            },
+            companyIdentificationNumber: {
+              equals: taxNum || undefined,
+            },
+            active: {
+              equals: act ? act === "true" : undefined,
+            },
+            companyTags: tagIds.length > 0
+              ? {
+                  some: {
+                    tagId: { in: tagIds },
+                  },
+                }
+              : undefined,
+          },
+        },
+      },
+      {
+        companyBranches: {
+          some: {
+            name: {
+              contains: name || undefined,
+            },
+            company: {
               name: {
-                contains: name ? name : undefined,
+                contains: name || undefined,
               },
               companyIdentificationNumber: {
-                equals: taxNum ? taxNum : undefined,
+                equals: taxNum || undefined,
               },
-              active: {
-                equals: act ? act === "true" : undefined,
-              },
+              companyTags: tagIds.length > 0
+                ? {
+                    some: {
+                      tagId: { in: tagIds },
+                    },
+                  }
+                : undefined,
             },
           },
         },
-        {
-          companyBranches: {
-            some: {
-              name: {
-                contains: name ? name : undefined,
-              },
-              company: {
-                name: {
-                  contains: name ? name : undefined,
-                },
-                companyIdentificationNumber: {
-                  equals: taxNum ? taxNum : undefined,
-                },
-              },
-            },
-          },
+      },
+      {
+        municipality: {
+          contains: mun || undefined,
         },
-        {
-          municipality: {
-            contains: mun ? mun : undefined,
-          },
-        },
-      ],
-    },
-  });
+      },
+    ],
+  },
+});
+
 
   let locations: LocationForComaniesAndBranches[] =
     await prisma.location.findMany({
@@ -112,14 +128,21 @@ export async function GET(request: NextRequest) {
             companies: {
               some: {
                 name: {
-                  contains: name ? name : undefined,
+                  contains: name || undefined,
                 },
                 companyIdentificationNumber: {
-                  equals: taxNum ? taxNum : undefined,
+                  equals: taxNum || undefined,
                 },
                 active: {
                   equals: act ? act === "true" : undefined,
                 },
+                companyTags: tagIds.length > 0
+                  ? {
+                      some: {
+                        tagId: { in: tagIds },
+                      },
+                    }
+                  : undefined, // Filtrování podle značek
               },
             },
           },
@@ -127,26 +150,33 @@ export async function GET(request: NextRequest) {
             companyBranches: {
               some: {
                 name: {
-                  contains: name ? name : undefined,
+                  contains: name || undefined,
                 },
                 company: {
                   name: {
-                    contains: name ? name : undefined,
+                    contains: name || undefined,
                   },
                   companyIdentificationNumber: {
-                    equals: taxNum ? taxNum : undefined,
+                    equals: taxNum || undefined,
                   },
+                  companyTags: tagIds.length > 0
+                    ? {
+                        some: {
+                          tagId: { in: tagIds },
+                        },
+                      }
+                    : undefined, // Filtrování podle značek
                 },
               },
             },
           },
           {
             municipality: {
-              contains: mun ? mun : undefined,
+              contains: mun || undefined,
             },
           },
         ],
-      },
+      },      
       orderBy: orderBy
         ? {
             [orderBy]: "asc",
