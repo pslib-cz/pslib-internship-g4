@@ -4,7 +4,6 @@ import { Notifications } from "@mantine/notifications";
 import { SessionProvider } from "next-auth/react";
 import { AccountDrawerProvider } from "@/providers/AccountDrawerProvider";
 import { AccountDrawer } from "@/components";
-import ClarityAnalytics from "./ClarityAnalytics";
 
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";

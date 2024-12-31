@@ -19,7 +19,8 @@ const InternshipCompanyTable: FC<InternshipCompanyTableProps> = ({ setId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const querySet = setId !== null && !isNaN(setId) ? `set=${setId}` : "";
+        const querySet = setId ? `set=${encodeURIComponent(setId)}` : "";
+        //const querySet = setId !== null && !isNaN(setId) ? `set=${setId}` : "";
         const queryActive = `active=true`;
         const queryString = [querySet, queryActive].filter(Boolean).join("&");
 
@@ -49,26 +50,28 @@ const InternshipCompanyTable: FC<InternshipCompanyTableProps> = ({ setId }) => {
 
   return (
     <Table>
-        <Table.Thead>
-            <Table.Tr>
-                <Table.Th>Firma</Table.Th>
-                <Table.Th>Studenti</Table.Th>
-            </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-            {data.map((row) => (
-                <Table.Tr key={row.companyId}>
-                    <Table.Td>{row.companyName}</Table.Td>
-                    <Table.Td>{row.totalStudents}</Table.Td>
-                </Table.Tr>
-            ))}
-        </Table.Tbody>
-        <Table.Tfoot>
-            <Table.Tr>
-                <Table.Th>Celkem</Table.Th>
-                <Table.Th>{data.reduce((acc, row) => acc + row.totalStudents, 0)}</Table.Th>
-            </Table.Tr>
-        </Table.Tfoot>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th>Firma</Table.Th>
+          <Table.Th>Studenti</Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
+        {data.map((row) => (
+          <Table.Tr key={row.companyId}>
+            <Table.Td>{row.companyName}</Table.Td>
+            <Table.Td>{row.totalStudents}</Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+      <Table.Tfoot>
+        <Table.Tr>
+          <Table.Th>Celkem</Table.Th>
+          <Table.Th>
+            {data.reduce((acc, row) => acc + row.totalStudents, 0)}
+          </Table.Th>
+        </Table.Tr>
+      </Table.Tfoot>
     </Table>
   );
 };

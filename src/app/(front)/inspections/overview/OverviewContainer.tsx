@@ -1,28 +1,53 @@
-"use client"
+"use client";
 
-import React, {useState, FC} from "react"
+import React, { useState, FC } from "react";
 import ActiveSetSelector from "./ActiveSetSelector";
 import InternshipClassCountTable from "./InternshipClassCountTable";
 import CompaniesCountTable from "./CompaniesCountTable";
-import {Paper, Title} from "@mantine/core"
+import InternshipKindCountTable from "./InternshipKindCountTable";
+import { Paper, Title } from "@mantine/core";
+import ReservationSummaryTable from "./ReservationsSummaryTable";
+import InspectorSummaryTable from "./InspectorSummaryTable";
+import InspectionResultsSummary from "./InspectionResultsSummary";
 
-const OverviewContainer:FC = () => {
-    const [activeSetId, setActiveSetId] = useState<number | null>(null);
-    
-    return (
-        <>
-         <Title order={1} mt="sm">Souhrnná data praxí</Title>
-         <ActiveSetSelector activeSetId={activeSetId} setActiveSetId={setActiveSetId} />
-         <Paper mt="lg" p="lg">
-            <Title order={2}>Počty praxí a studentů podle tříd</Title>
-            <InternshipClassCountTable setId={activeSetId} />
-          </Paper>
-          <Paper mt="lg" p="lg">
-            <Title order={2}>Počty studentů v jednotlivých firmách</Title>
-            <CompaniesCountTable setId={activeSetId} />
-          </Paper>
-        </>
-    )
-    }
+const OverviewContainer: FC = () => {
+  const [activeSetId, setActiveSetId] = useState<number | null>(null);
 
-export default OverviewContainer
+  return (
+    <>
+      <Title order={1} mt="sm">
+        Souhrnná data praxí
+      </Title>
+      <ActiveSetSelector
+        activeSetId={activeSetId}
+        setActiveSetId={setActiveSetId}
+      />
+      <Paper mt="lg" p="lg">
+        <Title order={2}>Počty praxí a studentů podle tříd</Title>
+        <InternshipClassCountTable setId={activeSetId} />
+      </Paper>
+      <Paper mt="lg" p="lg">
+        <Title order={2}>Počty studentů v jednotlivých firmách</Title>
+        <CompaniesCountTable setId={activeSetId} />
+      </Paper>
+      <Paper mt="lg" p="lg">
+        <Title order={2}>Počty praxí podle druhu</Title>
+        <InternshipKindCountTable />
+      </Paper>
+      <Paper mt="lg" p="lg">
+        <Title order={2}>Počty rezervovaných praxí</Title>
+        <ReservationSummaryTable />
+      </Paper>
+      <Paper mt="lg" p="lg">
+        <Title order={2}>Počty kontrol podle učitelů</Title>
+        <InspectorSummaryTable />
+      </Paper>
+      <Paper mt="lg" p="lg">
+        <Title order={2}>Počty kontrol podle výsledků</Title>
+        <InspectionResultsSummary />
+      </Paper>
+    </>
+  );
+};
+
+export default OverviewContainer;

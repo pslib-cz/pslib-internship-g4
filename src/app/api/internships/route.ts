@@ -216,7 +216,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: order,  
+      orderBy: order,
       skip: page !== null && size !== null ? page * size : undefined,
       take: size !== null ? size : undefined,
     });

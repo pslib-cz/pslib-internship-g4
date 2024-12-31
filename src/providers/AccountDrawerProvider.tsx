@@ -23,13 +23,14 @@ export const AccountDrawerContext = createContext<AccountDrawerState>({
 export const AccountDrawerProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  let storedPageSize = typeof window !== 'undefined' ? localStorage.getItem("pageSize") : null;
+  let storedPageSize =
+    typeof window !== "undefined" ? localStorage.getItem("pageSize") : null;
   const [opened, setOpened] = useState<boolean>(false);
   const [pageSize, setPageSize] = useState<number>(
     storedPageSize ? parseInt(storedPageSize) : 10,
   );
   useEffect(() => {
-    if (pageSize !== null && typeof window !== 'undefined') {
+    if (pageSize !== null && typeof window !== "undefined") {
       localStorage.setItem("pageSize", pageSize.toString());
     }
   }, [pageSize]);

@@ -35,65 +35,66 @@ export async function GET(request: NextRequest) {
       })
     }
 */
-let summary = await prisma.location.aggregate({
-  _count: true,
-  where: {
-    OR: [
-      {
-        companies: {
-          some: {
-            name: {
-              contains: name || undefined,
-            },
-            companyIdentificationNumber: {
-              equals: taxNum || undefined,
-            },
-            active: {
-              equals: act ? act === "true" : undefined,
-            },
-            companyTags: tagIds.length > 0
-              ? {
-                  some: {
-                    tagId: { in: tagIds },
-                  },
-                }
-              : undefined,
-          },
-        },
-      },
-      {
-        companyBranches: {
-          some: {
-            name: {
-              contains: name || undefined,
-            },
-            company: {
+  let summary = await prisma.location.aggregate({
+    _count: true,
+    where: {
+      OR: [
+        {
+          companies: {
+            some: {
               name: {
                 contains: name || undefined,
               },
               companyIdentificationNumber: {
                 equals: taxNum || undefined,
               },
-              companyTags: tagIds.length > 0
-                ? {
-                    some: {
-                      tagId: { in: tagIds },
-                    },
-                  }
-                : undefined,
+              active: {
+                equals: act ? act === "true" : undefined,
+              },
+              companyTags:
+                tagIds.length > 0
+                  ? {
+                      some: {
+                        tagId: { in: tagIds },
+                      },
+                    }
+                  : undefined,
             },
           },
         },
-      },
-      {
-        municipality: {
-          contains: mun || undefined,
+        {
+          companyBranches: {
+            some: {
+              name: {
+                contains: name || undefined,
+              },
+              company: {
+                name: {
+                  contains: name || undefined,
+                },
+                companyIdentificationNumber: {
+                  equals: taxNum || undefined,
+                },
+                companyTags:
+                  tagIds.length > 0
+                    ? {
+                        some: {
+                          tagId: { in: tagIds },
+                        },
+                      }
+                    : undefined,
+              },
+            },
+          },
         },
-      },
-    ],
-  },
-});
-
+        {
+          municipality: {
+            contains: mun || undefined,
+          },
+        },
+      ],
+    },
+  });
 
   let locations: LocationForComaniesAndBranches[] =
     await prisma.location.findMany({
@@ -136,13 +137,14 @@ let summary = await prisma.location.aggregate({
                 active: {
                   equals: act ? act === "true" : undefined,
                 },
-                companyTags: tagIds.length > 0
-                  ? {
-                      some: {
-                        tagId: { in: tagIds },
-                      },
-                    }
-                  : undefined, // Filtrování podle značek
+                companyTags:
+                  tagIds.length > 0
+                    ? {
+                        some: {
+                          tagId: { in: tagIds },
+                        },
+                      }
+                    : undefined, // Filtrování podle značek
               },
             },
           },
@@ -159,13 +161,14 @@ let summary = await prisma.location.aggregate({
                   companyIdentificationNumber: {
                     equals: taxNum || undefined,
                   },
-                  companyTags: tagIds.length > 0
-                    ? {
-                        some: {
-                          tagId: { in: tagIds },
-                        },
-                      }
-                    : undefined, // Filtrování podle značek
+                  companyTags:
+                    tagIds.length > 0
+                      ? {
+                          some: {
+                            tagId: { in: tagIds },
+                          },
+                        }
+                      : undefined, // Filtrování podle značek
                 },
               },
             },
@@ -176,7 +179,7 @@ let summary = await prisma.location.aggregate({
             },
           },
         ],
-      },      
+      },
       orderBy: orderBy
         ? {
             [orderBy]: "asc",

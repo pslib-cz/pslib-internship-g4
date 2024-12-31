@@ -442,7 +442,9 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                   fw={700}
                   onClick={() => {
                     let newOrder =
-                      state.order === "givenName" ? "givenName_desc" : "givenName";
+                      state.order === "givenName"
+                        ? "givenName_desc"
+                        : "givenName";
                     setState({ ...state, order: newOrder });
                   }}
                   style={{ cursor: "pointer" }}
@@ -809,7 +811,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
           </Button>
           <Text>nebo</Text>
           <Button
-            variant="default" 
+            variant="default"
             onClick={() => {
               if (selected != null) {
                 makeOneReservationForSelf(selected.id);

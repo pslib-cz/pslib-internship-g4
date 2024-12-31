@@ -216,7 +216,9 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                 fw={700}
                 onClick={() => {
                   let newOrder =
-                    state.order === "givenName" ? "givenName_desc" : "givenName";
+                    state.order === "givenName"
+                      ? "givenName_desc"
+                      : "givenName";
                   setState({ ...state, order: newOrder });
                 }}
                 style={{ cursor: "pointer" }}

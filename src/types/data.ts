@@ -31,11 +31,11 @@ export enum TagType {
 }
 
 export enum InspectionResult {
-  UNKNOWN = 0,
-  OK = 1,
-  PROBLEMS = 2,
-  NOT_PRESENT = 3,
-  NOT_KNOWN = 4,
+  UNKNOWN = 0, // neznámý
+  OK = 1, // v pořádku
+  PROBLEMS = 2, // se studentem jsou problémy
+  NOT_PRESENT = 3, // student nebyl přítomen
+  NOT_KNOWN = 4, // o studentovi nevědí
 }
 
 export enum InspectionType {

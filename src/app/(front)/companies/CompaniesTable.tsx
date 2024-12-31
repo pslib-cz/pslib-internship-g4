@@ -124,8 +124,8 @@ export const CompaniesTable: React.FC<CompaniesTableProps> = () => {
     state.filterActive === undefined
       ? params.set("active", "")
       : params.set("active", state.filterActive === true ? "true" : "false");
-    state.filterTags.length > 0 ?
-      params.set("tag", state.filterTags.join(","))
+    state.filterTags.length > 0
+      ? params.set("tag", state.filterTags.join(","))
       : params.delete("tag");
     params.set("page", page.toString());
     params.set("size", size.toString());

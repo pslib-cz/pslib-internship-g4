@@ -9,14 +9,20 @@ import { Company } from "@prisma/client";
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const name = searchParams.get("name");
-  const taxNum = searchParams.get("taxNum") ? Number(searchParams.get("taxNum")) : null;
+  const taxNum = searchParams.get("taxNum")
+    ? Number(searchParams.get("taxNum"))
+    : null;
   const search = searchParams.get("search");
   const act = searchParams.get("active");
   const mun = searchParams.get("municipality");
   const orderBy = searchParams.get("orderBy");
   const tagIds = searchParams.get("tag")?.split(",").map(Number) || []; // Načíst seznam tagů
-  const page = searchParams.get("page") ? parseInt(searchParams.get("page")!) : null;
-  const size = searchParams.get("size") ? parseInt(searchParams.get("size")!) : null;
+  const page = searchParams.get("page")
+    ? parseInt(searchParams.get("page")!)
+    : null;
+  const size = searchParams.get("size")
+    ? parseInt(searchParams.get("size")!)
+    : null;
 
   // Sestavení filtru
   const filters: any = {
@@ -47,8 +53,10 @@ export async function GET(request: NextRequest) {
   const sorting: any[] = [];
   if (orderBy === "name") sorting.push({ name: "asc" });
   if (orderBy === "name_desc") sorting.push({ name: "desc" });
-  if (orderBy === "taxNum") sorting.push({ companyIdentificationNumber: "asc" });
-  if (orderBy === "taxNum_desc") sorting.push({ companyIdentificationNumber: "desc" });
+  if (orderBy === "taxNum")
+    sorting.push({ companyIdentificationNumber: "asc" });
+  if (orderBy === "taxNum_desc")
+    sorting.push({ companyIdentificationNumber: "desc" });
 
   // Souhrn
   const summary = await prisma.company.aggregate({

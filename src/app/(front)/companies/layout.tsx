@@ -33,21 +33,21 @@ const FilterDrawer = () => {
       if (!response.ok) {
         throw new Error(`Chyba při načítání značek: ${response.statusText}`);
       }
-  
+
       const data = await response.json();
-  
+
       const formattedTags = data.data.map((tag: any) => ({
         value: String(tag.id),
         label: tag.text,
       }));
-  
+
       setTags(formattedTags);
     } catch (error) {
       console.error("Chyba při načítání značek:", error);
       setTags([]); // Nastavení prázdného seznamu při chybě
     }
   };
-  
+
   useEffect(() => {
     fetchtags();
     console.log("Tags fetched", tags);
@@ -128,15 +128,15 @@ const FilterDrawer = () => {
           </Button.Group>
         </Grid.Col>
         <Grid.Col span={isMobile ? 12 : isTablet ? 6 : 4}>
-        <MultiSelect
-          comboboxProps={{ zIndex: 1000 }}
-          label="Značky"
-          data={tags}
-          value={state.filterTags.map(String)}
-          onChange={(selected) =>
-            dispatch({ type: "SET_TAGS_FILTER", tags: selected.map(Number) })
-          }
-          placeholder="Vyberte značky"
+          <MultiSelect
+            comboboxProps={{ zIndex: 1000 }}
+            label="Značky"
+            data={tags}
+            value={state.filterTags.map(String)}
+            onChange={(selected) =>
+              dispatch({ type: "SET_TAGS_FILTER", tags: selected.map(Number) })
+            }
+            placeholder="Vyberte značky"
           />
         </Grid.Col>
       </Grid>

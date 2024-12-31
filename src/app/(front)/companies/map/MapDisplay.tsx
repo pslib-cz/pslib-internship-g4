@@ -93,8 +93,8 @@ const MapDisplay = () => {
       const tagsParam = tags.length > 0 ? `&tag=${tags.join(",")}` : "";
       fetch(
         `/api/maps/companies?name=${name ?? ""}&municipality=${municipality ?? ""}&taxNum=${
-        tax ?? ""
-      }&active=${active ?? ""}${tagsParam}`,
+          tax ?? ""
+        }&active=${active ?? ""}${tagsParam}`,
         {
           method: "GET",
           headers: {

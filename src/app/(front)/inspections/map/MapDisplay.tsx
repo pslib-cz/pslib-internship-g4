@@ -150,7 +150,11 @@ const MapDisplay = () => {
   );
 
   const determinePinState = (point: LocationWithInternships) => {
-    if (point.internships.every((i) => i.inspections.some((ins) => ins.result !== null))) {
+    if (
+      point.internships.every((i) =>
+        i.inspections.some((ins) => ins.result !== null),
+      )
+    ) {
       return "completed";
     }
     if (point.internships.some((i) => i.inspections.length > 0)) {
@@ -215,16 +219,17 @@ const MapDisplay = () => {
         {points.map((point, index) => {
           const ico = icons[determinePinState(point)];
           return (
-          <Marker
-            key={point.id}
-            position={[Number(point.latitude), Number(point.longitude)]}
-            icon={ico}
-            eventHandlers={{
-              click: () => {
-                setSelected(point);
-              },
-            }}
-          ></Marker>);
+            <Marker
+              key={point.id}
+              position={[Number(point.latitude), Number(point.longitude)]}
+              icon={ico}
+              eventHandlers={{
+                click: () => {
+                  setSelected(point);
+                },
+              }}
+            ></Marker>
+          );
         })}
       </MapContainer>
       <Drawer
@@ -283,17 +288,17 @@ const MapDisplay = () => {
               <Text>Žádné praxe</Text>
             )}
           </ScrollArea>
-            <Button
-              onClick={(e) => {
-                if (selected) {
-                  makeReservationsForUnreservedInLocation(selected.id);
-                  setSelected(null);
-                  fetchData(set, active);
-                }
-              }}
-            >
-              Zarezervovat
-            </Button>
+          <Button
+            onClick={(e) => {
+              if (selected) {
+                makeReservationsForUnreservedInLocation(selected.id);
+                setSelected(null);
+                fetchData(set, active);
+              }
+            }}
+          >
+            Zarezervovat
+          </Button>
         </Stack>
       </Drawer>
     </>

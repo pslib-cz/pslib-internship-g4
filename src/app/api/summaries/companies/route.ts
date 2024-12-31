@@ -1,5 +1,6 @@
 import { type NextRequest } from "next/server";
 import prisma from "@/utils/db";
+import { Prisma } from "@prisma/client";
 
 type AggregatedData = {
   [companyId: number]: {
@@ -10,11 +11,28 @@ type AggregatedData = {
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const setId = searchParams.get("set") ? parseInt(searchParams.get("set")!) : null;
+  const setId = searchParams.get("set")
+    ? parseInt(searchParams.get("set")!)
+    : null;
   const active = searchParams.get("active") === "true";
 
+  if (setId !== null && isNaN(setId)) {
+    return Response.json({ error: "Invalid setId parameter" }, { status: 400 });
+  }
+
+  if (
+    searchParams.get("active") &&
+    searchParams.get("active") !== "true" &&
+    searchParams.get("active") !== "false"
+  ) {
+    return Response.json(
+      { error: "Invalid active parameter" },
+      { status: 400 },
+    );
+  }
+
   // Sestavení filtru na základě parametrů
-  const filters: any = {};
+  const filters: Prisma.InternshipWhereInput = {};
   if (setId !== null) {
     filters.setId = setId;
   }
@@ -54,19 +72,19 @@ export async function GET(request: NextRequest) {
 
   // Formátování výsledku
   const formattedResult = Object.entries(aggregation)
-  .map(([companyId, data]: any) => ({
-    companyId: parseInt(companyId),
-    companyName: data.companyName,
-    totalStudents: data.totalStudents.size,
-  }))
-  .sort((a, b) => {
-    if (b.totalStudents !== a.totalStudents) {
-      // Primární řazení podle počtu studentů (sestupně)
-      return b.totalStudents - a.totalStudents;
-    }
-    // Sekundární řazení podle názvu firmy (vzestupně)
-    return a.companyName.localeCompare(b.companyName);
-  });
+    .map(([companyId, data]: any) => ({
+      companyId: parseInt(companyId),
+      companyName: data.companyName,
+      totalStudents: data.totalStudents.size,
+    }))
+    .sort((a, b) => {
+      if (b.totalStudents !== a.totalStudents) {
+        // Primární řazení podle počtu studentů (sestupně)
+        return b.totalStudents - a.totalStudents;
+      }
+      // Sekundární řazení podle názvu firmy (vzestupně)
+      return a.companyName.localeCompare(b.companyName);
+    });
 
   return Response.json(formattedResult);
 }
