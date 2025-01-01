@@ -41,3 +41,6 @@ next-env.d.ts
 **/dev.db
 **/dev.db-journal
 prisma/dev.db
+
+# ignore archives
+**/*.zip
