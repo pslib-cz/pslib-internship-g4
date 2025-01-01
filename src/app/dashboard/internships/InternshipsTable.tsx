@@ -81,7 +81,9 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       : undefined,
     filterCompanyName: searchParams.get("companyName") ?? "",
     filterClassname: searchParams.get("classname") ?? "",
-    filterKind: searchParams.get("kind") ? parseInt(searchParams.get("kind") as string) : undefined,
+    filterKind: searchParams.get("kind")
+      ? parseInt(searchParams.get("kind") as string)
+      : undefined,
     order: searchParams.get("orderBy") ?? "created",
     page: searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
@@ -204,8 +206,12 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       params.set("companyName", state.filterCompanyName);
     state.filterClassname !== undefined &&
       params.set("classname", state.filterClassname);
-    state.filterState !== undefined ? params.set("state", String(state.filterState)) : params.delete("state");
-    state.filterKind !== undefined ? params.set("kind", String(state.filterKind)) : params.delete("kind");
+    state.filterState !== undefined
+      ? params.set("state", String(state.filterState))
+      : params.delete("state");
+    state.filterKind !== undefined
+      ? params.set("kind", String(state.filterKind))
+      : params.delete("kind");
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
@@ -381,46 +387,46 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
               />
             </Table.Th>
             <Table.Th>
-            <NativeSelect
-              size="xs"
-              data={[
-                { value: "", label: "- Vše -" },
-                ...internshipKinds.map((kind) => ({
-                  value: kind.value.toString(),
-                  label: kind.label,
-                })),
-              ]}
-              value={state.filterKind?.toString() ?? ""}
-              onChange={(event) => {
-                const value = event.currentTarget.value;
-                setState({
-                  ...state,
-                  filterKind: value ? parseInt(value) : undefined,
-                  page: 1,
-                });
-              }}
-            />
+              <NativeSelect
+                size="xs"
+                data={[
+                  { value: "", label: "- Vše -" },
+                  ...internshipKinds.map((kind) => ({
+                    value: kind.value.toString(),
+                    label: kind.label,
+                  })),
+                ]}
+                value={state.filterKind?.toString() ?? ""}
+                onChange={(event) => {
+                  const value = event.currentTarget.value;
+                  setState({
+                    ...state,
+                    filterKind: value ? parseInt(value) : undefined,
+                    page: 1,
+                  });
+                }}
+              />
             </Table.Th>
             <Table.Th>
-            <NativeSelect
-              size="xs"
-              data={[
-                { value: "", label: "- Vše -" },
-                ...internshipStates.map((state) => ({
-                  value: state.value.toString(),
-                  label: state.label,
-                })),
-              ]}
-              value={state.filterState?.toString() ?? ""}
-              onChange={(event) => {
-                const value = event.currentTarget.value;
-                setState({
-                  ...state,
-                  filterState: value ? parseInt(value) : undefined,
-                  page: 1,
-                });
-              }}
-/>
+              <NativeSelect
+                size="xs"
+                data={[
+                  { value: "", label: "- Vše -" },
+                  ...internshipStates.map((state) => ({
+                    value: state.value.toString(),
+                    label: state.label,
+                  })),
+                ]}
+                value={state.filterState?.toString() ?? ""}
+                onChange={(event) => {
+                  const value = event.currentTarget.value;
+                  setState({
+                    ...state,
+                    filterState: value ? parseInt(value) : undefined,
+                    page: 1,
+                  });
+                }}
+              />
             </Table.Th>
             <Table.Th></Table.Th>
             <Table.Th>
@@ -452,9 +458,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
         <Table.Tbody>
           {loading && (
             <Table.Tr>
-              <Table.Td colSpan={100}>
-                Načítám data...
-              </Table.Td>
+              <Table.Td colSpan={100}>Načítám data...</Table.Td>
             </Table.Tr>
           )}
           {error && (

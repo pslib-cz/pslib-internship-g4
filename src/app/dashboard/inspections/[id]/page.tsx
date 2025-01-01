@@ -64,20 +64,30 @@ const InspectionDetails = ({ data }: { data: InspectionRecord }) => {
       <Box dangerouslySetInnerHTML={{ __html: data.note }} />
       <Text fw={700}>Kontrolér</Text>
       <Text>
-        <Anchor component={Link} href={`/dashboard/users/${data.inspectionUser.id}`}>
+        <Anchor
+          component={Link}
+          href={`/dashboard/users/${data.inspectionUser.id}`}
+        >
           {data.inspectionUser.surname}, {data.inspectionUser.givenName}
         </Anchor>
       </Text>
       <Text fw={700}>Praxe</Text>
       <Text>
-        <Anchor component={Link} href={`/dashboard/internships/${data.internship.id}`}>
+        <Anchor
+          component={Link}
+          href={`/dashboard/internships/${data.internship.id}`}
+        >
           {data.internship.id} ({data.internship.classname})
         </Anchor>
       </Text>
       <Text fw={700}>Firma</Text>
       <Text>
-        <Anchor component={Link} href={`/dashboard/companies/${data.internship.company.id}`}>
-          {data.internship.company.name} ({data.internship.company.companyIdentificationNumber})
+        <Anchor
+          component={Link}
+          href={`/dashboard/companies/${data.internship.company.id}`}
+        >
+          {data.internship.company.name} (
+          {data.internship.company.companyIdentificationNumber})
         </Anchor>
       </Text>
     </Card>

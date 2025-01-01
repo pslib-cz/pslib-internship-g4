@@ -58,9 +58,12 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
 
   const updateURL = useCallback(() => {
     const params = new URLSearchParams();
-    if (state.filterAuthorGivenName) params.set("authorGivenName", state.filterAuthorGivenName);
-    if (state.filterAuthorSurname) params.set("authorSurname", state.filterAuthorSurname);
-    if (state.filterInternshipId) params.set("internship", state.filterInternshipId);
+    if (state.filterAuthorGivenName)
+      params.set("authorGivenName", state.filterAuthorGivenName);
+    if (state.filterAuthorSurname)
+      params.set("authorSurname", state.filterAuthorSurname);
+    if (state.filterInternshipId)
+      params.set("internship", state.filterInternshipId);
     params.set("orderBy", state.order);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
@@ -117,7 +120,8 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
               <Text
                 fw={700}
                 onClick={() => {
-                  const newOrder = state.order === "date" ? "date_desc" : "date";
+                  const newOrder =
+                    state.order === "date" ? "date_desc" : "date";
                   setState({ ...state, order: newOrder, page: 1 });
                 }}
                 style={{ cursor: "pointer" }}
@@ -309,7 +313,7 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
                       title: "Chyba",
                       message: "Smazání se nezdařilo",
                       color: "red",
-                    })
+                    }),
                   )
                   .finally(() => {
                     close();

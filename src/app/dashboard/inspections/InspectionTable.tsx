@@ -26,7 +26,12 @@ import {
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { type ListResult } from "@/types/data";
-import { getInspectionResultLabel, getInspectionTypeLabel, inspectionResults, inspectionTypes } from "@/data/lists";
+import {
+  getInspectionResultLabel,
+  getInspectionTypeLabel,
+  inspectionResults,
+  inspectionTypes,
+} from "@/data/lists";
 
 type TInspectionTableProps = {};
 type TInspectionTableState = {
@@ -64,11 +69,14 @@ const InspectionTable: FC<TInspectionTableProps> = () => {
 
   const updateURL = useCallback(() => {
     const params = new URLSearchParams();
-    if (state.filterInspectorGivenName) params.set("inspectorGivenName", state.filterInspectorGivenName);
-    if (state.filterInspectorSurname) params.set("inspectorSurname", state.filterInspectorSurname);
+    if (state.filterInspectorGivenName)
+      params.set("inspectorGivenName", state.filterInspectorGivenName);
+    if (state.filterInspectorSurname)
+      params.set("inspectorSurname", state.filterInspectorSurname);
     if (state.filterResult) params.set("result", state.filterResult);
     if (state.filterKind) params.set("kind", state.filterKind);
-    if (state.filterInternshipId) params.set("internshipId", state.filterInternshipId);
+    if (state.filterInternshipId)
+      params.set("internshipId", state.filterInternshipId);
     params.set("orderBy", state.order);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
@@ -122,7 +130,8 @@ const InspectionTable: FC<TInspectionTableProps> = () => {
               <Text
                 fw={700}
                 onClick={() => {
-                  const newOrder = state.order === "date" ? "date_desc" : "date";
+                  const newOrder =
+                    state.order === "date" ? "date_desc" : "date";
                   setState({ ...state, order: newOrder, page: 1 });
                 }}
                 style={{ cursor: "pointer" }}
@@ -255,17 +264,27 @@ const InspectionTable: FC<TInspectionTableProps> = () => {
           )}
           {data?.data.map((inspection) => (
             <Table.Tr key={inspection.id}>
-              <Table.Td>{new Date(inspection.date).toLocaleDateString()}</Table.Td>
+              <Table.Td>
+                {new Date(inspection.date).toLocaleDateString()}
+              </Table.Td>
               <Table.Td>
                 <Text
-                    style={{ cursor: "pointer", textDecoration: "underline" }}
-                    onClick={() => handleInternshipClick(inspection.internship.id)}
-                >{inspection.internship.id}</Text>
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                  onClick={() =>
+                    handleInternshipClick(inspection.internship.id)
+                  }
+                >
+                  {inspection.internship.id}
+                </Text>
               </Table.Td>
               <Table.Td>{inspection.inspectionUser.givenName}</Table.Td>
               <Table.Td>{inspection.inspectionUser.surname}</Table.Td>
-              <Table.Td>{getInspectionResultLabel(String(inspection.result))}</Table.Td>
-              <Table.Td>{getInspectionTypeLabel(String(inspection.kind))}</Table.Td>
+              <Table.Td>
+                {getInspectionResultLabel(String(inspection.result))}
+              </Table.Td>
+              <Table.Td>
+                {getInspectionTypeLabel(String(inspection.kind))}
+              </Table.Td>
               <Table.Td>
                 <ActionIcon
                   variant="light"
@@ -332,7 +351,7 @@ const InspectionTable: FC<TInspectionTableProps> = () => {
                       title: "Chyba",
                       message: "Smazání se nezdařilo",
                       color: "red",
-                    })
+                    }),
                   )
                   .finally(() => {
                     close();

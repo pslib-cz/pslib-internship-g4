@@ -168,7 +168,11 @@ const Page = ({ params }: { params: { id: string } }) => {
           </RichTextEditor>
           <Group justify="flex-start" mt="md">
             <Button type="submit">Uložit</Button>
-            <Button component={Link} href="/dashboard/diaries" variant="default">
+            <Button
+              component={Link}
+              href="/dashboard/diaries"
+              variant="default"
+            >
               Storno
             </Button>
           </Group>

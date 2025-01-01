@@ -26,7 +26,12 @@ import { useMediaQuery } from "@mantine/hooks";
 import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { getInternshipKindLabel, getInternshipStateLabel, internshipKinds, internshipStates } from "@/data/lists";
+import {
+  getInternshipKindLabel,
+  getInternshipStateLabel,
+  internshipKinds,
+  internshipStates,
+} from "@/data/lists";
 
 type TInternshipsTableProps = {};
 type TInternshipsTableState = {
@@ -73,7 +78,9 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       : undefined,
     filterCompanyName: searchParams.get("companyName") ?? "",
     filterClassname: searchParams.get("classname") ?? "",
-    filterKind: searchParams.get("kind") ? parseInt(searchParams.get("kind") as string) : undefined,
+    filterKind: searchParams.get("kind")
+      ? parseInt(searchParams.get("kind") as string)
+      : undefined,
     order: searchParams.get("orderBy") ?? "created",
     page: searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
@@ -191,8 +198,12 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       params.set("companyName", state.filterCompanyName);
     state.filterClassname !== undefined &&
       params.set("classname", state.filterClassname);
-    state.filterKind !== undefined ? params.set("kind", String(state.filterKind)) : params.delete("kind");
-    state.filterState !== undefined ? params.set("state", String(state.filterState)) : params.delete("state");
+    state.filterKind !== undefined
+      ? params.set("kind", String(state.filterKind))
+      : params.delete("kind");
+    state.filterState !== undefined
+      ? params.set("state", String(state.filterState))
+      : params.delete("state");
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
@@ -370,48 +381,54 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
               />
             </Table.Th>
             <Table.Th>
-            <NativeSelect
-              size="xs"
-              data={[
-                { value: "", label: "- Vše -" },
-                ...internshipKinds.map((kind) => ({
-                  value: String(kind.value), // Převod na řetězec
-                  label: kind.label,
-                })),
-              ]}
-              value={state.filterKind !== undefined ? String(state.filterKind) : ""} // Převod na řetězec
-              onChange={(event) =>
-                setState({
-                  ...state,
-                  filterKind: event.currentTarget.value
-                    ? parseInt(event.currentTarget.value)
-                    : undefined,
-                  page: 1,
-                })
-              }
-            />
+              <NativeSelect
+                size="xs"
+                data={[
+                  { value: "", label: "- Vše -" },
+                  ...internshipKinds.map((kind) => ({
+                    value: String(kind.value), // Převod na řetězec
+                    label: kind.label,
+                  })),
+                ]}
+                value={
+                  state.filterKind !== undefined ? String(state.filterKind) : ""
+                } // Převod na řetězec
+                onChange={(event) =>
+                  setState({
+                    ...state,
+                    filterKind: event.currentTarget.value
+                      ? parseInt(event.currentTarget.value)
+                      : undefined,
+                    page: 1,
+                  })
+                }
+              />
             </Table.Th>
             <Table.Th>
-            <NativeSelect
-              size="xs"
-              data={[
-                { value: "", label: "- Vše -" },
-                ...internshipStates.map((state) => ({
-                  value: String(state.value), // Převod na řetězec
-                  label: state.label,
-                })),
-              ]}
-              value={state.filterState !== undefined ? String(state.filterState) : ""} // Převod na řetězec
-              onChange={(event) =>
-                setState({
-                  ...state,
-                  filterState: event.currentTarget.value
-                    ? parseInt(event.currentTarget.value)
-                    : undefined,
-                  page: 1,
-                })
-              }
-            />
+              <NativeSelect
+                size="xs"
+                data={[
+                  { value: "", label: "- Vše -" },
+                  ...internshipStates.map((state) => ({
+                    value: String(state.value), // Převod na řetězec
+                    label: state.label,
+                  })),
+                ]}
+                value={
+                  state.filterState !== undefined
+                    ? String(state.filterState)
+                    : ""
+                } // Převod na řetězec
+                onChange={(event) =>
+                  setState({
+                    ...state,
+                    filterState: event.currentTarget.value
+                      ? parseInt(event.currentTarget.value)
+                      : undefined,
+                    page: 1,
+                  })
+                }
+              />
             </Table.Th>
             <Table.Th></Table.Th>
             <Table.Th>

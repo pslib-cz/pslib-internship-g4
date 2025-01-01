@@ -84,7 +84,10 @@ const Page = () => {
           label: `${user.surname}, ${user.givenName} (${user.email})`,
           value: user.id,
         }));
-        setUsers([{ label: "- Vyberte kontroléra -", value: "" }, ...formattedUsers]);
+        setUsers([
+          { label: "- Vyberte kontroléra -", value: "" },
+          ...formattedUsers,
+        ]);
       })
       .catch((error) => setError(error.message))
       .finally(() => setLoadingUsers(false));

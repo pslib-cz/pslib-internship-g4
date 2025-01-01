@@ -1,7 +1,16 @@
 "use client";
 
 import React from "react";
-import { Title, TextInput, Button, Group, Container, Anchor, Breadcrumbs, Text } from "@mantine/core";
+import {
+  Title,
+  TextInput,
+  Button,
+  Group,
+  Container,
+  Anchor,
+  Breadcrumbs,
+  Text,
+} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { RichTextEditor } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
@@ -112,7 +121,11 @@ const Page = () => {
           </RichTextEditor>
           <Group justify="flex-start" mt="md">
             <Button type="submit">Vytvořit</Button>
-            <Button component={Link} href="/dashboard/diaries" variant="default">
+            <Button
+              component={Link}
+              href="/dashboard/diaries"
+              variant="default"
+            >
               Storno
             </Button>
           </Group>

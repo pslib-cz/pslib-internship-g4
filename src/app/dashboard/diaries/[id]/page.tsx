@@ -32,7 +32,10 @@ const DiaryDetails = ({ data }: { data: DiaryRecord }) => {
       <Title order={2}>Detail záznamu deníku</Title>
       <Text fw={700}>ID praxe</Text>
       <Text>
-        <Anchor component={Link} href={`/dashboard/internships/${data.internshipId}`}>
+        <Anchor
+          component={Link}
+          href={`/dashboard/internships/${data.internshipId}`}
+        >
           {data.internshipId}
         </Anchor>
       </Text>

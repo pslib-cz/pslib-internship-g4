@@ -122,8 +122,8 @@ const Page = ({ params }: { params: { id: string } }) => {
         <form
           onSubmit={form.onSubmit((values) => {
             const payload = {
-                ...values,
-                date: `${values.date}T00:00:00.000Z`, // Přidání časové složky
+              ...values,
+              date: `${values.date}T00:00:00.000Z`, // Přidání časové složky
             };
             fetch(`/api/inspections/${id}`, {
               method: "PUT",
