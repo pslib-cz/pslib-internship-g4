@@ -14,6 +14,7 @@ import {
   Alert,
   Pagination,
   Flex,
+  Select,
   NativeSelect,
 } from "@mantine/core";
 import {
@@ -46,6 +47,7 @@ type TInternshipsTableState = {
   filterCompanyName: string | undefined;
   filterClassname: string | undefined;
   filterState: number | undefined;
+  filterKind: number | undefined;
   order: string;
   page: number;
   size: number;
@@ -60,6 +62,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
   const [data, setData] =
     useState<ListResult<InternshipWithCompanyLocationSetUser> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [state, setState] = useState<TInternshipsTableState>({
     filterUser: searchParams.get("user") ?? "",
     filterUserGivenName: searchParams.get("givenName") ?? "",
@@ -78,6 +81,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       : undefined,
     filterCompanyName: searchParams.get("companyName") ?? "",
     filterClassname: searchParams.get("classname") ?? "",
+    filterKind: searchParams.get("kind") ? parseInt(searchParams.get("kind") as string) : undefined,
     order: searchParams.get("orderBy") ?? "created",
     page: searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
@@ -101,12 +105,14 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       companyName: string | undefined,
       classname: string | undefined,
       state: number | undefined,
+      kind: number | undefined,
       orderBy: string,
       page: number = 1,
       pageSize: number = 10,
     ) => {
+      setLoading(true);
       fetch(
-        `/api/internships?user=${user}&givenName=${givenName}&surname=${surname}&set=${set !== undefined ? set : ""}&year=${year !== undefined ? year : ""}&company=${company !== undefined ? company : ""}&state=${state !== undefined ? state : ""}&companyName=${companyName}&class=${classname}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
+        `/api/internships?user=${user}&givenName=${givenName}&surname=${surname}&set=${set !== undefined ? set : ""}&year=${year !== undefined ? year : ""}&company=${company !== undefined ? company : ""}&state=${state !== undefined ? state : ""}&kind=${kind !== undefined ? kind : ""}&companyName=${companyName}&class=${classname}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
         {
           method: "GET",
           headers: {
@@ -128,7 +134,9 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
         .catch((error) => {
           setError(error.message);
         })
-        .finally(() => {});
+        .finally(() => {
+          setLoading(false);
+        });
     },
     [],
   );
@@ -150,6 +158,9 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
     const searchedState = searchParams.get("state")
       ? parseInt(searchParams.get("state") as string)
       : undefined;
+    const searchedKind = searchParams.get("kind")
+      ? parseInt(searchParams.get("kind") as string)
+      : undefined;
     const searchedCompanyName = searchParams.get("companyName") ?? "";
     const searchedClassname = searchParams.get("classname") ?? "";
     const orderBy = searchParams.get("orderBy") ?? "created";
@@ -169,6 +180,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       filterCompanyName: searchedCompanyName,
       filterClassname: searchedClassname,
       filterState: searchedState,
+      filterKind: searchedKind,
       order: orderBy,
       page: paginationPage,
       size: paginationSize,
@@ -192,8 +204,8 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       params.set("companyName", state.filterCompanyName);
     state.filterClassname !== undefined &&
       params.set("classname", state.filterClassname);
-    state.filterState !== undefined &&
-      params.set("state", String(state.filterState));
+    state.filterState !== undefined ? params.set("state", String(state.filterState)) : params.delete("state");
+    state.filterKind !== undefined ? params.set("kind", String(state.filterKind)) : params.delete("kind");
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
@@ -209,6 +221,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       state.filterCompanyName,
       state.filterClassname,
       state.filterState,
+      state.filterKind,
       state.order,
       state.page,
       state.size,
@@ -368,26 +381,47 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
               />
             </Table.Th>
             <Table.Th>
-              <NativeSelect
-                size="xs"
-                value={state.filterState}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterState: event.currentTarget.value
-                      ? parseInt(event.currentTarget.value)
-                      : undefined,
-                    page: 1,
-                  });
-                }}
-              >
-                <option value="">Vše</option>
-                <option value="0">Nevyřízená</option>
-                <option value="1">Schválená</option>
-                <option value="2">Zamítnutá</option>
-              </NativeSelect>
+            <NativeSelect
+              size="xs"
+              data={[
+                { value: "", label: "- Vše -" },
+                ...internshipKinds.map((kind) => ({
+                  value: kind.value.toString(),
+                  label: kind.label,
+                })),
+              ]}
+              value={state.filterKind?.toString() ?? ""}
+              onChange={(event) => {
+                const value = event.currentTarget.value;
+                setState({
+                  ...state,
+                  filterKind: value ? parseInt(value) : undefined,
+                  page: 1,
+                });
+              }}
+            />
             </Table.Th>
-            <Table.Th></Table.Th>
+            <Table.Th>
+            <NativeSelect
+              size="xs"
+              data={[
+                { value: "", label: "- Vše -" },
+                ...internshipStates.map((state) => ({
+                  value: state.value.toString(),
+                  label: state.label,
+                })),
+              ]}
+              value={state.filterState?.toString() ?? ""}
+              onChange={(event) => {
+                const value = event.currentTarget.value;
+                setState({
+                  ...state,
+                  filterState: value ? parseInt(value) : undefined,
+                  page: 1,
+                });
+              }}
+/>
+            </Table.Th>
             <Table.Th></Table.Th>
             <Table.Th>
               <Button
@@ -403,6 +437,8 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                     filterCompany: undefined,
                     filterCompanyName: "",
                     filterClassname: "",
+                    filterState: undefined,
+                    filterKind: undefined,
                     order: "created",
                     page: 1,
                   });
@@ -414,6 +450,13 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
+          {loading && (
+            <Table.Tr>
+              <Table.Td colSpan={100}>
+                Načítám data...
+              </Table.Td>
+            </Table.Tr>
+          )}
           {error && (
             <Table.Tr>
               <Table.Td colSpan={100}>
@@ -536,6 +579,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                       state.filterCompanyName,
                       state.filterClassname,
                       state.filterState,
+                      state.filterKind,
                       state.order,
                       state.page,
                       state.size,

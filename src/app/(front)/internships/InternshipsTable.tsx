@@ -15,6 +15,7 @@ import {
   Flex,
   Group,
   Tooltip,
+  NativeSelect,
 } from "@mantine/core";
 import {
   IconInfoSmall,
@@ -25,7 +26,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { getInternshipKindLabel, getInternshipStateLabel } from "@/data/lists";
+import { getInternshipKindLabel, getInternshipStateLabel, internshipKinds, internshipStates } from "@/data/lists";
 
 type TInternshipsTableProps = {};
 type TInternshipsTableState = {
@@ -38,6 +39,7 @@ type TInternshipsTableState = {
   filterCompanyName: string | undefined;
   filterClassname: string | undefined;
   filterState: number | undefined;
+  filterKind: number | undefined;
   order: string;
   page: number;
   size: number;
@@ -71,6 +73,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       : undefined,
     filterCompanyName: searchParams.get("companyName") ?? "",
     filterClassname: searchParams.get("classname") ?? "",
+    filterKind: searchParams.get("kind") ? parseInt(searchParams.get("kind") as string) : undefined,
     order: searchParams.get("orderBy") ?? "created",
     page: searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
@@ -92,12 +95,13 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       companyName: string | undefined,
       classname: string | undefined,
       state: number | undefined,
+      kind: number | undefined,
       orderBy: string,
       page: number = 1,
       pageSize: number = 10,
     ) => {
       fetch(
-        `/api/internships?user=${user}&givenName=${givenName}&surname=${surname}&set=${set !== undefined ? set : ""}&year=${year !== undefined ? year : ""}&company=${company !== undefined ? company : ""}&state=${state !== undefined ? state : ""}&companyName=${companyName}&class=${classname}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
+        `/api/internships?user=${user}&givenName=${givenName}&surname=${surname}&set=${set !== undefined ? set : ""}&year=${year !== undefined ? year : ""}&company=${company !== undefined ? company : ""}&state=${state !== undefined ? state : ""}&kind=${kind ?? ""}&companyName=${companyName}&class=${classname}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
         {
           method: "GET",
           headers: {
@@ -141,6 +145,9 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
     const searchedState = searchParams.get("state")
       ? parseInt(searchParams.get("state") as string)
       : undefined;
+    const searchedKind = searchParams.get("kind")
+      ? parseInt(searchParams.get("kind") as string)
+      : undefined;
     const searchedCompanyName = searchParams.get("companyName") ?? "";
     const searchedClassname = searchParams.get("classname") ?? "";
     const orderBy = searchParams.get("orderBy") ?? "created";
@@ -160,6 +167,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       filterCompanyName: searchedCompanyName,
       filterClassname: searchedClassname,
       filterState: searchedState,
+      filterKind: searchedKind,
       order: orderBy,
       page: paginationPage,
       size: paginationSize,
@@ -183,8 +191,8 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       params.set("companyName", state.filterCompanyName);
     state.filterClassname !== undefined &&
       params.set("classname", state.filterClassname);
-    state.filterState !== undefined &&
-      params.set("state", String(state.filterState));
+    state.filterKind !== undefined ? params.set("kind", String(state.filterKind)) : params.delete("kind");
+    state.filterState !== undefined ? params.set("state", String(state.filterState)) : params.delete("state");
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
@@ -200,6 +208,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       state.filterCompanyName,
       state.filterClassname,
       state.filterState,
+      state.filterKind,
       state.order,
       state.page,
       state.size,
@@ -360,8 +369,50 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                 }}
               />
             </Table.Th>
-            <Table.Th></Table.Th>
-            <Table.Th></Table.Th>
+            <Table.Th>
+            <NativeSelect
+              size="xs"
+              data={[
+                { value: "", label: "- Vše -" },
+                ...internshipKinds.map((kind) => ({
+                  value: String(kind.value), // Převod na řetězec
+                  label: kind.label,
+                })),
+              ]}
+              value={state.filterKind !== undefined ? String(state.filterKind) : ""} // Převod na řetězec
+              onChange={(event) =>
+                setState({
+                  ...state,
+                  filterKind: event.currentTarget.value
+                    ? parseInt(event.currentTarget.value)
+                    : undefined,
+                  page: 1,
+                })
+              }
+            />
+            </Table.Th>
+            <Table.Th>
+            <NativeSelect
+              size="xs"
+              data={[
+                { value: "", label: "- Vše -" },
+                ...internshipStates.map((state) => ({
+                  value: String(state.value), // Převod na řetězec
+                  label: state.label,
+                })),
+              ]}
+              value={state.filterState !== undefined ? String(state.filterState) : ""} // Převod na řetězec
+              onChange={(event) =>
+                setState({
+                  ...state,
+                  filterState: event.currentTarget.value
+                    ? parseInt(event.currentTarget.value)
+                    : undefined,
+                  page: 1,
+                })
+              }
+            />
+            </Table.Th>
             <Table.Th></Table.Th>
             <Table.Th>
               <Button
@@ -375,6 +426,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                     filterSet: undefined,
                     filterYear: undefined,
                     filterCompany: undefined,
+                    filterKind: undefined,
                     filterCompanyName: "",
                     filterClassname: "",
                     filterState: undefined,
