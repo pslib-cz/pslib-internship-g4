@@ -143,17 +143,37 @@ export async function PUT(
       status: 403,
     });
   }
-  const body = await request.json();
-  let inspection = await prisma.inspection.update({
-    where: {
-      id: Number(id),
-    },
-    data: body as Inspection,
-  });
-  if (!inspection) {
-    return new Response("Inspection not Found", {
-      status: 404,
+
+  try {
+    const body = await request.json();
+
+    // Validace a konverze hodnot
+    const updateData = {
+      ...body,
+      result: body.result !== undefined ? Number(body.result) : undefined,
+      kind: body.kind !== undefined ? Number(body.kind) : undefined,
+      date: body.date ? new Date(body.date) : undefined,
+    };
+
+    // Aktualizace záznamu
+    const inspection = await prisma.inspection.update({
+      where: {
+        id: Number(id),
+      },
+      data: updateData,
+    });
+
+    if (!inspection) {
+      return new Response("Inspection not Found", {
+        status: 404,
+      });
+    }
+
+    return Response.json(inspection);
+  } catch (error) {
+    console.error("Error updating inspection:", error);
+    return new Response("Invalid request data", {
+      status: 400,
     });
   }
-  return Response.json(inspection);
 }

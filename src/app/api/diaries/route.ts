@@ -1,13 +1,15 @@
 import { type NextRequest } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/utils/db";
-import { Diary } from "@prisma/client";
 import { ListResult } from "@/types/data";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const internshipId = searchParams.get("internship");
   const orderBy = searchParams.get("orderBy");
+  const authorId = searchParams.get("authorId");
+  const authorGivenName = searchParams.get("authorGivenName");
+  const authorSurname = searchParams.get("authorSurname");
   const page: number | null =
     searchParams.get("page") !== null
       ? parseInt(searchParams.get("page") ?? "")
@@ -16,30 +18,30 @@ export async function GET(request: NextRequest) {
     searchParams.get("size") !== null
       ? parseInt(searchParams.get("size") ?? "")
       : null;
+
+  const whereClause: any = {
+    internshipId: internshipId || undefined,
+    createdById: authorId || undefined,
+    createdBy: {
+      givenName: authorGivenName ? { contains: authorGivenName } : undefined,
+      surname: authorSurname ? { contains: authorSurname } : undefined,
+    },
+  };
+
   let summary = await prisma.diary.aggregate({
     _count: true,
-    where: {
-      internshipId: {
-        equals: internshipId || undefined,
-      },
-    },
+    where: whereClause,
   });
 
-  let internship = await prisma.internship.findUnique({
-    where: {
-      id: internshipId || undefined,
-    },
-  });
-  if (!internship) {
-    return new Response("Internship not found", {
-      status: 404,
-    });
-  }
-
-  let diaries: Diary[] = await prisma.diary.findMany({
-    where: {
-      internshipId: {
-        equals: internshipId || undefined,
+  let diaries = await prisma.diary.findMany({
+    where: whereClause,
+    include: {
+      createdBy: {
+        select: {
+          id: true,
+          givenName: true,
+          surname: true,
+        },
       },
     },
     orderBy: {
@@ -48,7 +50,8 @@ export async function GET(request: NextRequest) {
     skip: page !== null && size !== null ? page * size : undefined,
     take: size !== null ? size : undefined,
   });
-  let result: ListResult<Diary> = {
+
+  let result: ListResult<any> = {
     data: diaries,
     count: diaries.length,
     total: summary._count || 0,
@@ -67,6 +70,7 @@ export async function POST(request: NextRequest) {
       status: 401,
     });
   }
+
   const internship = await prisma.internship.findUnique({
     where: {
       id: body.internshipId,
@@ -77,6 +81,7 @@ export async function POST(request: NextRequest) {
       status: 404,
     });
   }
+
   const diary = await prisma.diary.create({
     data: {
       internshipId: body.internshipId,
@@ -85,6 +90,16 @@ export async function POST(request: NextRequest) {
       createdById: session.user.id,
       text: body.text,
     },
+    include: {
+      createdBy: {
+        select: {
+          id: true,
+          givenName: true,
+          surname: true,
+        },
+      },
+    },
   });
+
   return Response.json(diary, { status: 201 });
 }

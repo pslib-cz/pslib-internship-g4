@@ -11,6 +11,7 @@ import {
   Text,
 } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
+import DiaryTable from "./DiaryTable";
 
 const Page = () => {
   return (
@@ -32,7 +33,9 @@ const Page = () => {
           Nový záznam
         </Button>
       </Box>
-      <ScrollArea type="auto"></ScrollArea>
+      <ScrollArea type="auto">
+        <DiaryTable />
+      </ScrollArea>
     </>
   );
 };
