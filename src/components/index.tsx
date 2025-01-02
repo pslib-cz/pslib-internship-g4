@@ -10,6 +10,7 @@ export {
   SignInButton,
   SignOutButton,
 } from "./SignButton/SignButton";
-export { RoleBadge } from "./RoleBadge/RoleBadge";
-export { MainLogo } from "./MainLogo/MainLogo";
-export { UserAvatar } from "./UserAvatar/UserAvatar";
+export { default as RoleBadge } from "./RoleBadge/RoleBadge";
+export { default as MainLogo } from "./MainLogo/MainLogo";
+export { default as UserAvatar } from "./UserAvatar/UserAvatar";
+export { default as SortableHeader } from "./SortableHeader/SortableHeader";

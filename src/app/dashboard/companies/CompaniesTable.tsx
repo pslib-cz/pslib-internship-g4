@@ -21,8 +21,6 @@ import {
   IconInfoSmall,
   IconTrash,
   IconEdit,
-  IconChevronDown,
-  IconChevronUp,
   IconCheck,
   IconX,
 } from "@tabler/icons-react";
@@ -31,6 +29,7 @@ import { notifications } from "@mantine/notifications";
 import { CompanyWithLocation } from "@/types/entities";
 import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { SortableHeader } from "@/components";
 
 type TCompaniesTableProps = {};
 type TCompaniesTableState = {
@@ -183,21 +182,12 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
         <Table.Thead>
           <Table.Tr>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder = state.order === "name" ? "name_desc" : "name";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Název{" "}
-                {state.order === "name" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "name_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+              <SortableHeader
+                label="Název"
+                currentOrder={state.order}
+                columnKey="name"
+                onSort={(newOrder) => setState({ ...state, order: newOrder })}
+              />
             </Table.Th>
             <Table.Th>
               <Text fw={700}>IČO</Text>
@@ -206,42 +196,20 @@ const CompaniesTable: FC = (TCompaniesTableProps) => {
               <Text fw={700}>Aktivní</Text>
             </Table.Th>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "municipality"
-                      ? "municipality_desc"
-                      : "municipality";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Obec{" "}
-                {state.order === "municipality" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "municipality_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+              <SortableHeader
+                label="Obec"
+                currentOrder={state.order}
+                columnKey="municipality"
+                onSort={(newOrder) => setState({ ...state, order: newOrder })}
+              />
             </Table.Th>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "country" ? "country_desc" : "country";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Stát{" "}
-                {state.order === "country" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "country_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+              <SortableHeader
+                label="Stát"
+                currentOrder={state.order}
+                columnKey="country"
+                onSort={(newOrder) => setState({ ...state, order: newOrder })}
+              />
             </Table.Th>
             <Table.Th>Možnosti</Table.Th>
           </Table.Tr>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useEffect, useState, useCallback } from "react";
+import React, { FC, useEffect, useState, useCallback, useContext } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -14,15 +14,12 @@ import {
   Alert,
   Pagination,
   Flex,
-  Select,
   NativeSelect,
 } from "@mantine/core";
 import {
   IconInfoSmall,
   IconTrash,
   IconEdit,
-  IconChevronDown,
-  IconChevronUp,
 } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -35,6 +32,8 @@ import {
   internshipKinds,
   internshipStates,
 } from "@/data/lists";
+import { SortableHeader } from "@/components";
+import { AccountDrawerContext } from "@/providers/AccountDrawerProvider";
 
 type TInternshipsTableProps = {};
 type TInternshipsTableState = {
@@ -57,6 +56,7 @@ const STORAGE_ID = "internships-table";
 
 const InternshipsTable: FC = (TInternshipsTableProps) => {
   const searchParams = useSearchParams();
+  const { pageSize: generalPageSize } = useContext(AccountDrawerContext);
   const [loadTableState, storeTableState, removeTableState] =
     useSessionStorage<TInternshipsTableState>(STORAGE_ID);
   const [data, setData] =
@@ -88,9 +88,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
     page: searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
       : 1,
-    size: searchParams.get("size")
-      ? parseInt(searchParams.get("size") as string)
-      : 10,
+    size: parseInt(searchParams.get("size") ?? `${generalPageSize}`),
   });
   const [deleteOpened, { open, close }] = useDisclosure(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -171,7 +169,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       : 1;
     const paginationSize = searchParams.get("size")
       ? parseInt(searchParams.get("size") as string)
-      : 10;
+      : generalPageSize;
     let URLState: TInternshipsTableState = {
       filterUser: searchedUser,
       filterUserGivenName: searchedGivenName,
@@ -188,7 +186,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       size: paginationSize,
     };
     setState({ ...URLState });
-  }, [searchParams, loadTableState]);
+  }, [searchParams, loadTableState, generalPageSize]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -240,40 +238,20 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
         <Table.Thead>
           <Table.Tr>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "" ? "givenName_desc" : "givenName";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Jméno{" "}
-                {state.order === "givenName" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "givenName_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+            <SortableHeader
+                label="Jméno"
+                currentOrder={state.order}
+                columnKey="givenName"
+                onSort={(newOrder) => setState({ ...state, order: newOrder })}
+              />
             </Table.Th>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "" ? "surname_desc" : "surname";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Příjmení{" "}
-                {state.order === "surname" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "surname_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+            <SortableHeader
+                label="Příjmení"
+                currentOrder={state.order}
+                columnKey="surname"
+                onSort={(newOrder) => setState({ ...state, order: newOrder })}
+              />
             </Table.Th>
             <Table.Th>
               <Text fw={700}>Sada</Text>
@@ -294,22 +272,12 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
               <Text fw={700}>Stav</Text>
             </Table.Th>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder =
-                    state.order === "created" ? "created_desc" : "created";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Vytvořeno{" "}
-                {state.order === "created" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "created_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+            <SortableHeader
+                label="Vytvořeno"
+                currentOrder={state.order}
+                columnKey="created"
+                onSort={(newOrder) => setState({ ...state, order: newOrder })}
+              />
             </Table.Th>
             <Table.Th>Možnosti</Table.Th>
           </Table.Tr>

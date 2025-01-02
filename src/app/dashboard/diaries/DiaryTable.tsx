@@ -1,29 +1,29 @@
 "use client";
 
-import React, { FC, useEffect, useState, useCallback } from "react";
+import React, { FC, useEffect, useState, useCallback, useContext } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Table,
   Button,
   ActionIcon,
-  Text,
   TextInput,
   Modal,
   Group,
   Alert,
   Pagination,
   Flex,
+  Text,
 } from "@mantine/core";
 import {
   IconTrash,
   IconEdit,
   IconInfoSmall,
-  IconChevronDown,
-  IconChevronUp,
 } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { AccountDrawerContext } from "@/providers/AccountDrawerProvider";
+import { SortableHeader } from "@/components";
 import { type ListResult } from "@/types/data";
 
 type TDiaryTableProps = {};
@@ -38,6 +38,7 @@ type TDiaryTableState = {
 
 const DiaryTable: FC<TDiaryTableProps> = () => {
   const searchParams = useSearchParams();
+  const { pageSize: generalPageSize } = useContext(AccountDrawerContext);
   const [data, setData] = useState<ListResult<any> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -51,7 +52,7 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
     filterInternshipId: searchParams.get("internship") ?? "",
     order: searchParams.get("orderBy") ?? "date",
     page: parseInt(searchParams.get("page") ?? "1"),
-    size: parseInt(searchParams.get("size") ?? "10"),
+    size: parseInt(searchParams.get("size") ?? `${generalPageSize}`),
   };
 
   const [state, setState] = useState<TDiaryTableState>(initialState);
@@ -98,41 +99,18 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
     fetchData();
   }, [state, fetchData, updateURL]);
 
-  const handleInternshipClick = (internshipId: string) => {
-    setState({
-      ...state,
-      filterInternshipId: internshipId,
-      page: 1,
-    });
-  };
-
-  const truncateText = (text: string, length: number = 100) => {
-    if (text.length <= length) return text;
-    return `${text.substring(0, length)}...`;
-  };
-
   return (
     <>
       <Table>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  const newOrder =
-                    state.order === "date" ? "date_desc" : "date";
-                  setState({ ...state, order: newOrder, page: 1 });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Datum{" "}
-                {state.order === "date" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "date_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+              <SortableHeader
+                label="Datum"
+                currentOrder={state.order}
+                columnKey="date"
+                onSort={(newOrder) => setState({ ...state, order: newOrder })}
+              />
             </Table.Th>
             <Table.Th>ID praxe</Table.Th>
             <Table.Th>Jméno autora</Table.Th>
@@ -195,7 +173,7 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
                     filterInternshipId: "",
                     order: "date",
                     page: 1,
-                    size: 10,
+                    size: generalPageSize,
                   })
                 }
               >
@@ -225,28 +203,10 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
           {data?.data.map((diary) => (
             <Table.Tr key={diary.id}>
               <Table.Td>{new Date(diary.date).toLocaleDateString()}</Table.Td>
-              <Table.Td>
-                <Text
-                  style={{ cursor: "pointer", textDecoration: "underline" }}
-                  onClick={() => handleInternshipClick(diary.internshipId)}
-                >
-                  {diary.internshipId}
-                </Text>
-              </Table.Td>
+              <Table.Td>{diary.internshipId}</Table.Td>
               <Table.Td>{diary.createdBy.givenName}</Table.Td>
               <Table.Td>{diary.createdBy.surname}</Table.Td>
-              <Table.Td>
-                <Text>
-                  {truncateText(diary.text)}{" "}
-                  {diary.text.length > 100 && (
-                    <Link href={`/dashboard/diaries/${diary.id}`}>
-                      <Button size="xs" variant="subtle">
-                        Více
-                      </Button>
-                    </Link>
-                  )}
-                </Text>
-              </Table.Td>
+              <Table.Td>{diary.text}</Table.Td>
               <Table.Td>
                 <ActionIcon
                   variant="light"
@@ -278,7 +238,7 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
       </Table>
       <Flex justify="center">
         <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
+          total={Math.ceil((data?.total ?? 0) / (data?.size ?? generalPageSize))}
           value={state.page}
           onChange={(page) => setState({ ...state, page })}
         />
@@ -313,7 +273,7 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
                       title: "Chyba",
                       message: "Smazání se nezdařilo",
                       color: "red",
-                    }),
+                    })
                   )
                   .finally(() => {
                     close();
