@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useEffect, useState, useCallback } from "react";
+import React, { FC, useEffect, useState, useCallback, useContext } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -16,144 +16,84 @@ import {
   Flex,
   NativeSelect,
 } from "@mantine/core";
-import {
-  IconInfoSmall,
-  IconTrash,
-  IconEdit,
-  IconChevronDown,
-  IconChevronUp,
-  IconCheck,
-  IconChecks,
-  IconX,
-} from "@tabler/icons-react";
+import { IconTrash, IconEdit, IconInfoSmall, IconCheck, IconX } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { Set } from "@prisma/client";
+import { AccountDrawerContext } from "@/providers/AccountDrawerProvider";
+import { SortableHeader } from "@/components";
 import { type ListResult } from "@/types/data";
-import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { Set } from "@prisma/client";
 
 type TSetsTableProps = {};
 type TSetsTableState = {
-  filterName: string | undefined;
-  filterYear: number | undefined;
-  filterActive: boolean | undefined;
-  filterContinuous: boolean | undefined;
+  filterName: string;
+  filterYear: string;
+  filterActive: string;
+  filterContinuous: string;
   order: string;
   page: number;
   size: number;
 };
 
-const STORAGE_ID = "locations-table";
-
-const SetsTable: FC = (TSetsTableProps) => {
+const SetsTable: FC<TSetsTableProps> = () => {
   const searchParams = useSearchParams();
-  const [loadTableState, storeTableState, removeTableState] =
-    useSessionStorage<TSetsTableState>(STORAGE_ID);
+  const { pageSize: generalPageSize } = useContext(AccountDrawerContext);
+
+  const initialState: TSetsTableState = {
+    filterName: searchParams.get("name") ?? "",
+    filterYear: searchParams.get("year") ?? "",
+    filterActive: searchParams.get("active") ?? "",
+    filterContinuous: searchParams.get("continuous") ?? "",
+    order: searchParams.get("orderBy") ?? "name",
+    page: parseInt(searchParams.get("page") ?? "1"),
+    size: parseInt(searchParams.get("size") ?? `${generalPageSize}`),
+  };
+
+  const [state, setState] = useState<TSetsTableState>(initialState);
   const [data, setData] = useState<ListResult<Set> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [state, setState] = useState<TSetsTableState>({
-    filterName: "",
-    filterActive: undefined,
-    filterContinuous: undefined,
-    filterYear: undefined,
-    order: "name",
-    page: 1,
-    size: 10,
-  });
   const [deleteOpened, { open, close }] = useDisclosure(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const isMobile = useMediaQuery("(max-width: 50em)");
 
-  const fetchData = useCallback(
-    (
-      name: string | undefined,
-      year: number | undefined,
-      active: boolean | undefined,
-      continuous: boolean | undefined,
-      orderBy: string,
-      page: number = 1,
-      pageSize: number = 10,
-    ) => {
-      fetch(
-        `/api/sets?name=${name}&year=${year === undefined ? "" : year}&active=${active === undefined ? "" : active}&continuous=${continuous === undefined ? "" : continuous}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      )
-        .then((response) => {
-          if (!response.ok) {
-            setData(null);
-            setError("Došlo k chybě při získávání dat.");
-            throw new Error("Došlo k chybě při získávání dat.");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setData(data);
-        })
-        .catch((error) => {
-          setError(error.message);
-        })
-        .finally(() => {});
-    },
-    [],
-  );
-
-  useEffect(() => {
-    let storedState = loadTableState();
-    const searchedName = searchParams.get("name") ?? "";
-    const searchedYear = searchParams.get("year") ?? "";
-    const orderBy = searchParams.get("orderBy") ?? "name";
-    const paginationPage = searchParams.get("page")
-      ? parseInt(searchParams.get("page") as string)
-      : 1;
-    const paginationSize = searchParams.get("size")
-      ? parseInt(searchParams.get("size") as string)
-      : 10;
-    let URLState: TSetsTableState = {
-      filterName: searchedName,
-      filterActive: storedState?.filterActive,
-      filterContinuous: storedState?.filterContinuous,
-      filterYear: searchedYear ? parseInt(searchedYear) : undefined,
-      order: orderBy,
-      page: paginationPage,
-      size: paginationSize,
-    };
-    setState({ ...URLState });
-  }, [searchParams, loadTableState]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    state.filterName !== undefined && params.set("name", state.filterName);
-    state.filterYear !== undefined &&
-      params.set("year", state.filterYear.toString());
-    state.filterActive === undefined
-      ? params.set("active", "")
-      : params.set("active", state.filterActive === true ? "true" : "false");
-    state.filterContinuous === undefined
-      ? params.set("continuous", "")
-      : params.set(
-          "continuous",
-          state.filterContinuous === true ? "true" : "false",
-        );
+  const updateURL = useCallback(() => {
+    const params = new URLSearchParams();
+    if (state.filterName) params.set("name", state.filterName);
+    if (state.filterYear) params.set("year", state.filterYear);
+    if (state.filterActive) params.set("active", state.filterActive);
+    if (state.filterContinuous) params.set("continuous", state.filterContinuous);
+    params.set("orderBy", state.order);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
-    params.set("orderBy", state.order);
     window.history.replaceState(null, "", `?${params.toString()}`);
-    storeTableState(state);
-    fetchData(
-      state.filterName,
-      state.filterYear,
-      state.filterActive,
-      state.filterContinuous,
-      state.order,
-      state.page,
-      state.size,
-    );
-  }, [state, fetchData, searchParams, storeTableState]);
+  }, [state]);
+
+  const fetchData = useCallback(() => {
+    const params = new URLSearchParams({
+      name: state.filterName,
+      year: state.filterYear,
+      active: state.filterActive,
+      continuous: state.filterContinuous,
+      orderBy: state.order,
+      page: (state.page - 1).toString(),
+      size: state.size.toString(),
+    });
+
+    fetch(`/api/sets?${params.toString()}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Došlo k chybě při získávání dat.");
+        }
+        return response.json();
+      })
+      .then((data) => setData(data))
+      .catch((error) => setError(error.message));
+  }, [state]);
+
+  useEffect(() => {
+    updateURL();
+    fetchData();
+  }, [state, updateURL, fetchData]);
 
   return (
     <>
@@ -161,146 +101,88 @@ const SetsTable: FC = (TSetsTableProps) => {
         <Table.Thead>
           <Table.Tr>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder = state.order === "name" ? "name_desc" : "name";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Název{" "}
-                {state.order === "name" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "name_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+              <SortableHeader
+                label="Název"
+                currentOrder={state.order}
+                columnKey="name"
+                onSort={(newOrder) => setState({ ...state, order: newOrder })}
+              />
             </Table.Th>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder = state.order === "year" ? "year_desc" : "year";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Rok{" "}
-                {state.order === "year" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "year_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+              <SortableHeader
+                label="Rok"
+                currentOrder={state.order}
+                columnKey="year"
+                onSort={(newOrder) => setState({ ...state, order: newOrder })}
+              />
             </Table.Th>
-            <Table.Th>
-              <Text fw={700}>Aktivní</Text>
-            </Table.Th>
-            <Table.Th>
-              <Text fw={700}>Průběžná</Text>
-            </Table.Th>
+            <Table.Th>Aktivní</Table.Th>
+            <Table.Th>Průběžná</Table.Th>
             <Table.Th>Možnosti</Table.Th>
           </Table.Tr>
           <Table.Tr>
             <Table.Th>
               <TextInput
                 size="xs"
+                placeholder="Název"
                 value={state.filterName}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterName: event.currentTarget.value,
-                    page: 1,
-                  });
-                }}
+                onChange={(event) =>
+                  setState({ ...state, filterName: event.currentTarget.value, page: 1 })
+                }
               />
             </Table.Th>
             <Table.Th>
               <TextInput
                 size="xs"
+                placeholder="Rok"
                 value={state.filterYear}
-                onChange={(event) => {
-                  setState({
-                    ...state,
-                    filterYear:
-                      event.currentTarget.value !== undefined
-                        ? parseInt(event.currentTarget.value)
-                        : undefined,
-                    page: 1,
-                  });
-                }}
+                onChange={(event) =>
+                  setState({ ...state, filterYear: event.currentTarget.value, page: 1 })
+                }
               />
             </Table.Th>
             <Table.Th>
               <NativeSelect
                 size="xs"
-                value={
-                  state.filterActive === undefined
-                    ? ""
-                    : state.filterActive === true
-                      ? "true"
-                      : "false"
-                }
+                value={state.filterActive}
                 onChange={(event) =>
-                  setState({
-                    ...state,
-                    filterActive:
-                      event.currentTarget.value === ""
-                        ? undefined
-                        : event.currentTarget.value === "true"
-                          ? true
-                          : false,
-                    page: 1,
-                  })
+                  setState({ ...state, filterActive: event.currentTarget.value, page: 1 })
                 }
                 data={[
                   { label: "Vše", value: "" },
-                  { label: "Aktivní", value: "true" },
-                  { label: "Zrušená", value: "false" },
+                  { label: "Ano", value: "true" },
+                  { label: "Ne", value: "false" },
                 ]}
               />
             </Table.Th>
             <Table.Th>
               <NativeSelect
                 size="xs"
-                value={
-                  state.filterContinuous === undefined
-                    ? ""
-                    : state.filterContinuous === true
-                      ? "true"
-                      : "false"
-                }
+                value={state.filterContinuous}
                 onChange={(event) =>
-                  setState({
-                    ...state,
-                    filterContinuous:
-                      event.currentTarget.value === ""
-                        ? undefined
-                        : event.currentTarget.value === "true"
-                          ? true
-                          : false,
-                    page: 1,
-                  })
+                  setState({ ...state, filterContinuous: event.currentTarget.value, page: 1 })
                 }
                 data={[
                   { label: "Vše", value: "" },
-                  { label: "Souvislá", value: "false" },
-                  { label: "Průběžná", value: "true" },
+                  { label: "Ano", value: "true" },
+                  { label: "Ne", value: "false" },
                 ]}
               />
             </Table.Th>
             <Table.Th>
               <Button
                 size="xs"
-                onClick={(event) => {
+                onClick={() =>
                   setState({
-                    ...state,
                     filterName: "",
+                    filterYear: "",
+                    filterActive: "",
+                    filterContinuous: "",
                     order: "name",
                     page: 1,
-                  });
-                }}
+                    size: generalPageSize,
+                  })
+                }
               >
                 Vše
               </Button>
@@ -310,139 +192,90 @@ const SetsTable: FC = (TSetsTableProps) => {
         <Table.Tbody>
           {error && (
             <Table.Tr>
-              <Table.Td colSpan={100}>
+              <Table.Td colSpan={5}>
                 <Alert color="red">{error}</Alert>
               </Table.Td>
             </Table.Tr>
           )}
-          {data && data.total === 0 && (
-            <Table.Tr>
-              <Table.Td colSpan={100}>
-                Žádná sada nevyhovuje podmínkám.
+          {data?.data.map((set) => (
+            <Table.Tr key={set.id}>
+              <Table.Td>{set.name}</Table.Td>
+              <Table.Td>{set.year}</Table.Td>
+              <Table.Td>{set.active ? <IconCheck /> : <IconX />}</Table.Td>
+              <Table.Td>{set.continuous ? <IconCheck /> : <IconX />}</Table.Td>
+              <Table.Td>
+                <ActionIcon
+                  variant="light"
+                  component={Link}
+                  href={`/dashboard/sets/${set.id}`}
+                >
+                  <IconInfoSmall />
+                </ActionIcon>
+                <ActionIcon
+                  variant="light"
+                  color="red"
+                  onClick={() => {
+                    setDeleteId(set.id);
+                    open();
+                  }}
+                >
+                  <IconTrash />
+                </ActionIcon>
+                <ActionIcon
+                  variant="light"
+                  component={Link}
+                  href={`/dashboard/sets/${set.id}/edit`}
+                >
+                  <IconEdit />
+                </ActionIcon>
               </Table.Td>
             </Table.Tr>
-          )}
-          {data &&
-            data.data.map((set) => (
-              <Table.Tr key={set.id}>
-                <Table.Td>
-                  <Text>{set.name}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{set.year}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>
-                    {set.active ? (
-                      set.editable ? (
-                        <IconChecks />
-                      ) : (
-                        <IconCheck />
-                      )
-                    ) : (
-                      <IconX />
-                    )}
-                  </Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text>{set.continuous ? <IconCheck /> : <IconX />}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <ActionIcon
-                    variant="light"
-                    component={Link}
-                    href={"/dashboard/sets/" + set.id}
-                  >
-                    <IconInfoSmall />
-                  </ActionIcon>{" "}
-                  <ActionIcon
-                    variant="light"
-                    color="red"
-                    onClick={() => {
-                      setDeleteId(set.id);
-                      open();
-                    }}
-                  >
-                    <IconTrash />
-                  </ActionIcon>{" "}
-                  <ActionIcon
-                    variant="light"
-                    component={Link}
-                    href={"/dashboard/sets/" + set.id + "/edit"}
-                  >
-                    <IconEdit />
-                  </ActionIcon>
-                </Table.Td>
-              </Table.Tr>
-            ))}
+          ))}
         </Table.Tbody>
       </Table>
       <Flex justify="center">
         <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
-          value={(data?.page ?? 1) + 1}
-          onChange={(page) =>
-            /*setPage(page)*/ setState({ ...state, page: page })
-          }
+          total={Math.ceil((data?.total ?? 0) / (data?.size ?? generalPageSize))}
+          value={state.page}
+          onChange={(page) => setState({ ...state, page })}
         />
       </Flex>
       <Modal
         opened={deleteOpened}
-        centered
         onClose={close}
-        size="auto"
         title="Odstranění sady"
-        fullScreen={isMobile}
-        transitionProps={{ transition: "fade", duration: 200 }}
+        centered
+        size="auto"
       >
-        <Text>Opravdu si přejete tuto sadu odstranit?</Text>
-        <Text fw={700}>Data pak už nebude možné obnovit.</Text>
-        <Group mt="xl">
+        <Text>Opravdu chcete tuto sadu odstranit?</Text>
+        <Group mt="md">
           <Button
+            color="red"
             onClick={() => {
-              if (deleteId !== null) {
-                fetch("/api/sets/" + deleteId, {
-                  method: "DELETE",
-                })
-                  .then((response) => {
-                    if (!response.ok) {
-                      throw new Error("Network response was not ok");
-                    }
+              if (deleteId) {
+                fetch(`/api/sets/${deleteId}`, { method: "DELETE" })
+                  .then(() => {
                     notifications.show({
-                      title: "Povedlo se!",
+                      title: "Úspěch",
                       message: "Sada byla odstraněna.",
-                      color: "lime",
+                      color: "green",
                     });
-                    fetchData(
-                      state.filterName,
-                      state.filterYear,
-                      state.filterActive,
-                      state.filterContinuous,
-                      state.order,
-                      state.page,
-                      state.size,
-                    );
+                    fetchData();
                   })
-                  .catch((error) => {
+                  .catch(() =>
                     notifications.show({
-                      title: "Chyba!",
-                      message: "Smazání sady nebylo úspěšné.",
+                      title: "Chyba",
+                      message: "Odstranění se nezdařilo.",
                       color: "red",
-                    });
-                  })
-                  .finally(() => {
-                    close();
-                  });
+                    })
+                  )
+                  .finally(() => close());
               }
             }}
-            color="red"
-            leftSection={<IconTrash />}
           >
             Smazat
           </Button>
-          <Button onClick={close} variant="default">
-            Storno
-          </Button>
+          <Button onClick={close}>Zrušit</Button>
         </Group>
       </Modal>
     </>

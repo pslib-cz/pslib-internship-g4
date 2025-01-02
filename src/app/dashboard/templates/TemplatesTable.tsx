@@ -1,32 +1,27 @@
 "use client";
 
-import React, { FC, useEffect, useState, useCallback } from "react";
+import React, { FC, useEffect, useState, useCallback, useContext } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Table,
   Button,
   ActionIcon,
-  Text,
   TextInput,
   Modal,
   Group,
   Alert,
   Pagination,
   Flex,
+  Text,
 } from "@mantine/core";
-import {
-  IconInfoSmall,
-  IconTrash,
-  IconEdit,
-  IconChevronDown,
-  IconChevronUp,
-} from "@tabler/icons-react";
+import { IconTrash, IconEdit, IconInfoSmall } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { AccountDrawerContext } from "@/providers/AccountDrawerProvider";
+import { SortableHeader } from "@/components";
 import { Template } from "@prisma/client";
 import { type ListResult } from "@/types/data";
-import { useSessionStorage } from "@/hooks/useSessionStorage";
 
 type TTemplatesTableProps = {};
 type TTemplatesTableState = {
@@ -36,88 +31,59 @@ type TTemplatesTableState = {
   size: number;
 };
 
-const STORAGE_ID = "locations-table";
-
-const TemplatesTable: FC = (TTemplatesTableProps) => {
+const TemplatesTable: FC<TTemplatesTableProps> = () => {
   const searchParams = useSearchParams();
-  const [loadTableState, storeTableState, removeTableState] =
-    useSessionStorage<TTemplatesTableState>(STORAGE_ID);
+  const { pageSize: generalPageSize } = useContext(AccountDrawerContext);
+
+  const initialState: TTemplatesTableState = {
+    filterName: searchParams.get("name") ?? "",
+    order: searchParams.get("orderBy") ?? "name",
+    page: parseInt(searchParams.get("page") ?? "1"),
+    size: parseInt(searchParams.get("size") ?? `${generalPageSize}`),
+  };
+
+  const [state, setState] = useState<TTemplatesTableState>(initialState);
   const [data, setData] = useState<ListResult<Template> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [state, setState] = useState<TTemplatesTableState>({
-    filterName: "",
-    order: "name",
-    page: 1,
-    size: 10,
-  });
+  const [loading, setLoading] = useState<boolean>(false);
   const [deleteOpened, { open, close }] = useDisclosure(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const isMobile = useMediaQuery("(max-width: 50em)");
 
-  const fetchData = useCallback(
-    (
-      name: string | undefined,
-      orderBy: string,
-      page: number = 1,
-      pageSize: number = 10,
-    ) => {
-      fetch(
-        `/api/templates?name=${name}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      )
-        .then((response) => {
-          if (!response.ok) {
-            setData(null);
-            setError("Došlo k chybě při získávání dat.");
-            throw new Error("Došlo k chybě při získávání dat.");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setData(data);
-        })
-        .catch((error) => {
-          setError(error.message);
-        })
-        .finally(() => {});
-    },
-    [],
-  );
-
-  useEffect(() => {
-    let storedState = loadTableState();
-    const searchedName = searchParams.get("name") ?? "";
-    const orderBy = searchParams.get("orderBy") ?? "name";
-    const paginationPage = searchParams.get("page")
-      ? parseInt(searchParams.get("page") as string)
-      : 1;
-    const paginationSize = searchParams.get("size")
-      ? parseInt(searchParams.get("size") as string)
-      : 10;
-    let URLState: TTemplatesTableState = {
-      filterName: searchedName,
-      order: orderBy,
-      page: paginationPage,
-      size: paginationSize,
-    };
-    setState({ ...URLState });
-  }, [searchParams, loadTableState]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    state.filterName !== undefined && params.set("name", state.filterName);
+  const updateURL = useCallback(() => {
+    const params = new URLSearchParams();
+    if (state.filterName) params.set("name", state.filterName);
+    params.set("orderBy", state.order);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
-    params.set("orderBy", state.order);
     window.history.replaceState(null, "", `?${params.toString()}`);
-    storeTableState(state);
-    fetchData(state.filterName, state.order, state.page, state.size);
-  }, [state, fetchData, searchParams, storeTableState]);
+  }, [state]);
+
+  const fetchData = useCallback(() => {
+    setLoading(true);
+    const params = new URLSearchParams({
+      name: state.filterName,
+      orderBy: state.order,
+      page: (state.page - 1).toString(),
+      size: state.size.toString(),
+    });
+
+    fetch(`/api/templates?${params.toString()}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Došlo k chybě při načítání dat.");
+        }
+        return response.json();
+      })
+      .then((data) => setData(data))
+      .catch((error) => setError(error.message))
+      .finally(() => setLoading(false));
+  }, [state]);
+
+  useEffect(() => {
+    updateURL();
+    fetchData();
+  }, [state, updateURL, fetchData]);
 
   return (
     <>
@@ -125,21 +91,12 @@ const TemplatesTable: FC = (TTemplatesTableProps) => {
         <Table.Thead>
           <Table.Tr>
             <Table.Th>
-              <Text
-                fw={700}
-                onClick={() => {
-                  let newOrder = state.order === "name" ? "name_desc" : "name";
-                  setState({ ...state, order: newOrder });
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                Název{" "}
-                {state.order === "name" ? (
-                  <IconChevronDown size={12} />
-                ) : state.order === "name_desc" ? (
-                  <IconChevronUp size={12} />
-                ) : null}
-              </Text>
+              <SortableHeader
+                label="Název"
+                currentOrder={state.order}
+                columnKey="name"
+                onSort={(newOrder) => setState({ ...state, order: newOrder })}
+              />
             </Table.Th>
             <Table.Th>Možnosti</Table.Th>
           </Table.Tr>
@@ -147,27 +104,28 @@ const TemplatesTable: FC = (TTemplatesTableProps) => {
             <Table.Th>
               <TextInput
                 size="xs"
+                placeholder="Název"
                 value={state.filterName}
-                onChange={(event) => {
+                onChange={(event) =>
                   setState({
                     ...state,
                     filterName: event.currentTarget.value,
                     page: 1,
-                  });
-                }}
+                  })
+                }
               />
             </Table.Th>
             <Table.Th>
               <Button
                 size="xs"
-                onClick={(event) => {
+                onClick={() =>
                   setState({
-                    ...state,
                     filterName: "",
                     order: "name",
                     page: 1,
-                  });
-                }}
+                    size: generalPageSize,
+                  })
+                }
               >
                 Vše
               </Button>
@@ -175,119 +133,101 @@ const TemplatesTable: FC = (TTemplatesTableProps) => {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
+          {loading && (
+            <Table.Tr>
+              <Table.Td colSpan={2}>
+                <Text>Načítám data...</Text>
+              </Table.Td>
+            </Table.Tr>
+          )}
           {error && (
             <Table.Tr>
-              <Table.Td colSpan={100}>
+              <Table.Td colSpan={2}>
                 <Alert color="red">{error}</Alert>
               </Table.Td>
             </Table.Tr>
           )}
-          {data && data.total === 0 && (
+          {data?.data.length === 0 && (
             <Table.Tr>
-              <Table.Td colSpan={100}>
-                Žádná šablona nevyhovuje podmínkám.
-              </Table.Td>
+              <Table.Td colSpan={2}>Žádná šablona nevyhovuje podmínkám.</Table.Td>
             </Table.Tr>
           )}
-          {data &&
-            data.data.map((template) => (
-              <Table.Tr key={template.id}>
-                <Table.Td>
-                  <Text>{template.name}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <ActionIcon
-                    variant="light"
-                    component={Link}
-                    href={"/dashboard/templates/" + template.id}
-                  >
-                    <IconInfoSmall />
-                  </ActionIcon>{" "}
-                  <ActionIcon
-                    variant="light"
-                    color="red"
-                    onClick={() => {
-                      setDeleteId(template.id);
-                      open();
-                    }}
-                  >
-                    <IconTrash />
-                  </ActionIcon>{" "}
-                  <ActionIcon
-                    variant="light"
-                    component={Link}
-                    href={"/dashboard/templates/" + template.id + "/edit"}
-                  >
-                    <IconEdit />
-                  </ActionIcon>
-                </Table.Td>
-              </Table.Tr>
-            ))}
+          {data?.data.map((template) => (
+            <Table.Tr key={template.id}>
+              <Table.Td>{template.name}</Table.Td>
+              <Table.Td>
+                <ActionIcon
+                  variant="light"
+                  component={Link}
+                  href={`/dashboard/templates/${template.id}`}
+                >
+                  <IconInfoSmall />
+                </ActionIcon>
+                <ActionIcon
+                  variant="light"
+                  color="red"
+                  onClick={() => {
+                    setDeleteId(template.id);
+                    open();
+                  }}
+                >
+                  <IconTrash />
+                </ActionIcon>
+                <ActionIcon
+                  variant="light"
+                  component={Link}
+                  href={`/dashboard/templates/${template.id}/edit`}
+                >
+                  <IconEdit />
+                </ActionIcon>
+              </Table.Td>
+            </Table.Tr>
+          ))}
         </Table.Tbody>
       </Table>
       <Flex justify="center">
         <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? 10))}
-          value={(data?.page ?? 1) + 1}
-          onChange={(page) =>
-            /*setPage(page)*/ setState({ ...state, page: page })
-          }
+          total={Math.ceil((data?.total ?? 0) / (data?.size ?? generalPageSize))}
+          value={state.page}
+          onChange={(page) => setState({ ...state, page })}
         />
       </Flex>
       <Modal
         opened={deleteOpened}
-        centered
         onClose={close}
-        size="auto"
         title="Odstranění šablony"
-        fullScreen={isMobile}
-        transitionProps={{ transition: "fade", duration: 200 }}
+        centered
+        size="auto"
       >
-        <Text>Opravdu si přejete tuto šablonu odstranit?</Text>
-        <Text fw={700}>Data pak už nebude možné obnovit.</Text>
-        <Group mt="xl">
+        <Text>Opravdu chcete tuto šablonu odstranit?</Text>
+        <Group mt="md">
           <Button
+            color="red"
             onClick={() => {
-              if (deleteId !== null) {
-                fetch("/api/templates/" + deleteId, {
-                  method: "DELETE",
-                })
-                  .then((response) => {
-                    if (!response.ok) {
-                      throw new Error("Network response was not ok");
-                    }
+              if (deleteId) {
+                fetch(`/api/templates/${deleteId}`, { method: "DELETE" })
+                  .then(() => {
                     notifications.show({
-                      title: "Povedlo se!",
+                      title: "Úspěch",
                       message: "Šablona byla odstraněna.",
-                      color: "lime",
+                      color: "green",
                     });
-                    fetchData(
-                      state.filterName,
-                      state.order,
-                      state.page,
-                      state.size,
-                    );
+                    fetchData();
                   })
-                  .catch((error) => {
+                  .catch(() =>
                     notifications.show({
-                      title: "Chyba!",
-                      message: "Smazání šablony nebylo úspěšné.",
+                      title: "Chyba",
+                      message: "Odstranění se nezdařilo.",
                       color: "red",
-                    });
-                  })
-                  .finally(() => {
-                    close();
-                  });
+                    })
+                  )
+                  .finally(() => close());
               }
             }}
-            color="red"
-            leftSection={<IconTrash />}
           >
             Smazat
           </Button>
-          <Button onClick={close} variant="default">
-            Storno
-          </Button>
+          <Button onClick={close}>Zrušit</Button>
         </Group>
       </Modal>
     </>
