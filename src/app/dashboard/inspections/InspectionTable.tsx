@@ -304,7 +304,7 @@ const InspectionTable: FC<TInspectionTableProps> = () => {
       <Flex justify="center">
         <Pagination
           total={Math.ceil(
-            (data?.total ?? 0) / (data?.size ?? generalPageSize)
+            (data?.total ?? 0) / (data?.size ?? generalPageSize),
           )}
           value={state.page}
           onChange={(page) => setState({ ...state, page })}
@@ -340,7 +340,7 @@ const InspectionTable: FC<TInspectionTableProps> = () => {
                       title: "Chyba",
                       message: "Smazání se nezdařilo",
                       color: "red",
-                    })
+                    }),
                   )
                   .finally(() => {
                     close();

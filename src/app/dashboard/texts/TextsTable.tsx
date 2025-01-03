@@ -187,7 +187,9 @@ const TextsTable: FC<TTextsTableProps> = () => {
           {data?.data.map((txt) => (
             <Table.Tr key={txt.id}>
               <Table.Td>{txt.title}</Table.Td>
-              <Table.Td>{getPublicationTargetLabel(String(txt.published))}</Table.Td>
+              <Table.Td>
+                {getPublicationTargetLabel(String(txt.published))}
+              </Table.Td>
               <Table.Td>
                 <ActionIcon
                   variant="light"
@@ -220,7 +222,9 @@ const TextsTable: FC<TTextsTableProps> = () => {
       </Table>
       <Flex justify="center">
         <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? generalPageSize))}
+          total={Math.ceil(
+            (data?.total ?? 0) / (data?.size ?? generalPageSize),
+          )}
           value={state.page}
           onChange={(page) => setState({ ...state, page })}
         />
@@ -251,7 +255,7 @@ const TextsTable: FC<TTextsTableProps> = () => {
                       title: "Chyba",
                       message: "Odstranění se nezdařilo.",
                       color: "red",
-                    })
+                    }),
                   )
                   .finally(() => close());
               }

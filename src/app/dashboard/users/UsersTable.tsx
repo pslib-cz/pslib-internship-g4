@@ -259,7 +259,9 @@ const UsersTable: FC<TUsersTableProps> = () => {
             )}
             {data?.data.length === 0 && (
               <Table.Tr>
-                <Table.Td colSpan={7}>Žádný uživatel nevyhovuje podmínkám.</Table.Td>
+                <Table.Td colSpan={7}>
+                  Žádný uživatel nevyhovuje podmínkám.
+                </Table.Td>
               </Table.Tr>
             )}
             {data?.data.map((user) => (
@@ -267,9 +269,7 @@ const UsersTable: FC<TUsersTableProps> = () => {
                 <Table.Td>
                   <Avatar
                     src={
-                      user.image
-                        ? `data:image/jpeg;base64,${user.image}`
-                        : null
+                      user.image ? `data:image/jpeg;base64,${user.image}` : null
                     }
                     radius="40"
                     size={40}
@@ -321,7 +321,9 @@ const UsersTable: FC<TUsersTableProps> = () => {
       </ScrollArea>
       <Flex justify="center">
         <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? generalPageSize))}
+          total={Math.ceil(
+            (data?.total ?? 0) / (data?.size ?? generalPageSize),
+          )}
           value={state.page}
           onChange={(page) => setState({ ...state, page })}
         />
@@ -352,7 +354,7 @@ const UsersTable: FC<TUsersTableProps> = () => {
                       title: "Chyba",
                       message: "Odstranění se nezdařilo.",
                       color: "red",
-                    })
+                    }),
                   )
                   .finally(() => close());
               }

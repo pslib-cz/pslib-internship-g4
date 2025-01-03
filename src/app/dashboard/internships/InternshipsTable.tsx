@@ -16,11 +16,7 @@ import {
   Flex,
   NativeSelect,
 } from "@mantine/core";
-import {
-  IconInfoSmall,
-  IconTrash,
-  IconEdit,
-} from "@tabler/icons-react";
+import { IconInfoSmall, IconTrash, IconEdit } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { InternshipWithCompanyLocationSetUser } from "@/types/entities";
@@ -238,7 +234,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
         <Table.Thead>
           <Table.Tr>
             <Table.Th>
-            <SortableHeader
+              <SortableHeader
                 label="Jméno"
                 currentOrder={state.order}
                 columnKey="givenName"
@@ -246,7 +242,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
               />
             </Table.Th>
             <Table.Th>
-            <SortableHeader
+              <SortableHeader
                 label="Příjmení"
                 currentOrder={state.order}
                 columnKey="surname"
@@ -272,7 +268,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
               <Text fw={700}>Stav</Text>
             </Table.Th>
             <Table.Th>
-            <SortableHeader
+              <SortableHeader
                 label="Vytvořeno"
                 currentOrder={state.order}
                 columnKey="created"

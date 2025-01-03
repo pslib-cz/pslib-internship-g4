@@ -16,7 +16,13 @@ import {
   Flex,
   NativeSelect,
 } from "@mantine/core";
-import { IconTrash, IconEdit, IconInfoSmall, IconCheck, IconX } from "@tabler/icons-react";
+import {
+  IconTrash,
+  IconEdit,
+  IconInfoSmall,
+  IconCheck,
+  IconX,
+} from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { AccountDrawerContext } from "@/providers/AccountDrawerProvider";
@@ -61,7 +67,8 @@ const SetsTable: FC<TSetsTableProps> = () => {
     if (state.filterName) params.set("name", state.filterName);
     if (state.filterYear) params.set("year", state.filterYear);
     if (state.filterActive) params.set("active", state.filterActive);
-    if (state.filterContinuous) params.set("continuous", state.filterContinuous);
+    if (state.filterContinuous)
+      params.set("continuous", state.filterContinuous);
     params.set("orderBy", state.order);
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
@@ -127,7 +134,11 @@ const SetsTable: FC<TSetsTableProps> = () => {
                 placeholder="Název"
                 value={state.filterName}
                 onChange={(event) =>
-                  setState({ ...state, filterName: event.currentTarget.value, page: 1 })
+                  setState({
+                    ...state,
+                    filterName: event.currentTarget.value,
+                    page: 1,
+                  })
                 }
               />
             </Table.Th>
@@ -137,7 +148,11 @@ const SetsTable: FC<TSetsTableProps> = () => {
                 placeholder="Rok"
                 value={state.filterYear}
                 onChange={(event) =>
-                  setState({ ...state, filterYear: event.currentTarget.value, page: 1 })
+                  setState({
+                    ...state,
+                    filterYear: event.currentTarget.value,
+                    page: 1,
+                  })
                 }
               />
             </Table.Th>
@@ -146,7 +161,11 @@ const SetsTable: FC<TSetsTableProps> = () => {
                 size="xs"
                 value={state.filterActive}
                 onChange={(event) =>
-                  setState({ ...state, filterActive: event.currentTarget.value, page: 1 })
+                  setState({
+                    ...state,
+                    filterActive: event.currentTarget.value,
+                    page: 1,
+                  })
                 }
                 data={[
                   { label: "Vše", value: "" },
@@ -160,7 +179,11 @@ const SetsTable: FC<TSetsTableProps> = () => {
                 size="xs"
                 value={state.filterContinuous}
                 onChange={(event) =>
-                  setState({ ...state, filterContinuous: event.currentTarget.value, page: 1 })
+                  setState({
+                    ...state,
+                    filterContinuous: event.currentTarget.value,
+                    page: 1,
+                  })
                 }
                 data={[
                   { label: "Vše", value: "" },
@@ -235,7 +258,9 @@ const SetsTable: FC<TSetsTableProps> = () => {
       </Table>
       <Flex justify="center">
         <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? generalPageSize))}
+          total={Math.ceil(
+            (data?.total ?? 0) / (data?.size ?? generalPageSize),
+          )}
           value={state.page}
           onChange={(page) => setState({ ...state, page })}
         />
@@ -267,7 +292,7 @@ const SetsTable: FC<TSetsTableProps> = () => {
                       title: "Chyba",
                       message: "Odstranění se nezdařilo.",
                       color: "red",
-                    })
+                    }),
                   )
                   .finally(() => close());
               }

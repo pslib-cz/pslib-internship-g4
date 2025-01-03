@@ -219,7 +219,9 @@ const TagsTable: FC<TTagsTableProps> = () => {
       </Table>
       <Flex justify="center">
         <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? generalPageSize))}
+          total={Math.ceil(
+            (data?.total ?? 0) / (data?.size ?? generalPageSize),
+          )}
           value={state.page}
           onChange={(page) => setState({ ...state, page })}
         />
@@ -250,7 +252,7 @@ const TagsTable: FC<TTagsTableProps> = () => {
                       title: "Chyba",
                       message: "Odstranění se nezdařilo.",
                       color: "red",
-                    })
+                    }),
                   )
                   .finally(() => close());
               }

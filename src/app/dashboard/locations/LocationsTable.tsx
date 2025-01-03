@@ -57,7 +57,8 @@ const LocationsTable: FC<TLocationsTableProps> = () => {
   const updateURL = useCallback(() => {
     const params = new URLSearchParams();
     if (state.filterCountry) params.set("country", state.filterCountry);
-    if (state.filterMunicipality) params.set("municipality", state.filterMunicipality);
+    if (state.filterMunicipality)
+      params.set("municipality", state.filterMunicipality);
     if (state.filterStreet) params.set("street", state.filterStreet);
     params.set("orderBy", state.order);
     params.set("page", state.page.toString());
@@ -229,7 +230,9 @@ const LocationsTable: FC<TLocationsTableProps> = () => {
       </Table>
       <Flex justify="center">
         <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? generalPageSize))}
+          total={Math.ceil(
+            (data?.total ?? 0) / (data?.size ?? generalPageSize),
+          )}
           value={state.page}
           onChange={(page) => setState({ ...state, page })}
         />
@@ -261,7 +264,7 @@ const LocationsTable: FC<TLocationsTableProps> = () => {
                       title: "Chyba",
                       message: "Odstranění selhalo.",
                       color: "red",
-                    })
+                    }),
                   )
                   .finally(() => {
                     close();

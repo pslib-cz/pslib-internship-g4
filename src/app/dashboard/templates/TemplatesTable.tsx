@@ -149,7 +149,9 @@ const TemplatesTable: FC<TTemplatesTableProps> = () => {
           )}
           {data?.data.length === 0 && (
             <Table.Tr>
-              <Table.Td colSpan={2}>Žádná šablona nevyhovuje podmínkám.</Table.Td>
+              <Table.Td colSpan={2}>
+                Žádná šablona nevyhovuje podmínkám.
+              </Table.Td>
             </Table.Tr>
           )}
           {data?.data.map((template) => (
@@ -187,7 +189,9 @@ const TemplatesTable: FC<TTemplatesTableProps> = () => {
       </Table>
       <Flex justify="center">
         <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? generalPageSize))}
+          total={Math.ceil(
+            (data?.total ?? 0) / (data?.size ?? generalPageSize),
+          )}
           value={state.page}
           onChange={(page) => setState({ ...state, page })}
         />
@@ -219,7 +223,7 @@ const TemplatesTable: FC<TTemplatesTableProps> = () => {
                       title: "Chyba",
                       message: "Odstranění se nezdařilo.",
                       color: "red",
-                    })
+                    }),
                   )
                   .finally(() => close());
               }

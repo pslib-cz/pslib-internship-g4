@@ -15,11 +15,7 @@ import {
   Flex,
   Text,
 } from "@mantine/core";
-import {
-  IconTrash,
-  IconEdit,
-  IconInfoSmall,
-} from "@tabler/icons-react";
+import { IconTrash, IconEdit, IconInfoSmall } from "@tabler/icons-react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { AccountDrawerContext } from "@/providers/AccountDrawerProvider";
@@ -238,7 +234,9 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
       </Table>
       <Flex justify="center">
         <Pagination
-          total={Math.ceil((data?.total ?? 0) / (data?.size ?? generalPageSize))}
+          total={Math.ceil(
+            (data?.total ?? 0) / (data?.size ?? generalPageSize),
+          )}
           value={state.page}
           onChange={(page) => setState({ ...state, page })}
         />
@@ -273,7 +271,7 @@ const DiaryTable: FC<TDiaryTableProps> = () => {
                       title: "Chyba",
                       message: "Smazání se nezdařilo",
                       color: "red",
-                    })
+                    }),
                   )
                   .finally(() => {
                     close();
