@@ -102,11 +102,11 @@ export async function GET(
   );
   content = content.replace(
     /{{Student.Address}}/g,
-    `${internship.user.street}${internship.user.street && internship.user.descNo ? " " : null}${internship.user.descNo}${internship.user.descNo && internship.user.orientNo ? "/" : ""}${internship.user.orientNo}, ${internship.user.postalCode} ${internship.user.municipality}`,
+    `${internship.user.street && ""}${internship.user.street && internship.user.descNo ? " " : ""}${internship.user.descNo}${internship.user.descNo && internship.user.orientNo ? "/" : ""}${internship.user.orientNo ?? ""}, ${internship.user.postalCode ?? ""} ${internship.user.municipality ?? ""}`,
   );
   content = content.replace(
     /{{Student.Phone}}/g,
-    `${internship.user.phone ?? "?"}`,
+    `${internship.user.phone ?? ""}`,
   );
   content = content.replace(/{{Set.Start}}/g, `${internship.set.start}`);
   content = content.replace(/{{Set.End}}/g, `${internship.set.end}`);
@@ -187,7 +187,7 @@ export async function GET(
   );
   content = content.replace(
     /{{Company.Address}}/g,
-    `${internship.company.location.street}${internship.company.location.street && internship.company.location.descNo ? " " : null}${internship.company.location.descNo}${internship.company.location.descNo && internship.company.location.orientNo ? "/" : ""}${internship.company.location.orientNo}, ${internship.company.location.postalCode} ${internship.company.location.municipality}`,
+    `${internship.company.location.street ?? ""}${internship.company.location.street && internship.company.location.descNo ? " " : null}${internship.company.location.descNo ?? ""}${internship.company.location.descNo && internship.company.location.orientNo ? "/" : ""}${internship.company.location.orientNo ?? ""}, ${internship.company.location.postalCode ?? ""} ${internship.company.location.municipality ?? ""}`,
   );
   content = content.replace(
     /{{Location.Municipality}}/g,
@@ -215,7 +215,7 @@ export async function GET(
   );
   content = content.replace(
     /{{Location.Address}}/g,
-    `${internship.location.street}${internship.location.street && internship.location.descNo ? " " : null}${internship.location.descNo}${internship.location.descNo && internship.location.orientNo ? "/" : ""}${internship.location.orientNo}, ${internship.location.postalCode} ${internship.location.municipality}`,
+    `${internship.location.street ?? ""}${internship.location.street && internship.location.descNo ? " " : null}${internship.location.descNo ?? ""}${internship.location.descNo && internship.location.orientNo ? "/" : ""}${internship.location.orientNo ?? ""}, ${internship.location.postalCode ?? ""} ${internship.location.municipality ?? ""}`,
   );
   content = content.replace(/{{Description}}/g, `${internship.jobDescription}`);
   content = content.replace(/{{Info}}/g, `${internship.additionalInfo}`);

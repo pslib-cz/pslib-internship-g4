@@ -42,35 +42,43 @@ export const AccountDrawer = () => {
         /^\S+@\S+$/.test(value) ? null : "Neplatný formát emailu",
     },
   });
-  useEffect(() => {
+  const fetchData = async () => {
     setLoading(true);
-    fetch("/api/account")
-      .then((response) => response.json())
-      .then((data) => {
-        form.setValues({
-          givenName: data.givenName || "",
-          surname: data.surname || "",
-          email: data.email || "",
-          department: data.department || null,
-          birthDate: data.birthDate || null,
-          phone: data.phone || null,
-          street: data.street || null,
-          descNo: data.descNo || null,
-          orientNo: data.orientNo || null,
-          municipality: data.municipality || null,
-          postalCode: data.postalCode || null,
-        });
-      })
-      .catch((error) => {
-        notifications.show({
-          title: "Stala se chyba!",
-          message: error.message || "Nepodařilo se načíst osobní data.",
-          color: "red",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      const response = await fetch("/api/account");
+      if (!response.ok) {
+        if (response.status === 401) {
+          return;
+        }
+        throw new Error("Nepodařilo se načíst osobní data.");
+      }
+      const data = await response.json();
+      form.setValues({
+        givenName: data.givenName || "",
+        surname: data.surname || "",
+        email: data.email || "",
+        department: data.department || null,
+        birthDate: data.birthDate || null,
+        phone: data.phone || null,
+        street: data.street || null,
+        descNo: data.descNo || null,
+        orientNo: data.orientNo || null,
+        municipality: data.municipality || null,
+        postalCode: data.postalCode || null,
       });
+    } catch (error: Error | any) {
+      console.error(error);
+      notifications.show({
+        title: "Stala se chyba!",
+        message: error.message || "Nepodařilo se načíst osobní data.",
+        color: "red",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+      fetchData();
   }, []);
   return (
     <Drawer
