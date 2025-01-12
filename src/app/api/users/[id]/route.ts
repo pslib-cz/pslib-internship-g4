@@ -1,4 +1,5 @@
 import { type NextRequest } from "next/server";
+import { User } from "@prisma/client";
 import { auth } from "@/auth";
 import prisma from "@/utils/db";
 import { Role } from "@/types/auth";
@@ -9,76 +10,113 @@ export async function GET(
 ) {
   const id = params.id;
 
-  // Authenticate user
   const session = await auth();
   if (!session) {
     return new Response("Unauthorized", {
       status: 401,
     });
   }
-
-  // Check if the user is allowed to access the requested data
-  const isUnauthorized =
+  const censored =
     session.user.role !== Role.ADMIN &&
     session.user.role !== Role.TEACHER &&
     session.user.id !== id;
+  let user = await prisma.user.findFirst({
+    where: {
+      id: id,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      emailVerified: false,
+      image: true,
+      department: true,
+      role: true,
+      birthDate: !censored,
+      phone: !censored,
+      surname: true,
+      givenName: true,
+      street: !censored,
+      descNo: !censored,
+      orientNo: !censored,
+      municipality: !censored,
+      postalCode: !censored,
+    },
+  });
+  if (!user) {
+    return new Response("User not Found", {
+      status: 404,
+    });
+  }
+  return Response.json(user);
+}
 
-  if (isUnauthorized) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  const id = params.id;
+
+  const session = await auth();
+  if (!session) {
+    return new Response("Unauthorized", {
+      status: 401,
+    });
+  }
+  if (session.user.role !== Role.ADMIN) {
     return new Response("Forbidden", {
       status: 403,
     });
   }
 
-  try {
-    // Fetch active sets and corresponding internships
-    const activeInternships = await prisma.set.findMany({
-      where: {
-        active: true,
-        internships: {
-          some: {
-            userId: id,
-          },
-        },
-      },
-      include: {
-        internships: {
-          where: {
-            userId: id,
-          },
-          include: {
-            diaries: true,
-            company: { select: { name: true } }, // Přidá název firmy
-          },
-        },
-      },
-    });    
-
-    // Transform data to include required fields and counts only
-    const result = activeInternships.map((set) => ({
-      id: set.id,
-      name: set.name,
-      start: set.start,
-      end: set.end,
-      internships: set.internships.map((internship) => ({
-        id: internship.id,
-        companyRepName: internship.companyRepName,
-        companyMentorName: internship.companyMentorName,
-        jobDescription: internship.jobDescription,
-        additionalInfo: internship.additionalInfo,
-        diaryCount: internship.diaries.length,
-      })),
-    }));
-
-    return new Response(JSON.stringify(result), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching active internships:", error);
-    return new Response("Internal Server Error", {
-      status: 500,
+  let user = await prisma.user.delete({
+    where: {
+      id: id,
+    },
+  });
+  if (!user) {
+    return new Response("User not Found", {
+      status: 404,
     });
   }
+  return new Response("Deleted", {
+    status: 200,
+  });
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  const id = params.id;
+
+  const session = await auth();
+  if (!session) {
+    return new Response("Unauthorized", {
+      status: 401,
+    });
+  }
+  if (session.user.role !== Role.ADMIN) {
+    return new Response("Forbidden", {
+      status: 403,
+    });
+  }
+
+  const body = await request.json();
+  console.log(body);
+  if (body.birthDate) {
+    body.birthDate = new Date(body.birthDate);
+  }
+  let user = await prisma.user.update({
+    where: {
+      id: id,
+    },
+    data: body as User,
+  });
+  if (!user) {
+    return new Response("User not Found", {
+      status: 404,
+    });
+  }
+  return Response.json(user);
 }

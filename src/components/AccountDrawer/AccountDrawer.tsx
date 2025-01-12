@@ -78,7 +78,7 @@ export const AccountDrawer = () => {
     }
   };
   useEffect(() => {
-      fetchData();
+    fetchData();
   }, []);
   return (
     <Drawer

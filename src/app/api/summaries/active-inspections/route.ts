@@ -63,11 +63,11 @@ export async function GET(request: NextRequest) {
     const result = sets.map((set) => {
       const totalInternships = set.internships.length;
       const reservedByUser = set.internships.filter(
-        (internship) => internship.reservationUserId === userId
+        (internship) => internship.reservationUserId === userId,
       ).length;
       const checkedByUser = set.internships.reduce((count, internship) => {
         const inspectionsByUser = internship.inspections.filter(
-          (inspection) => inspection.inspectionUserId === userId
+          (inspection) => inspection.inspectionUserId === userId,
         ).length;
         return count + inspectionsByUser;
       }, 0);

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 import {
@@ -10,7 +10,7 @@ import {
   Alert,
   Grid,
   GridCol,
-  Anchor
+  Anchor,
 } from "@mantine/core";
 import styles from "./InspectionsSection.module.css";
 
@@ -78,9 +78,16 @@ const InternshipsSection = () => {
               <Box mb="md">
                 <Title order={3}>{set.setName}</Title>
                 <Text>
-                  Celkový počet praxí: <Anchor href="/inspections"><strong>{set.totalInternships}</strong></Anchor>. 
-                  Zkontrolovat chcete:{" "} <Anchor href="/inspections/reservations"><strong>{set.reservedByUser}</strong></Anchor>. 
-                  Celkem proběhlo kontrol:{" "} <strong>{set.checkedByUser}</strong>. 
+                  Celkový počet praxí:{" "}
+                  <Anchor href="/inspections">
+                    <strong>{set.totalInternships}</strong>
+                  </Anchor>
+                  . Zkontrolovat chcete:{" "}
+                  <Anchor href="/inspections/reservations">
+                    <strong>{set.reservedByUser}</strong>
+                  </Anchor>
+                  . Celkem proběhlo kontrol:{" "}
+                  <strong>{set.checkedByUser}</strong>.
                 </Text>
               </Box>
             </GridCol>

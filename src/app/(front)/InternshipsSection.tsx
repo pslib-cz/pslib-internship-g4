@@ -1,11 +1,6 @@
-import {
-  Container,
-  Box,
-  Grid,
-  Title,
-  Text,
-  Anchor,
-} from "@mantine/core";
+"use client"
+
+import { Container, Box, Grid, Title, Text, Anchor } from "@mantine/core";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styles from "./InternshipsSection.module.css";
@@ -48,12 +43,9 @@ const InternshipsSection = () => {
         const result = await response.json();
         setData(result);
       } catch (err) {
-        if (err instanceof Error)
-        {
+        if (err instanceof Error) {
           setError(err);
-        }
-        else
-        {
+        } else {
           setError(new Error("An unknown error occurred"));
         }
       }
@@ -82,7 +74,8 @@ const InternshipsSection = () => {
             <Box key={set.id}>
               <Title order={3}>{set.name}</Title>
               <Text>
-                {new Date(set.start).toLocaleDateString()} - {new Date(set.end).toLocaleDateString()}
+                {new Date(set.start).toLocaleDateString()} -{" "}
+                {new Date(set.end).toLocaleDateString()}
               </Text>
               {set.internships.map((internship) => (
                 <Box key={internship.id}>
