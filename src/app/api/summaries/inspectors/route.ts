@@ -3,12 +3,9 @@ import prisma from "@/utils/db";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const setId = searchParams.get("set")
-    ? parseInt(searchParams.get("set")!)
-    : null;
+  const setId = searchParams.get("set") ? parseInt(searchParams.get("set")!) : null;
   const active = searchParams.get("active") === "true";
 
-  // Sestavení dynamických filtrů
   const filters: Record<string, any> = {};
   if (setId !== null) {
     filters.setId = setId;
@@ -18,43 +15,33 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Agregace kontrol podle inspectionUserId
-    const inspections = await prisma.inspection.groupBy({
+    // Fetch data from the database
+    const inspectionsSummary = await prisma.inspection.groupBy({
       by: ["inspectionUserId"],
+      _count: { id: true },
       where: {
-        inspectionUserId: { not: null as any }, // Pouze záznamy s přiřazeným učitelem
+        internship: {
+          set: filters.set || undefined,
+        },
         ...filters,
       },
-      _count: {
-        inspectionUserId: true, // Počet kontrol na učitele
-      },
     });
 
-    // Načtení odpovídajících uživatelů
-    const userIds = inspections
-      .map((insp) => insp.inspectionUserId)
-      .filter(Boolean) as string[];
-    const users = await prisma.user.findMany({
-      where: { id: { in: userIds } },
-      select: { id: true, givenName: true, surname: true },
-    });
-
-    // Formátování výsledků
-    const result = inspections.map((insp) => {
-      const user = users.find((u) => u.id === insp.inspectionUserId);
-      return {
-        inspectionUserId: insp.inspectionUserId,
-        count:
-          typeof insp._count === "object" && insp._count.inspectionUserId
-            ? insp._count.inspectionUserId
-            : 0,
-        givenName: user?.givenName || "Neznámé",
-        surname: user?.surname || "Uživatel",
-      };
-    });
-
-    // Seřazení podle počtu kontrol sestupně
-    result.sort((a, b) => b.count - a.count);
+    // Map data to include user details
+    const result = await Promise.all(
+      inspectionsSummary.map(async (summary) => {
+        const user = await prisma.user.findUnique({
+          where: { id: summary.inspectionUserId },
+          select: { name: true, surname: true },
+        });
+        return {
+          userId: summary.inspectionUserId,
+          name: user?.name || "Unknown",
+          surname: user?.surname || "",
+          inspectionCount: summary._count.id,
+        };
+      })
+    );
 
     return new Response(JSON.stringify(result), {
       status: 200,
@@ -64,7 +51,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching inspections summary:", error);
     return new Response(
       JSON.stringify({ error: "Failed to fetch inspections summary" }),
-      { status: 500, headers: { "Content-Type": "application/json" } },
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }

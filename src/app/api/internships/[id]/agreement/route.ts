@@ -7,9 +7,9 @@ import { InternshipFullRecord } from "@/types/entities";
 // Pomocná funkce pro formátování adres
 function formatAddress(
   street?: string | null,
-  descNo?: string | null,
+  descNo?: number |string | null,
   orientNo?: string | null,
-  postalCode?: string | null,
+  postalCode?: number | string | null,
   municipality?: string | null,
 ): string {
   const addressParts = [
@@ -23,10 +23,10 @@ function formatAddress(
 }
 
 // Pomocná funkce pro nahrazení placeholderů
-function replacePlaceholders(content: string, placeholders: Record<string, string | null | undefined>): string {
+function replacePlaceholders(content: string, placeholders: Record<string, number | string | null | undefined>): string {
   Object.entries(placeholders).forEach(([key, value]) => {
     const regex = new RegExp(`{{${key}}}`, "g");
-    content = content.replace(regex, value ?? "");
+    content = content.replace(regex, String(value ?? ""));
   });
   return content;
 }
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     "School.Logo": internship.set.logoName,
   };
 
-  content = replacePlaceholders(content, placeholders);
+  content = replacePlaceholders(content, placeholders); 
 
   return new Response(content, {
     status: 200,
