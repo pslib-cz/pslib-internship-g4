@@ -3,7 +3,9 @@ import prisma from "@/utils/db";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const setId = searchParams.get("set") ? parseInt(searchParams.get("set")!) : null;
+  const setId = searchParams.get("set")
+    ? parseInt(searchParams.get("set")!)
+    : null;
   const active = searchParams.get("active") === "true";
 
   const filters: Record<string, any> = {};
@@ -40,7 +42,7 @@ export async function GET(request: NextRequest) {
           surname: user?.surname || "",
           inspectionCount: summary._count.id,
         };
-      })
+      }),
     );
 
     return new Response(JSON.stringify(result), {
@@ -51,7 +53,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching inspections summary:", error);
     return new Response(
       JSON.stringify({ error: "Failed to fetch inspections summary" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     );
   }
 }

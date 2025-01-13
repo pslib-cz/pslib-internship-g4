@@ -7,7 +7,7 @@ import { InternshipFullRecord } from "@/types/entities";
 // Pomocná funkce pro formátování adres
 function formatAddress(
   street?: string | null,
-  descNo?: number |string | null,
+  descNo?: number | string | null,
   orientNo?: string | null,
   postalCode?: number | string | null,
   municipality?: string | null,
@@ -23,7 +23,10 @@ function formatAddress(
 }
 
 // Pomocná funkce pro nahrazení placeholderů
-function replacePlaceholders(content: string, placeholders: Record<string, number | string | null | undefined>): string {
+function replacePlaceholders(
+  content: string,
+  placeholders: Record<string, number | string | null | undefined>,
+): string {
   Object.entries(placeholders).forEach(([key, value]) => {
     const regex = new RegExp(`{{${key}}}`, "g");
     content = content.replace(regex, String(value ?? ""));
@@ -31,7 +34,10 @@ function replacePlaceholders(content: string, placeholders: Record<string, numbe
   return content;
 }
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
   const id = params.id;
   const session = await auth();
 
@@ -62,7 +68,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     return new Response("Forbidden", { status: 403 });
   }
 
-  const template = await prisma.template.findFirst({ where: { id: internship.set.templateId } });
+  const template = await prisma.template.findFirst({
+    where: { id: internship.set.templateId },
+  });
   if (!template) {
     return new Response("Template not found", { status: 404 });
   }
@@ -87,7 +95,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       internship.user.descNo,
       internship.user.orientNo,
       internship.user.postalCode,
-      internship.user.municipality
+      internship.user.municipality,
     ),
     "Student.Phone": internship.user.phone,
     "Set.Start": new Date(internship.set.start).toLocaleDateString(),
@@ -97,7 +105,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     "Set.Continuous": internship.set.continuous ? "průběžná" : "souvislá",
     "Set.Year": internship.set.year?.toString(),
     "Company.Name": internship.company.name,
-    "Company.CompanyIdentificationNumber": internship.company.companyIdentificationNumber?.toString() ?? "není",
+    "Company.CompanyIdentificationNumber":
+      internship.company.companyIdentificationNumber?.toString() ?? "není",
     "Internship.Kind": internship.kind?.toString(),
     "Company.RepresentativeName": internship.companyRepName,
     "Company.RepresentativeEmail": internship.companyRepEmail,
@@ -116,7 +125,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       internship.company.location.descNo,
       internship.company.location.orientNo,
       internship.company.location.postalCode,
-      internship.company.location.municipality
+      internship.company.location.municipality,
     ),
     "Location.Municipality": internship.location.municipality,
     "Location.Street": internship.location.street,
@@ -129,12 +138,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       internship.location.descNo,
       internship.location.orientNo,
       internship.location.postalCode,
-      internship.location.municipality
+      internship.location.municipality,
     ),
-    "Description": internship.jobDescription,
-    "Info": internship.additionalInfo,
-    "Appendix": internship.appendixText,
-    "Date": new Date().toLocaleDateString(),
+    Description: internship.jobDescription,
+    Info: internship.additionalInfo,
+    Appendix: internship.appendixText,
+    Date: new Date().toLocaleDateString(),
     "School.RepresentativeName": internship.set.representativeName,
     "School.RepresentativeEmail": internship.set.representativeEmail,
     "School.RepresentativePhone": internship.set.representativePhone,
@@ -142,7 +151,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     "School.Logo": internship.set.logoName,
   };
 
-  content = replacePlaceholders(content, placeholders); 
+  content = replacePlaceholders(content, placeholders);
 
   return new Response(content, {
     status: 200,
