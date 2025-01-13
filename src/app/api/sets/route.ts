@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const name = searchParams.get("name");
   const active = searchParams.get("active");
+  const editable = searchParams.get("editable");
   const year = Number(searchParams.get("year"));
   const continuous = searchParams.get("continuous");
   const template = searchParams.get("template");
@@ -42,6 +43,8 @@ export async function GET(request: NextRequest) {
           : continuous === "false"
             ? false
             : undefined,
+      editable:
+        editable === "true" ? true : editable === "false" ? false : undefined,
       year: {
         equals: year || undefined,
       },
@@ -60,6 +63,8 @@ export async function GET(request: NextRequest) {
           : continuous === "false"
             ? false
             : undefined,
+      editable:
+        editable === "true" ? true : editable === "false" ? false : undefined,
       year: {
         equals: year || undefined,
       },

@@ -90,7 +90,7 @@ const MapDisplay = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [set, setSet] = useState<number | undefined>(undefined);
-  const [active, setActive] = useState<boolean | undefined>(undefined);
+  const [active, setActive] = useState<boolean | undefined>(true);
   const [selected, setSelected] = useState<LocationWithInternships | null>(
     null,
   );

@@ -60,7 +60,7 @@ const Page = ({ params }: { params: { id: string } }) => {
         setLoading(false);
       });
     setLoading(true);
-    fetch("/api/sets?orderBy=year")
+    fetch("/api/sets?editable=true&orderBy=year")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Při komunikaci se serverem došlo k chybě.");

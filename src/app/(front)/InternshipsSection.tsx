@@ -1,6 +1,14 @@
-"use client"
+"use client";
 
-import { Container, Box, Grid, Title, Text, Anchor } from "@mantine/core";
+import {
+  Container,
+  Box,
+  Grid,
+  Title,
+  Text,
+  Anchor,
+  Group,
+} from "@mantine/core";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styles from "./InternshipsSection.module.css";
@@ -79,9 +87,14 @@ const InternshipsSection = () => {
               </Text>
               {set.internships.map((internship) => (
                 <Box key={internship.id}>
-                  <Text>{internship.companyName}</Text>
+                  <Text>
+                    <Anchor href={"/my/" + internship.id}>
+                      {internship.companyName}
+                    </Anchor>
+                  </Text>
                 </Box>
               ))}
+              <Anchor href={"/my/create?set=" + set.id}>Nová</Anchor>
             </Box>
           ))}
         </Grid>

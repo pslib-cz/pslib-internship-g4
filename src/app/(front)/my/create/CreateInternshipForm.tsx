@@ -56,7 +56,7 @@ const CreateInternshipForm = () => {
       .finally(() => {
         setLoading(false);
       });
-    fetch("/api/sets?orderBy=year")
+    fetch("/api/sets?editable=true&orderBy=year")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Při komunikaci se serverem došlo k chybě.");
