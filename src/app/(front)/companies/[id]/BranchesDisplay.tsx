@@ -70,7 +70,7 @@ const BranchesDisplay = ({
   if (branches?.length === 0) {
     return (
       <Text>
-        Firma nemá žádné pobočky. Můžete nějakou{" "}
+        Kromě svého sídla firma nemá žádné pobočky. Můžete nějakou{" "}
         {session?.user ? (
           <Anchor
             onClick={() => {

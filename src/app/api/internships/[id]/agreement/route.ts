@@ -4,241 +4,148 @@ import prisma from "@/utils/db";
 import { Role } from "@/types/auth";
 import { InternshipFullRecord } from "@/types/entities";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
-) {
+// Pomocná funkce pro formátování adres
+function formatAddress(
+  street?: string | null,
+  descNo?: string | null,
+  orientNo?: string | null,
+  postalCode?: string | null,
+  municipality?: string | null,
+): string {
+  const addressParts = [
+    street || "",
+    descNo || "",
+    orientNo ? `/${orientNo}` : "",
+    postalCode || "",
+    municipality || "",
+  ];
+  return addressParts.filter(Boolean).join(", ");
+}
+
+// Pomocná funkce pro nahrazení placeholderů
+function replacePlaceholders(content: string, placeholders: Record<string, string | null | undefined>): string {
+  Object.entries(placeholders).forEach(([key, value]) => {
+    const regex = new RegExp(`{{${key}}}`, "g");
+    content = content.replace(regex, value ?? "");
+  });
+  return content;
+}
+
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const id = params.id;
   const session = await auth();
+
   if (!session) {
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+    return new Response("Unauthorized", { status: 401 });
   }
 
-  let internship: InternshipFullRecord | null =
-    await prisma.internship.findFirst({
-      include: {
-        set: true,
-        user: true,
-        company: {
-          include: { location: true },
-        },
-        location: true,
-        reservationUser: true,
-      },
-      where: { id: id },
-    });
+  const internship = await prisma.internship.findFirst({
+    include: {
+      set: true,
+      user: true,
+      company: { include: { location: true } },
+      location: true,
+      reservationUser: true,
+    },
+    where: { id },
+  });
 
   if (!internship) {
-    return new Response("Internship not found", {
-      status: 404,
-    });
+    return new Response("Internship not found", { status: 404 });
   }
+
   if (
     session.user.role !== Role.ADMIN &&
     session.user.role !== Role.TEACHER &&
-    session.user.id !== internship?.userId
+    session.user.id !== internship.userId
   ) {
-    return new Response("Forbidden", {
-      status: 403,
-    });
+    return new Response("Forbidden", { status: 403 });
   }
 
-  let template = await prisma.template.findFirst({
-    where: { id: internship.set.templateId },
-  });
-
+  const template = await prisma.template.findFirst({ where: { id: internship.set.templateId } });
   if (!template) {
-    return new Response("Template not found", {
-      status: 404,
-    });
+    return new Response("Template not found", { status: 404 });
   }
 
   let content = template.content;
-  content = content.replace(
-    /{{Student.GivenName}}/g,
-    `${internship.user.givenName}`,
-  );
-  content = content.replace(
-    /{{Student.Surname}}/g,
-    `${internship.user.surname}`,
-  );
-  content = content.replace(
-    /{{Student.Name}}/g,
-    `${internship.user.givenName} ${internship.user.surname}`,
-  );
-  content = content.replace(
-    /{{Student.Email}}/g,
-    `${internship.user.email ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Student.Classname}}/g,
-    `${internship.classname ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Student.BirthDate}}/g,
-    `${internship.user.birthDate ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Student.Municipality}}/g,
-    `${internship.user.municipality ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Student.Street}}/g,
-    `${internship.user.street ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Student.DescNumber}}/g,
-    `${internship.user.descNo ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Student.OrientNumber}}/g,
-    `${internship.user.orientNo ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Student.Zip}}/g,
-    `${internship.user.postalCode ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Student.Address}}/g,
-    `${internship.user.street && ""}${internship.user.street && internship.user.descNo ? " " : ""}${internship.user.descNo}${internship.user.descNo && internship.user.orientNo ? "/" : ""}${internship.user.orientNo ?? ""}, ${internship.user.postalCode ?? ""} ${internship.user.municipality ?? ""}`,
-  );
-  content = content.replace(
-    /{{Student.Phone}}/g,
-    `${internship.user.phone ?? ""}`,
-  );
-  content = content.replace(/{{Set.Start}}/g, `${internship.set.start}`);
-  content = content.replace(/{{Set.End}}/g, `${internship.set.end}`);
-  content = content.replace(
-    /{{Set.DaysTotal}}/g,
-    `${internship.set.daysTotal}`,
-  );
-  content = content.replace(
-    /{{Set.HoursDaily}}/g,
-    `${internship.set.hoursDaily}`,
-  );
-  content = content.replace(
-    /{{Set.Continuous}}/g,
-    `${internship.set.continuous ? "průběžná" : "souvislá"}`,
-  );
-  content = content.replace(
-    /{{Set.Start}}/g,
-    `${new Date(internship.set.start).toLocaleDateString()}`,
-  );
-  content = content.replace(
-    /{{Set.End}}/g,
-    `${new Date(internship.set.end).toLocaleDateString()}`,
-  );
-  content = content.replace(/{{Set.Year}}/g, `${internship.set.year}`);
-  content = content.replace(/{{Company.Name}}/g, `${internship.company.name}`);
-  content = content.replace(
-    /{{Company.CompanyIdentificationNumber}}/g,
-    `${internship.company.companyIdentificationNumber ?? "není"}`,
-  );
-  content = content.replace(/{{Internship.Kind}}/g, `${internship.kind}`);
-  content = content.replace(
-    /{{Company.RepresentativeName}}/g,
-    `${internship.companyRepName ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Company.RepresentativeEmail}}/g,
-    `${internship.companyRepEmail ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Company.RepresentativePhone}}/g,
-    `${internship.companyRepPhone ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Company.MentorName}}/g,
-    `${internship.companyMentorName ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Company.MentorEmail}}/g,
-    `${internship.companyMentorEmail ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Company.MentorPhone}}/g,
-    `${internship.companyMentorPhone ?? "?"}`,
-  );
-  content = content.replace(
-    /{{Company.Municipality}}/g,
-    `${internship.company.location.municipality}`,
-  );
-  content = content.replace(
-    /{{Company.Street}}/g,
-    `${internship.company.location.street}`,
-  );
-  content = content.replace(
-    /{{Company.DescNumber}}/g,
-    `${internship.company.location.descNo}`,
-  );
-  content = content.replace(
-    /{{Company.OrientNumber}}/g,
-    `${internship.company.location.orientNo}`,
-  );
-  content = content.replace(
-    /{{Company.Zip}}/g,
-    `${internship.company.location.postalCode}`,
-  );
-  content = content.replace(
-    /{{Company.Country}}/g,
-    `${internship.company.location.country}`,
-  );
-  content = content.replace(
-    /{{Company.Address}}/g,
-    `${internship.company.location.street ?? ""}${internship.company.location.street && internship.company.location.descNo ? " " : null}${internship.company.location.descNo ?? ""}${internship.company.location.descNo && internship.company.location.orientNo ? "/" : ""}${internship.company.location.orientNo ?? ""}, ${internship.company.location.postalCode ?? ""} ${internship.company.location.municipality ?? ""}`,
-  );
-  content = content.replace(
-    /{{Location.Municipality}}/g,
-    `${internship.location.municipality}`,
-  );
-  content = content.replace(
-    /{{Location.Street}}/g,
-    `${internship.location.street}`,
-  );
-  content = content.replace(
-    /{{Location.DescNumber}}/g,
-    `${internship.location.descNo}`,
-  );
-  content = content.replace(
-    /{{Location.OrientNumber}}/g,
-    `${internship.location.orientNo}`,
-  );
-  content = content.replace(
-    /{{Location.Zip}}/g,
-    `${internship.location.postalCode}`,
-  );
-  content = content.replace(
-    /{{Location.Country}}/g,
-    `${internship.location.country}`,
-  );
-  content = content.replace(
-    /{{Location.Address}}/g,
-    `${internship.location.street ?? ""}${internship.location.street && internship.location.descNo ? " " : null}${internship.location.descNo ?? ""}${internship.location.descNo && internship.location.orientNo ? "/" : ""}${internship.location.orientNo ?? ""}, ${internship.location.postalCode ?? ""} ${internship.location.municipality ?? ""}`,
-  );
-  content = content.replace(/{{Description}}/g, `${internship.jobDescription}`);
-  content = content.replace(/{{Info}}/g, `${internship.additionalInfo}`);
-  content = content.replace(/{{Appendix}}/g, `${internship.appendixText}`);
-  content = content.replace(/{{Date}}/g, `${new Date().toLocaleDateString()}`);
-  content = content.replace(
-    /{{School.RepresentativeName}}/g,
-    `${internship.set.representativeName}`,
-  );
-  content = content.replace(
-    /{{School.RepresentativeEmail}}/g,
-    `${internship.set.representativeEmail}`,
-  );
-  content = content.replace(
-    /{{School.RepresentativePhone}}/g,
-    `${internship.set.representativePhone}`,
-  );
-  content = content.replace(/{{School.Name}}/g, `${internship.set.schoolName}`);
-  content = content.replace(/{{School.Logo}}/g, `${internship.set.logoName}`);
 
-  let res = new Response(content, {
+  // Všechny hodnoty pro nahrazení placeholderů
+  const placeholders = {
+    "Student.GivenName": internship.user.givenName,
+    "Student.Surname": internship.user.surname,
+    "Student.Name": `${internship.user.givenName} ${internship.user.surname}`,
+    "Student.Email": internship.user.email,
+    "Student.Classname": internship.classname,
+    "Student.BirthDate": internship.user.birthDate?.toString(),
+    "Student.Municipality": internship.user.municipality,
+    "Student.Street": internship.user.street,
+    "Student.DescNumber": internship.user.descNo,
+    "Student.OrientNumber": internship.user.orientNo,
+    "Student.Zip": internship.user.postalCode,
+    "Student.Address": formatAddress(
+      internship.user.street,
+      internship.user.descNo,
+      internship.user.orientNo,
+      internship.user.postalCode,
+      internship.user.municipality
+    ),
+    "Student.Phone": internship.user.phone,
+    "Set.Start": new Date(internship.set.start).toLocaleDateString(),
+    "Set.End": new Date(internship.set.end).toLocaleDateString(),
+    "Set.DaysTotal": internship.set.daysTotal?.toString(),
+    "Set.HoursDaily": internship.set.hoursDaily?.toString(),
+    "Set.Continuous": internship.set.continuous ? "průběžná" : "souvislá",
+    "Set.Year": internship.set.year?.toString(),
+    "Company.Name": internship.company.name,
+    "Company.CompanyIdentificationNumber": internship.company.companyIdentificationNumber?.toString() ?? "není",
+    "Internship.Kind": internship.kind?.toString(),
+    "Company.RepresentativeName": internship.companyRepName,
+    "Company.RepresentativeEmail": internship.companyRepEmail,
+    "Company.RepresentativePhone": internship.companyRepPhone,
+    "Company.MentorName": internship.companyMentorName,
+    "Company.MentorEmail": internship.companyMentorEmail,
+    "Company.MentorPhone": internship.companyMentorPhone,
+    "Company.Municipality": internship.company.location.municipality,
+    "Company.Street": internship.company.location.street,
+    "Company.DescNumber": internship.company.location.descNo,
+    "Company.OrientNumber": internship.company.location.orientNo,
+    "Company.Zip": internship.company.location.postalCode,
+    "Company.Country": internship.company.location.country,
+    "Company.Address": formatAddress(
+      internship.company.location.street,
+      internship.company.location.descNo,
+      internship.company.location.orientNo,
+      internship.company.location.postalCode,
+      internship.company.location.municipality
+    ),
+    "Location.Municipality": internship.location.municipality,
+    "Location.Street": internship.location.street,
+    "Location.DescNumber": internship.location.descNo,
+    "Location.OrientNumber": internship.location.orientNo,
+    "Location.Zip": internship.location.postalCode,
+    "Location.Country": internship.location.country,
+    "Location.Address": formatAddress(
+      internship.location.street,
+      internship.location.descNo,
+      internship.location.orientNo,
+      internship.location.postalCode,
+      internship.location.municipality
+    ),
+    "Description": internship.jobDescription,
+    "Info": internship.additionalInfo,
+    "Appendix": internship.appendixText,
+    "Date": new Date().toLocaleDateString(),
+    "School.RepresentativeName": internship.set.representativeName,
+    "School.RepresentativeEmail": internship.set.representativeEmail,
+    "School.RepresentativePhone": internship.set.representativePhone,
+    "School.Name": internship.set.schoolName,
+    "School.Logo": internship.set.logoName,
+  };
+
+  content = replacePlaceholders(content, placeholders);
+
+  return new Response(content, {
     status: 200,
     headers: { "Content-Type": "text/html" },
   });
-  return res;
 }
