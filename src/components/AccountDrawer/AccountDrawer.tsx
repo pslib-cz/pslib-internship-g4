@@ -20,7 +20,19 @@ export const AccountDrawer = () => {
   const { opened, close, open, pageSize, setPageSize, pageSizeOptions } =
     useContext(AccountDrawerContext);
   const [loading, setLoading] = useState(true);
-  const form = useForm({
+  const form = useForm<{
+    givenName: string;
+    surname: string;
+    email: string;
+    department: string;
+    birthDate: string | null;
+    phone: string | null;
+    street: string;
+    descNo: string | null;
+    orientNo: string | null;
+    municipality: string;
+    postalCode: string | null;
+  }>({
     initialValues: {
       givenName: "",
       surname: "",
@@ -58,7 +70,9 @@ export const AccountDrawer = () => {
         surname: data.surname || "",
         email: data.email || "",
         department: data.department || null,
-        birthDate: data.birthDate || null,
+        birthDate: data.birthDate
+          ? new Date(data.birthDate).toISOString().split("T")[0]
+          : null,
         phone: data.phone || null,
         street: data.street || null,
         descNo: data.descNo || null,
@@ -127,6 +141,7 @@ export const AccountDrawer = () => {
                   message: "Osobní data byla uložena.",
                   color: "lime",
                 });
+                fetchData();
               })
               .catch((error) => {
                 notifications.show({

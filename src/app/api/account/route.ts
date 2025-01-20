@@ -26,6 +26,9 @@ export async function PUT(request: NextRequest) {
   }
   const body = await request.json();
   body.name = body.givenName + " " + body.surname;
+  if (body.birthDate) {
+    body.birthDate = new Date(body.birthDate).toISOString();
+  }
   let user = await prisma.user.update({
     where: { id: session.user?.id },
     data: body as User,
