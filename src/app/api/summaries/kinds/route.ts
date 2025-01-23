@@ -8,7 +8,6 @@ export async function GET(request: NextRequest) {
     : null;
   const active = searchParams.get("active") === "true";
 
-  // Sestavení filtru
   const filters: any = {};
   if (setId !== null) {
     filters.setId = setId;

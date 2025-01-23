@@ -16,6 +16,15 @@ export async function GET(request: NextRequest) {
     : null;
   const active = searchParams.get("active") === "true";
 
+  // Sestavení filtru na základě parametrů
+  const filters: any = {};
+  if (setId !== null) {
+    filters.setId = setId;
+  }
+  if (active) {
+    filters.set = { active: true }; // Přidáme filtr na aktivní sady
+  }
+
   if (setId !== null && isNaN(setId)) {
     return Response.json({ error: "Invalid setId parameter" }, { status: 400 });
   }
@@ -29,15 +38,6 @@ export async function GET(request: NextRequest) {
       { error: "Invalid active parameter" },
       { status: 400 },
     );
-  }
-
-  // Sestavení filtru na základě parametrů
-  const filters: Prisma.InternshipWhereInput = {};
-  if (setId !== null) {
-    filters.setId = setId;
-  }
-  if (active) {
-    filters.set = { active: true }; // Přidáme filtr na aktivní sady
   }
 
   // Načtení dat

@@ -8,12 +8,13 @@ export async function GET(request: NextRequest) {
     : null;
   const active = searchParams.get("active") === "true";
 
-  const filters: Record<string, any> = {};
+  // Sestavení filtru na základě parametrů
+  const filters: any = {};
   if (setId !== null) {
     filters.setId = setId;
   }
   if (active) {
-    filters.set = { active: true };
+    filters.set = { active: true }; // Přidáme filtr na aktivní sady
   }
 
   try {
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
       _count: { id: true },
       where: {
         internship: {
-          set: filters.set || undefined,
+          setId: filters.setId || undefined,
         },
         ...filters,
       },
