@@ -20,7 +20,6 @@ const InternshipCompanyTable: FC<InternshipCompanyTableProps> = ({ setId }) => {
     const fetchData = async () => {
       try {
         const querySet = setId ? `set=${encodeURIComponent(setId)}` : "";
-        //const querySet = setId !== null && !isNaN(setId) ? `set=${setId}` : "";
         const queryActive = `active=true`;
         const queryString = [querySet, queryActive].filter(Boolean).join("&");
 

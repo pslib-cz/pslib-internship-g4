@@ -8,7 +8,11 @@ type InspectorSummary = {
   surname: string;
 };
 
-const InspectorSummaryTable: FC = () => {
+type InspectorSummaryTableProps = {
+  setId: number | null;
+};
+
+const InspectorSummaryTable: FC<InspectorSummaryTableProps> = ({ setId }) => {
   const [data, setData] = useState<InspectorSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -16,7 +20,13 @@ const InspectorSummaryTable: FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/summaries/inspectors");
+        const querySet = setId ? `set=${encodeURIComponent(setId)}` : "";
+        const queryActive = `active=true`;
+        const queryString = [querySet, queryActive].filter(Boolean).join("&");
+
+        const response = await fetch(
+          `/api/summaries/inspectors?${queryString}`,
+        );
         if (!response.ok) {
           throw new Error(`Server responded with status ${response.status}`);
         }

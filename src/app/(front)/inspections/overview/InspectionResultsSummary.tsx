@@ -17,7 +17,13 @@ const inspectionResultLabels: { [key in InspectionResult]: string } = {
   [InspectionResult.NOT_KNOWN]: "O studentovi nevědí",
 };
 
-const InspectionResultsSummary: FC = () => {
+type InspectionResultsSummaryProps = {
+  setId: number | null;
+};
+
+const InspectionResultsSummary: FC<InspectionResultsSummaryProps> = ({
+  setId,
+}) => {
   const [data, setData] = useState<InspectionResultSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -25,7 +31,14 @@ const InspectionResultsSummary: FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/summaries/inspection-results");
+        const querySet = setId ? `set=${encodeURIComponent(setId)}` : "";
+        //const querySet = setId !== null && !isNaN(setId) ? `set=${setId}` : "";
+        const queryActive = `active=true`;
+        const queryString = [querySet, queryActive].filter(Boolean).join("&");
+
+        const response = await fetch(
+          `/api/summaries/inspection-results?${queryString}`,
+        );
         if (!response.ok) {
           throw new Error(`Server responded with status ${response.status}`);
         }
