@@ -11,7 +11,11 @@ const internshipKinds: { [key: number]: string } = {
   1: "Homeoffice",
 };
 
-const InternshipKindsTable: FC = () => {
+type InternshipKindsTableProps = {
+  setId: number | null;
+};
+
+const InternshipKindsTable: FC<InternshipKindsTableProps> = ({ setId }) => {
   const [data, setData] = useState<InternshipKindSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -19,7 +23,11 @@ const InternshipKindsTable: FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/summaries/kinds");
+        const querySet = setId ? `set=${encodeURIComponent(setId)}` : "";
+        const queryActive = `active=true`;
+        const queryString = [querySet, queryActive].filter(Boolean).join("&");
+
+        const response = await fetch(`/api/summaries/kinds?${queryString}`);
         if (!response.ok) {
           throw new Error(`Server responded with status ${response.status}`);
         }

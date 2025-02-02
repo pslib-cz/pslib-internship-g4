@@ -32,19 +32,19 @@ const OverviewContainer: FC = () => {
       </Paper>
       <Paper mt="lg" p="lg">
         <Title order={2}>Počty praxí podle druhu</Title>
-        <InternshipKindCountTable />
+        <InternshipKindCountTable setId={activeSetId} />
       </Paper>
       <Paper mt="lg" p="lg">
         <Title order={2}>Počty rezervovaných praxí</Title>
-        <ReservationSummaryTable />
+        <ReservationSummaryTable setId={activeSetId} />
       </Paper>
       <Paper mt="lg" p="lg">
         <Title order={2}>Počty kontrol podle učitelů</Title>
-        <InspectorSummaryTable />
+        <InspectorSummaryTable setId={activeSetId} />
       </Paper>
       <Paper mt="lg" p="lg">
         <Title order={2}>Počty kontrol podle výsledků</Title>
-        <InspectionResultsSummary />
+        <InspectionResultsSummary setId={activeSetId} />
       </Paper>
     </>
   );

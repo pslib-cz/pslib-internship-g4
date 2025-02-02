@@ -13,11 +13,25 @@ export async function GET(request: NextRequest) {
     filters.setId = setId;
   }
   if (active) {
-    filters.set = { active: true };
+    filters.set = { active: true }; // Přidáme filtr na aktivní sady
+  }
+
+  if (setId !== null && isNaN(setId)) {
+    return Response.json({ error: "Invalid setId parameter" }, { status: 400 });
+  }
+
+  if (
+    searchParams.get("active") &&
+    searchParams.get("active") !== "true" &&
+    searchParams.get("active") !== "false"
+  ) {
+    return Response.json(
+      { error: "Invalid active parameter" },
+      { status: 400 },
+    );
   }
 
   try {
-    // Načtení dat s agregací
     const kinds = await prisma.internship.groupBy({
       by: ["kind"],
       where: filters,
@@ -26,7 +40,6 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Formátování výsledků
     const result = kinds.map((item) => ({
       kind: item.kind,
       count: item._count.kind,

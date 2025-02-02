@@ -289,6 +289,7 @@ export async function PUT(
   const body = await request.json();
   body.kind = Number(body.kind);
   body.state = Number(body.state);
+  body.setId = Number(body.setId);
 
   if (session.user.role !== Role.ADMIN && session.user.role !== Role.TEACHER) {
     body.reservationUserId = undefined;

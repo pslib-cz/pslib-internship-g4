@@ -8,7 +8,13 @@ type ReservationSummary = {
   surname: string;
 };
 
-const ReservationSummaryTable: FC = () => {
+type ReservationSummaryTableProps = {
+  setId: number | null;
+};
+
+const ReservationSummaryTable: FC<ReservationSummaryTableProps> = ({
+  setId,
+}) => {
   const [data, setData] = useState<ReservationSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -16,7 +22,14 @@ const ReservationSummaryTable: FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/summaries/reservations");
+        const querySet = setId ? `set=${encodeURIComponent(setId)}` : "";
+        //const querySet = setId !== null && !isNaN(setId) ? `set=${setId}` : "";
+        const queryActive = `active=true`;
+        const queryString = [querySet, queryActive].filter(Boolean).join("&");
+
+        const response = await fetch(
+          `/api/summaries/reservations?${queryString}`,
+        );
         if (!response.ok) {
           throw new Error(`Server responded with status ${response.status}`);
         }
