@@ -29,7 +29,7 @@ const FilterDrawer = () => {
   const [tags, setTags] = useState<{ value: string; label: string }[]>([]);
   const fetchtags = async () => {
     try {
-      const response = await fetch("/api/tags");
+      const response = await fetch("/api/tags?orderBy=text");
       if (!response.ok) {
         throw new Error(`Chyba při načítání značek: ${response.statusText}`);
       }

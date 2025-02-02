@@ -219,6 +219,19 @@ const StateDisplay = ({
   );
 };
 
+const ConclusionDisplay = ({ data }: { data: InternshipFullRecord }) => {
+  return (
+    <>
+      <Title order={3}>Závěrečné hodnocení</Title>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: data.conclusion ?? "Žádná zpráva nebyla nastavena.",
+        }}
+      />
+    </>
+  );
+};
+
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const [data, setData] = useState<InternshipFullRecord | null>(null);
@@ -297,6 +310,9 @@ const Page = ({ params }: { params: { id: string } }) => {
         </Suspense>
         <Card shadow="sm" padding="lg">
           <AgreementDownload internshipId={data.id} />
+        </Card>
+        <Card shadow="sm" padding="lg">
+          <ConclusionDisplay data={data} />
         </Card>
       </SimpleGrid>
     </>

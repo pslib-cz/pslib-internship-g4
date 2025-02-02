@@ -54,6 +54,7 @@ export async function GET(
         appendixText: true,
         additionalInfo: true,
         state: true,
+        conclusion: true,
         user: {
           select: {
             givenName: true,
@@ -135,6 +136,7 @@ export async function DELETE(
         appendixText: true,
         additionalInfo: true,
         state: true,
+        conclusion: true,
         user: {
           select: {
             givenName: true,
@@ -227,6 +229,7 @@ export async function PUT(
         appendixText: true,
         additionalInfo: true,
         state: true,
+        conclusion: true,
         user: {
           select: {
             givenName: true,

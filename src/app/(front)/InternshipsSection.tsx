@@ -3,15 +3,19 @@
 import {
   Container,
   Box,
-  Grid,
+  Group,
   Title,
   Text,
   Anchor,
-  Group,
+  Paper,
+  Button,
+  Stack,
+  List,
 } from "@mantine/core";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styles from "./InternshipsSection.module.css";
+import { useSession } from "next-auth/react";
 
 type Diary = {
   id: number;
@@ -40,11 +44,17 @@ type Set = {
 const InternshipsSection = () => {
   const [data, setData] = useState<Set[]>([]);
   const [error, setError] = useState<Error | null>(null);
+  const { data: session } = useSession();
 
   useEffect(() => {
+    if (!session) {
+      return;
+    }
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/personal/[id]/active-internships");
+        const response = await fetch(
+          "/api/personal/" + session.user!.id + "/active-internships",
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
@@ -60,7 +70,7 @@ const InternshipsSection = () => {
     };
 
     fetchData();
-  }, []);
+  }, [session]);
 
   if (error) {
     return (
@@ -77,27 +87,39 @@ const InternshipsSection = () => {
     <Box className={styles.panel}>
       <Container>
         <Title order={2}>Praxe</Title>
-        <Grid>
+        <Stack>
           {data.map((set) => (
-            <Box key={set.id}>
+            <Paper key={set.id} shadow="xs" p="sm" mt="sm">
               <Title order={3}>{set.name}</Title>
               <Text>
                 {new Date(set.start).toLocaleDateString()} -{" "}
                 {new Date(set.end).toLocaleDateString()}
               </Text>
               {set.internships.map((internship) => (
-                <Box key={internship.id}>
-                  <Text>
+                <List
+                  key={internship.id}
+                  spacing="xs"
+                  size="sm"
+                  m="sm"
+                  center
+                  listStyleType="disc"
+                  withPadding
+                >
+                  <List.Item>
                     <Anchor href={"/my/" + internship.id}>
                       {internship.companyName}
                     </Anchor>
-                  </Text>
-                </Box>
+                  </List.Item>
+                </List>
               ))}
-              <Anchor href={"/my/create?set=" + set.id}>Nová</Anchor>
-            </Box>
+              <Group>
+                <Button component={Link} href={"/my/create?set=" + set.id}>
+                  Nová
+                </Button>
+              </Group>
+            </Paper>
           ))}
-        </Grid>
+        </Stack>
       </Container>
     </Box>
   );

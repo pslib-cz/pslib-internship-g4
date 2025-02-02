@@ -187,6 +187,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       kind: "0",
       highlight: false,
       state: "0",
+      conclusion: "",
     },
     validate: {
       companyRepName: (value) =>
@@ -241,6 +242,7 @@ const Page = ({ params }: { params: { id: string } }) => {
           kind: String(data.kind),
           state: String(data.state),
           highlight: data.highlight,
+          conclusion: data.conclusion,
         });
       })
       .catch((error) => {
@@ -284,6 +286,20 @@ const Page = ({ params }: { params: { id: string } }) => {
       StarterKit,
       Placeholder.configure({
         placeholder: "Student musí dodržovat naše bezpečnostní předpisy..",
+      }),
+      TipLink,
+    ],
+    content: "",
+    immediatelyRender: false,
+    onUpdate({ editor }) {
+      form.setValues({ appendixText: editor.getHTML() });
+    },
+  });
+  const editorConclusion = useEditor({
+    extensions: [
+      StarterKit,
+      Placeholder.configure({
+        placeholder: "Byla to moc hezká praxe ...",
       }),
       TipLink,
     ],
@@ -504,6 +520,20 @@ const Page = ({ params }: { params: { id: string } }) => {
             label="Důležitá kontrola"
             {...form.getInputProps("highlighted", { type: "checkbox" })}
           />
+          <Text>Závěrečná zpráva</Text>
+          <RichTextEditor
+            editor={editorConclusion}
+            {...form.getInputProps("conclusion")}
+          >
+            <RichTextEditor.Toolbar>
+              <RichTextEditor.Bold />
+              <RichTextEditor.Italic />
+              <RichTextEditor.Underline />
+              <RichTextEditor.Strikethrough />
+              <RichTextEditor.Link />
+            </RichTextEditor.Toolbar>
+            <RichTextEditor.Content />
+          </RichTextEditor>
           <Group justify="flex-start" mt="md">
             <Button type="submit">Uložit</Button>
             <Button

@@ -131,6 +131,7 @@ export async function GET(request: NextRequest) {
         additionalInfo: true,
         appendixText: true,
         state: true,
+        conclusion: true,
         user: {
           select: {
             givenName: true,
@@ -288,6 +289,8 @@ export async function POST(request: NextRequest) {
       updated: new Date(),
       kind: Number(body.kind),
       highlighted: isManager ? body.highlighted : false,
+      conclusion: body.conclusion,
+      state: body.state ?? 0,
     },
   });
   return new Response(JSON.stringify(internship), { status: 201 });

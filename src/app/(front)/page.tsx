@@ -24,7 +24,6 @@ const Page = async () => {
       <TextsSection />
       {session?.user?.role === Role.STUDENT && (
         <Suspense fallback={<div>Nahrávání...</div>}>
-          <CreateInternshipSection />
           <InternshipsSection />
         </Suspense>
       )}

@@ -203,6 +203,19 @@ const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
   );
 };
 
+const ConclusionDisplay = ({ data }: { data: InternshipFullRecord }) => {
+  return (
+    <>
+      <Title order={2}>Závěrečné hodnocení</Title>
+      <Box
+        dangerouslySetInnerHTML={{
+          __html: data.conclusion ?? "Žádná zpráva nebyla nastavena.",
+        }}
+      />
+    </>
+  );
+};
+
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const [data, setData] = useState<InternshipFullRecord | null>(null);
@@ -264,6 +277,9 @@ const Page = ({ params }: { params: { id: string } }) => {
         <Suspense fallback={<LoadingOverlay />}>
           <InspectionsDisplay data={data} />
         </Suspense>
+        <Card shadow="sm" padding="lg">
+          <ConclusionDisplay data={data} />
+        </Card>
         <Card shadow="sm" padding="lg">
           <AgreementDownload internshipId={id} />
         </Card>

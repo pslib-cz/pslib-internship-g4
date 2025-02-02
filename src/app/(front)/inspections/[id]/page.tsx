@@ -468,6 +468,14 @@ const Page = ({ params }: { params: { id: string } }) => {
         />
       </Card>
       <Card shadow="sm" padding="lg">
+        <Title order={2}>Závěrečná zpráva</Title>
+        <Box
+          dangerouslySetInnerHTML={{
+            __html: data.conclusion ?? "Žádná zpráva nebyla nastavena.",
+          }}
+        />
+      </Card>
+      <Card shadow="sm" padding="lg">
         <AgreementDownload internshipId={data.id} />
       </Card>
     </SimpleGrid>

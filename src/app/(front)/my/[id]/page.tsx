@@ -19,10 +19,7 @@ import {
   Container,
   SimpleGrid,
   Card,
-  Button,
-  Group,
 } from "@mantine/core";
-import { IconDownload, IconPrinter } from "@tabler/icons-react";
 import {
   InternshipWithCompanyLocationSetUser,
   InternshipFullRecord,
@@ -34,6 +31,7 @@ import LocationPanel from "./LocationPanel";
 import DiarySection from "./DiarySection";
 import { useReactToPrint } from "react-to-print";
 import { AgreementDownload } from "@/components";
+import ConclusionPanel from "./ConclusionPanel";
 
 const StudentDisplay: FC<
   InternshipFullRecord | InternshipWithCompanyLocationSetUser
@@ -126,6 +124,17 @@ const DescriptionDisplay: FC<
   );
 };
 
+const DownloadsDisplay: FC<
+  InternshipFullRecord | InternshipWithCompanyLocationSetUser
+> = (internship) => {
+  return (
+    <Card shadow="sm" padding="lg">
+      <Title order={2}>Ke stažení</Title>
+      <AgreementDownload internshipId={internship.id} />
+    </Card>
+  );
+};
+
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const loadData = useCallback(() => {
@@ -200,12 +209,18 @@ const Page = ({ params }: { params: { id: string } }) => {
               <DescriptionDisplay {...data} />
             </Suspense>
             <Suspense fallback={<LoadingOverlay />}>
-              <AgreementDownload internshipId={id} />
+              <DownloadsDisplay {...data} />
             </Suspense>
           </SimpleGrid>
         )}
         <Suspense fallback={<LoadingOverlay />}>
           <DiarySection id={id} editable={data.set.active} />
+        </Suspense>
+        <Suspense fallback={<LoadingOverlay />}>
+          <ConclusionPanel
+            internship={data}
+            reloadInternshipCallback={loadData}
+          />
         </Suspense>
       </Container>
     </>
