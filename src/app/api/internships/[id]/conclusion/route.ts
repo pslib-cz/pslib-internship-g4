@@ -34,7 +34,7 @@ export async function GET(
   return Response.json({ conclusion: internship.conclusion });
 }
 
-export async function PATCH(
+export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
         select: { internships: true },
       },
     },
-    orderBy: { internships: { _count: "desc" } },
+    orderBy: [{ internships: { _count: "desc" } }, { name: "asc" }],
     take: amount,
   });
   console.log(result);

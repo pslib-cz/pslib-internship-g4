@@ -25,6 +25,11 @@ export async function PUT(request: NextRequest) {
     });
   }
   const body = await request.json();
+  if (typeof body.descNo === "string" && body.descNo.trim() === "") {
+    body.descNo = null;
+  } else if (!isNaN(Number(body.descNo))) {
+    body.descNo = Number(body.descNo);
+  }
   body.name = body.givenName + " " + body.surname;
   if (body.birthDate) {
     body.birthDate = new Date(body.birthDate).toISOString();

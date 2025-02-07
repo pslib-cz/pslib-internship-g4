@@ -15,6 +15,7 @@ import {
   Anchor,
   Text,
   rem,
+  Avatar,
 } from "@mantine/core";
 import { useDisclosure, useHeadroom } from "@mantine/hooks";
 import { useSession } from "next-auth/react";
@@ -100,11 +101,19 @@ const FrontLayout = ({ children }: LayoutProps) => {
               <SignIcon hiddenFrom="md" />
               <SignButton visibleFrom="md" />
             </Flex>
-            <Burger
-              opened={drawerOpened}
-              onClick={toggleDrawer}
-              hiddenFrom="sm"
-            />
+            <Flex hiddenFrom="sm" gap="sm">
+              <Avatar
+                src={
+                  session?.user?.image
+                    ? "data:image/jpeg;base64, " + session?.user?.image
+                    : null
+                }
+                radius={40}
+                size={40}
+                onClick={open}
+              />
+              <Burger opened={drawerOpened} onClick={toggleDrawer} />
+            </Flex>
           </Group>
         </Group>
       </AppShell.Header>
@@ -150,7 +159,8 @@ const FrontLayout = ({ children }: LayoutProps) => {
       <Drawer
         opened={drawerOpened}
         onClose={closeDrawer}
-        size="100%"
+        position="right"
+        size="90%"
         padding="md"
         title="Navigace"
         hiddenFrom="sm"
