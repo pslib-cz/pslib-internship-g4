@@ -168,22 +168,27 @@ const FrontLayout = ({ children }: LayoutProps) => {
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
-          {session && (
-            <Link href="/internships" className={styles.link}>
-              Praxe
+          {session && session?.user.role == Role.STUDENT && (
+            <Link href="/my" className={styles.link}>
+              Moje praxe
             </Link>
           )}
           <Link href="/companies" className={styles.link}>
             Firmy
           </Link>
           {session &&
-            (session?.user.role == "admin" ||
-              session?.user.role == "teacher") && (
-              <Link href="/inspections" className={styles.link}>
-                Kontroly
-              </Link>
+            (session?.user.role == Role.ADMIN ||
+              session?.user.role == Role.TEACHER) && (
+              <>
+                <Link href="/internships" className={styles.link}>
+                  Praxe
+                </Link>
+                <Link href="/inspections" className={styles.link}>
+                  Kontroly
+                </Link>
+              </>
             )}
-          {session && session?.user.role == "admin" && (
+          {session && session?.user.role == Role.ADMIN && (
             <Link href="/dashboard" className={styles.link}>
               Administrace
             </Link>

@@ -175,7 +175,9 @@ const OtherDisplay: FC<{
                 street: values.street ?? undefined,
                 descNumber: values.descNo ? Number(values.descNo) : undefined,
                 orientNumber: String(values.orientNo) ?? undefined,
-                postalCode: values.postalCode ?? undefined,
+                postalCode: values.postalCode
+                  ? Number(values.postalCode)
+                  : undefined,
               }),
             })
               .then((response) => {
@@ -219,7 +221,9 @@ const OtherDisplay: FC<{
                   body: JSON.stringify({
                     country: values.country,
                     municipality: values.municipality,
-                    postalCode: values.postalCode,
+                    postalCode: values.postalCode
+                      ? Number(values.postalCode)
+                      : undefined,
                     street: values.street ?? "",
                     orientNo: values.orientNo ?? "",
                     descNo: values.descNo ? Number(values.descNo) : undefined,
