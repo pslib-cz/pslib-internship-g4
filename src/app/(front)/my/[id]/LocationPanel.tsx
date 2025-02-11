@@ -434,7 +434,7 @@ const LocationPanel: FC<LocationPanelProps> = ({
   const setLocation = (locationId: number) => {
     //console.log("LOCATION ID::", locationId);
     fetch(`/api/internships/${internship.id}/location`, {
-      method: "PATCH",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
