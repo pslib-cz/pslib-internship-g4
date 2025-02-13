@@ -290,6 +290,7 @@ export async function PUT(
   body.kind = Number(body.kind);
   body.state = Number(body.state);
   body.setId = Number(body.setId);
+  body.locationId = Number(body.locationId);
 
   if (session.user.role !== Role.ADMIN && session.user.role !== Role.TEACHER) {
     body.reservationUserId = undefined;
