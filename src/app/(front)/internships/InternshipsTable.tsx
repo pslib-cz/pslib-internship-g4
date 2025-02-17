@@ -32,6 +32,7 @@ import {
   internshipKinds,
   internshipStates,
 } from "@/data/lists";
+import { Set } from "@prisma/client";
 
 type TInternshipsTableProps = {};
 type TInternshipsTableState = {
@@ -53,13 +54,14 @@ type TInternshipsTableState = {
 const STORAGE_ID = "users-internships-table";
 
 const InternshipsTable: FC = (TInternshipsTableProps) => {
+  const [sets, setSets] = useState<Set[]>([]);
   const { pageSize: generalPageSize } = useContext(AccountDrawerContext);
   const searchParams = useSearchParams();
   const [loadTableState, storeTableState, removeTableState] =
     useSessionStorage<TInternshipsTableState>(STORAGE_ID);
   const [data, setData] =
     useState<ListResult<InternshipWithCompanyLocationSetUser> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
   const [state, setState] = useState<TInternshipsTableState>({
     filterUser: searchParams.get("user") ?? "",
     filterUserGivenName: searchParams.get("givenName") ?? "",
@@ -90,6 +92,26 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
       : generalPageSize,
   });
   const isMobile = useMediaQuery("(max-width: 50em)");
+  const fetchAllSets = async () => {
+    try {
+      const response = await fetch("/api/sets?active=true");
+      if (!response.ok) {
+        throw new Error("Failed to fetch sets");
+      }
+      const data = await response.json();
+      setSets(data.data);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error);
+      } else {
+        setError(new Error("An unknown error occurred"));
+      }
+    } finally {
+    }
+  };
+  useEffect(() => {
+    fetchAllSets();
+  }, []);
 
   const fetchData = useCallback(
     (
@@ -119,7 +141,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
         .then((response) => {
           if (!response.ok) {
             setData(null);
-            setError("Došlo k chybě při získávání dat.");
+            throw new Error("Došlo k chybě při získávání dat.");
             throw new Error("Došlo k chybě při získávání dat.");
           }
           return response.json();
@@ -128,7 +150,11 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
           setData(data);
         })
         .catch((error) => {
-          setError(error.message);
+          if (error instanceof Error) {
+            setError(error);
+          } else {
+            setError(new Error("An unknown error occurred"));
+          }
         })
         .finally(() => {});
     },
@@ -204,6 +230,9 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
     state.filterState !== undefined
       ? params.set("state", String(state.filterState))
       : params.delete("state");
+    state.filterSet !== undefined
+      ? params.set("set", String(state.filterSet))
+      : params.delete("set");
     params.set("page", state.page.toString());
     params.set("size", state.size.toString());
     params.set("orderBy", state.order);
@@ -334,7 +363,30 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                 }}
               />
             </Table.Th>
-            <Table.Th></Table.Th>
+            <Table.Th>
+              <NativeSelect
+                size="xs"
+                data={[
+                  { value: "", label: "- Vše -" },
+                  ...sets.map((set) => ({
+                    value: String(set.id), // Převod na řetězec
+                    label: set.name,
+                  })),
+                ]}
+                value={
+                  state.filterSet !== undefined ? String(state.filterSet) : ""
+                } // Převod na řetězec
+                onChange={(event) =>
+                  setState({
+                    ...state,
+                    filterSet: event.currentTarget.value
+                      ? parseInt(event.currentTarget.value)
+                      : undefined,
+                    page: 1,
+                  })
+                }
+              />
+            </Table.Th>
             <Table.Th>
               <TextInput
                 size="xs"
@@ -461,7 +513,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
           {error && (
             <Table.Tr>
               <Table.Td colSpan={100}>
-                <Alert color="red">{error}</Alert>
+                <Alert color="red">{error.message}</Alert>
               </Table.Td>
             </Table.Tr>
           )}

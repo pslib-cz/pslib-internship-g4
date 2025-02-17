@@ -50,8 +50,7 @@ export async function PUT(
   if (
     session.user.role !== Role.ADMIN &&
     session.user.role !== Role.TEACHER &&
-    (session.user.id !== internship.userId ||
-      internship.state !== InternshipState.IN_PROGRESS)
+    session.user.id !== internship.userId
   ) {
     return new Response("Forbidden", { status: 403 });
   }

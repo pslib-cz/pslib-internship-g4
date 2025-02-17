@@ -13,7 +13,6 @@ import {
   Anchor,
   Breadcrumbs,
   Text,
-  Checkbox,
   NativeSelect,
   Title,
   Alert,
@@ -22,7 +21,7 @@ import { RichTextEditor, Link as TipLink } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import { Location, Company, User, Set } from "@prisma/client";
+import { Company, Set } from "@prisma/client";
 import { internshipKinds } from "@/data/lists";
 
 const Page = ({ params }: { params: { id: string } }) => {
@@ -98,9 +97,9 @@ const Page = ({ params }: { params: { id: string } }) => {
       additionalInfo: "",
       appendixText: "",
       classname: "",
-      companyId: undefined,
-      setId: undefined,
-      kind: 0,
+      companyId: "",
+      setId: "",
+      kind: "0",
     },
     validate: {
       companyRepName: (value) =>
@@ -144,7 +143,7 @@ const Page = ({ params }: { params: { id: string } }) => {
           classname: data.classname,
           companyId: data.companyId,
           setId: data.setId,
-          kind: data.kind,
+          kind: String(data.kind),
         });
       })
       .catch((error) => {
@@ -220,8 +219,8 @@ const Page = ({ params }: { params: { id: string } }) => {
         <Anchor component={Link} href="/">
           Titulní stránka
         </Anchor>
-        <Anchor component={Link} href="/internships">
-          Praxe
+        <Anchor component={Link} href="/my">
+          Moje praxe
         </Anchor>
         <Text>Editace</Text>
       </Breadcrumbs>
@@ -245,7 +244,7 @@ const Page = ({ params }: { params: { id: string } }) => {
                   message: "Praxe byla uložena.",
                   color: "lime",
                 });
-                router.push("/internships", { scroll: false });
+                router.push("/my/" + id, { scroll: false });
               })
               .catch((error) => {
                 notifications.show({
@@ -277,7 +276,12 @@ const Page = ({ params }: { params: { id: string } }) => {
             data={[{ label: "--", value: "" }, ...companies]}
             {...form.getInputProps("companyId")}
           />
-          <Text>Popis zaměstnání</Text>
+          <Text>
+            Popis zaměstnání{" "}
+            <Text component="span" c="red">
+              *
+            </Text>
+          </Text>
           <RichTextEditor
             editor={editorDescription}
             {...form.getInputProps("jobDescription")}
@@ -375,7 +379,7 @@ const Page = ({ params }: { params: { id: string } }) => {
           />
           <Group justify="flex-start" mt="md">
             <Button type="submit">Uložit</Button>
-            <Button component={Link} href="/internships" variant="default">
+            <Button component={Link} href="/my" variant="default">
               Storno
             </Button>
           </Group>

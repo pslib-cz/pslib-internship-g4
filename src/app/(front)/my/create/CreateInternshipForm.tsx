@@ -203,7 +203,12 @@ const CreateInternshipForm = () => {
         data={[{ label: "--", value: "" }, ...companies]}
         {...form.getInputProps("companyId")}
       />
-      <Text>Popis zaměstnání *</Text>
+      <Text>
+        Popis zaměstnání{" "}
+        <Text component="span" c="red">
+          *
+        </Text>
+      </Text>
       <RichTextEditor
         editor={editorDescription}
         {...form.getInputProps("jobDescription")}
