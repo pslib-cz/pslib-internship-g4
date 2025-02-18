@@ -183,7 +183,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       companyId: undefined,
       locationId: undefined,
       setId: undefined,
-      reservationUserId: null,
+      reservationUserId: "" as string | null,
       kind: "0",
       highlight: false,
       state: "0",
@@ -341,8 +341,9 @@ const Page = ({ params }: { params: { id: string } }) => {
         <Title order={2}>Editace praxe</Title>
         <form
           onSubmit={form.onSubmit((values) => {
-            if (values.reservationUserId === "")
+            if (values.reservationUserId === "") {
               values.reservationUserId = null;
+            }
             fetch("/api/internships/" + id, {
               method: "PUT",
               headers: {
@@ -509,10 +510,9 @@ const Page = ({ params }: { params: { id: string } }) => {
           />
           <Title order={3}>Kontrola praxí</Title>
           <NativeSelect
-            withAsterisk
             label="Vyučující"
             description={`Pokud se zde uživatel nenachází, musí se do aplikace nejprve alespoň jednou přihlásit.`}
-            data={[{ label: "--", value: "" }, ...teachers]}
+            data={[{ label: "nikdo", value: "" }, ...teachers]}
             {...form.getInputProps("reservationUserId")}
           />
           <Checkbox

@@ -144,3 +144,76 @@ export async function GET(request: NextRequest) {
   };
   return Response.json(resultData);
 }
+
+export async function POST(request: NextRequest) {
+  const session = await auth();
+
+  // Ověření oprávnění
+  if (!session) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const { internshipId, date, result, kind, note, inspectionUserId } = body;
+
+    // Validace vstupních dat
+    if (!internshipId || !date || !result || !kind || !inspectionUserId) {
+      return new Response("Missing required fields", { status: 400 });
+    }
+
+    // Ověření, zda praxe existuje
+    const internship = await prisma.internship.findUnique({
+      where: { id: internshipId },
+    });
+
+    if (!internship) {
+      return new Response("Internship not found", { status: 404 });
+    }
+
+    // Ověření, zda kontrolér existuje
+    const inspector = await prisma.user.findUnique({
+      where: { id: inspectionUserId },
+    });
+
+    if (!inspector) {
+      return new Response("Inspector not found", { status: 404 });
+    }
+
+    // Omezení pro učitele – může přidat kontrolu jen ke svým praxím
+    if (session.user.role === Role.TEACHER) {
+      const teacherHasInternship = await prisma.internship.findFirst({
+        where: {
+          id: internshipId,
+          reservationUserId: session.user.id, // Ujistíme se, že učitel je přiřazený k této praxi
+        },
+      });
+
+      if (!teacherHasInternship) {
+        return new Response(
+          "Forbidden: You can only add inspections to your own internships",
+          {
+            status: 403,
+          },
+        );
+      }
+    }
+
+    // Vytvoření nové kontroly
+    const newInspection = await prisma.inspection.create({
+      data: {
+        internshipId,
+        date: new Date(date),
+        result: Number(result),
+        kind: Number(kind),
+        note,
+        inspectionUserId,
+      },
+    });
+
+    return new Response(JSON.stringify(newInspection), { status: 201 });
+  } catch (error) {
+    console.error("Error creating inspection:", error);
+    return new Response("Internal Server Error", { status: 500 });
+  }
+}

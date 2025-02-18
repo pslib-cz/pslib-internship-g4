@@ -657,7 +657,10 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                   <Table.Td>
                     <Text>
                       {internship.diaries ? (
-                        <Anchor href={`/inspections/${internship.id}/diary`}>
+                        <Anchor
+                          component={Link}
+                          href={`/inspections/${internship.id}/diary`}
+                        >
                           {internship.diaries.length}
                         </Anchor>
                       ) : (
@@ -668,7 +671,10 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
                   <Table.Td>
                     <Text ta="center">
                       {internship.inspections ? (
-                        <Anchor href={`/inspections/${internship.id}/list`}>
+                        <Anchor
+                          component={Link}
+                          href={`/inspections/${internship.id}/list`}
+                        >
                           {internship.inspections.length}
                         </Anchor>
                       ) : (

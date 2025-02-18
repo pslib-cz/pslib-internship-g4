@@ -228,10 +228,10 @@ export async function PUT(
       ? internship!.companyId
       : Number(body.companyId),
     locationId: body.locationId ?? internship!.locationId,
-    reservationUserId: body.reservationUserId ?? internship!.reservationUserId,
-    highlighted: body.highlighted ?? internship!.highlighted,
+    reservationUserId: body.reservationUserId,
+    highlighted: body.highlighted,
     classname: body.classname,
-    conclusion: body.conclusion ?? internship!.conclusion,
+    conclusion: body.conclusion,
     updated: new Date(),
   };
   console.log("RES", updatedData);

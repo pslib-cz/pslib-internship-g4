@@ -27,7 +27,7 @@ import { type ListResult } from "@/types/data";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { DateTime } from "@/components";
 import { useSession } from "next-auth/react";
-import { getInspectionResultLabel, getInternshipKindLabel } from "@/data/lists";
+import { getInspectionResultLabel, getInspectionTypeLabel } from "@/data/lists";
 import { InspectionWithInspectorAndInternship } from "@/types/entities";
 
 type TInspectionsTableProps = {
@@ -229,7 +229,7 @@ const InspectionsTable: FC<TInspectionsTableProps> = ({ internshipId }) => {
                     {getInspectionResultLabel(String(inspection.result))}
                   </Table.Td>
                   <Table.Td>
-                    {getInternshipKindLabel(String(inspection.kind))}
+                    {getInspectionTypeLabel(String(inspection.kind))}
                   </Table.Td>
                   <Table.Td>
                     <Box
