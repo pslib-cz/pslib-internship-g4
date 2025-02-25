@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from "react";
-import { Table, Title, Text, Alert, Loader } from "@mantine/core";
+import { Table, Anchor, Alert, Loader } from "@mantine/core";
 
 type InternshipClassCountTableProps = {
   setId: number | null;
@@ -56,7 +56,11 @@ const InternshipClassCountTable: FC<InternshipClassCountTableProps> = ({
         <Table.Tr>
           <Table.Td>Praxe</Table.Td>
           {data.map((row) => (
-            <Table.Td key={row.classname}>{row.totalInternships}</Table.Td>
+            <Table.Td key={row.classname}>
+              <Anchor href={"/inspections?classname=" + row.classname}>
+                {row.totalInternships}
+              </Anchor>
+            </Table.Td>
           ))}
           <Table.Td>
             {data.reduce((acc, row) => acc + row.totalInternships, 0)}
@@ -74,8 +78,6 @@ const InternshipClassCountTable: FC<InternshipClassCountTableProps> = ({
       </Table.Tbody>
     </Table>
   );
-
-  return <></>;
 };
 
 export default InternshipClassCountTable;

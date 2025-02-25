@@ -94,7 +94,7 @@ const InternshipsTable: FC = (TInternshipsTableProps) => {
   const isMobile = useMediaQuery("(max-width: 50em)");
   const fetchAllSets = async () => {
     try {
-      const response = await fetch("/api/sets?active=true");
+      const response = await fetch("/api/sets");
       if (!response.ok) {
         throw new Error("Failed to fetch sets");
       }

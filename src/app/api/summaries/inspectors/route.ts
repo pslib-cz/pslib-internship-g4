@@ -8,43 +8,38 @@ export async function GET(request: NextRequest) {
     : null;
   const active = searchParams.get("active") === "true";
 
-  // Sestavení filtru na základě parametrů
-  const filters: any = {};
-  if (setId !== null) {
-    filters.setId = setId;
-  }
-  if (active) {
-    filters.set = { active: true }; // Přidáme filtr na aktivní sady
-  }
-
   try {
-    // Fetch data from the database
+    // Fetch summary
     const inspectionsSummary = await prisma.inspection.groupBy({
       by: ["inspectionUserId"],
       _count: { id: true },
       where: {
         internship: {
-          setId: filters.setId || undefined,
+          ...(setId !== null ? { setId: setId } : {}),
+          ...(active ? { set: { active: true } } : {}),
         },
-        ...filters,
       },
     });
 
-    // Map data to include user details
-    const result = await Promise.all(
-      inspectionsSummary.map(async (summary) => {
-        const user = await prisma.user.findUnique({
-          where: { id: summary.inspectionUserId },
-          select: { name: true, surname: true },
-        });
-        return {
-          userId: summary.inspectionUserId,
-          name: user?.name || "Unknown",
-          surname: user?.surname || "",
-          inspectionCount: summary._count.id,
-        };
-      }),
+    // Získání všech uživatelů jedním dotazem
+    const userIds = inspectionsSummary.map(
+      (summary) => summary.inspectionUserId,
     );
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, givenName: true, surname: true },
+    });
+
+    // Vytvoření mapy uživatelů pro rychlé přiřazení
+    const userMap = new Map(users.map((user) => [user.id, user]));
+
+    // Výstup s přidanými detaily uživatelů
+    const result = inspectionsSummary.map((summary) => ({
+      userId: summary.inspectionUserId,
+      givenName: userMap.get(summary.inspectionUserId)?.givenName || "",
+      surname: userMap.get(summary.inspectionUserId)?.surname || "",
+      count: summary._count.id,
+    }));
 
     return new Response(JSON.stringify(result), {
       status: 200,

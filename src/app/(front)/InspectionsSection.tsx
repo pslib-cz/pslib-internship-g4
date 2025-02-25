@@ -66,7 +66,9 @@ const InternshipsSection = () => {
   return (
     <Box className={styles.panel}>
       <Container>
-        <Title order={2}>Kontroly praxí</Title>
+        <Anchor href="/inspections">
+          <Title order={2}>Kontroly praxí</Title>
+        </Anchor>
         {data.length === 0 && (
           <Text c="gray" style={{ textAlign: "center" }}>
             Právě neprobíhají ani se nepřipravují žádné praxe.
@@ -79,7 +81,7 @@ const InternshipsSection = () => {
                 <Title order={3}>{set.setName}</Title>
                 <Text>
                   Celkový počet praxí:{" "}
-                  <Anchor href="/inspections">
+                  <Anchor href={"/inspections?set=" + set.setId}>
                     <strong>{set.totalInternships}</strong>
                   </Anchor>
                   . Zkontrolovat chcete:{" "}
