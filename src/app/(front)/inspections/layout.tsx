@@ -44,7 +44,7 @@ const InspectionsLayout = ({ children }: LayoutProps) => {
           Titulní stránka
         </Anchor>
         <Anchor component={Link} href="/inspections" scroll={false}>
-          Kontroly
+          Aktuální praxe
         </Anchor>
         <Text>{text}</Text>
       </Breadcrumbs>

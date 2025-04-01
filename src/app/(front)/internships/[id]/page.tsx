@@ -12,6 +12,7 @@ import {
   Card,
   SimpleGrid,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { InternshipFullRecord } from "@/types/entities";
 import DateTime from "@/components/DateTime/DateTime";
 import Link from "next/link";
@@ -19,6 +20,9 @@ import { getInternshipKindLabel } from "@/data/lists";
 import Address from "@/components/Address/Address";
 import SwitchInternshipState from "@/components/SwitchInternshipState/SwitchInternshipState";
 import { AgreementDownload } from "@/components";
+import CompanyDisplay from "@/components/InternshipCards/CompanyDisplay/CompanyDisplay";
+import StudentDisplay from "@/components/InternshipCards/StudentDisplay/StudentDisplay";
+import ContactsDisplay from "@/components/InternshipCards/ContactsDisplay/ContactsDisplay";
 
 const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
@@ -53,62 +57,6 @@ const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   );
 };
 
-const ContactsDisplay = ({ data }: { data: InternshipFullRecord }) => {
-  return (
-    <Card shadow="sm" padding="lg">
-      <Title order={3}>Kontakty</Title>
-      <Title order={4}>Zástupce firmy</Title>
-      <Text>Člověk zastupující firmu a podepisující za ní smlouvu</Text>
-      <Text fw={700}>Jméno a příjmení</Text>
-      <Text>{data.companyRepName}</Text>
-      <Text fw={700}>Email</Text>
-      <Text>
-        {data.companyRepEmail ? (
-          <Anchor component={Link} href={`mailto:${data.companyRepEmail}`}>
-            {data.companyRepEmail}
-          </Anchor>
-        ) : (
-          "není"
-        )}
-      </Text>
-      <Text fw={700}>Telefon</Text>
-      <Text>
-        {data.companyRepPhone ? (
-          <Anchor component={Link} href={`tel:${data.companyRepPhone}`}>
-            {data.companyRepPhone}
-          </Anchor>
-        ) : (
-          "není"
-        )}
-      </Text>
-      <Title order={4}>Kontaktní osoba</Title>
-      <Text>Osoba řídící praxi studenta</Text>
-      <Text fw={700}>Jméno a příjmení</Text>
-      <Text>{data.companyMentorName}</Text>
-      <Text fw={700}>Email</Text>
-      <Text>
-        {data.companyMentorEmail ? (
-          <Anchor component={Link} href={`mailto:${data.companyMentorEmail}`}>
-            {data.companyMentorEmail}
-          </Anchor>
-        ) : (
-          "není"
-        )}
-      </Text>
-      <Text fw={700}>Telefon</Text>
-      <Text>
-        {data.companyMentorPhone ? (
-          <Anchor component={Link} href={`tel:${data.companyMentorPhone}`}>
-            {data.companyMentorPhone}
-          </Anchor>
-        ) : (
-          "není"
-        )}
-      </Text>
-    </Card>
-  );
-};
-
 const InternshipDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
     <Card shadow="sm" padding="lg">
@@ -131,40 +79,6 @@ const InternshipDisplay = ({ data }: { data: InternshipFullRecord }) => {
       ) : (
         <Text>není</Text>
       )}
-    </Card>
-  );
-};
-
-const StudentDisplay = ({ data }: { data: InternshipFullRecord }) => {
-  return (
-    <Card shadow="sm" padding="lg">
-      <Title order={3}>Student</Title>
-      <Text fw={700}>Příjmení a jméno</Text>
-      <Text>
-        {data.user.surname}, {data.user.givenName}
-      </Text>
-      <Text fw={700}>Třída</Text>
-      <Text>{data.classname ?? "není"}</Text>
-      <Text fw={700}>Email</Text>
-      <Text>
-        {data.user.email ? (
-          <Anchor component={Link} href={`mailto:${data.user.email}`}>
-            {data.user.email}
-          </Anchor>
-        ) : (
-          "není"
-        )}
-      </Text>
-      <Text fw={700}>Telefon</Text>
-      <Text>
-        {data.user.phone ? (
-          <Anchor component={Link} href={`tel:${data.user.phone}`}>
-            {data.user.phone}
-          </Anchor>
-        ) : (
-          "není"
-        )}
-      </Text>
     </Card>
   );
 };
@@ -236,6 +150,7 @@ const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const [data, setData] = useState<InternshipFullRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const mobile = useMediaQuery("(max-width: 48rem)");
   const fetchData = (id: string) => {
     fetch(`/api/internships/${id}`, {
       method: "GET",
@@ -281,18 +196,21 @@ const Page = ({ params }: { params: { id: string } }) => {
         <Text>Detail</Text>
       </Breadcrumbs>
       <Title order={2}>Obecné informace</Title>
-      <SimpleGrid cols={2} spacing="lg">
+      <SimpleGrid cols={mobile ? 1 : 3} spacing="lg">
+        <Card shadow="sm" padding="lg">
+          <StudentDisplay data={data} />
+        </Card>
+        <Card shadow="sm" padding="lg">
+          <CompanyDisplay data={data} />
+        </Card>
+        <Card shadow="sm" padding="lg">
+          <ContactsDisplay data={data} />
+        </Card>
         <Suspense fallback={<LoadingOverlay />}>
           <DataDisplay data={data} />
         </Suspense>
         <Suspense fallback={<LoadingOverlay />}>
-          <ContactsDisplay data={data} />
-        </Suspense>
-        <Suspense fallback={<LoadingOverlay />}>
           <InternshipDisplay data={data} />
-        </Suspense>
-        <Suspense fallback={<LoadingOverlay />}>
-          <StudentDisplay data={data} />
         </Suspense>
         <Suspense fallback={<LoadingOverlay />}>
           <InspectionsDisplay data={data} />

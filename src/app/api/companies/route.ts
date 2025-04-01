@@ -95,13 +95,7 @@ export async function POST(request: NextRequest) {
       status: 401,
     });
   }
-  /*
-  if (session.user?.role !== Role.ADMIN) {
-    return new Response("Forbidden", {
-      status: 403,
-    });
-  }
-    */
+
   if (body.companyIdentificationNumber !== undefined) {
     let existingcompany: Company | null = await prisma.company.findFirst({
       where: { companyIdentificationNumber: body.companyIdentificationNumber },
@@ -112,13 +106,24 @@ export async function POST(request: NextRequest) {
       });
     }
   }
+
+  // Normalizace webové adresy
+  let website = body.website?.trim();
+  if (
+    website &&
+    !website.startsWith("http://") &&
+    !website.startsWith("https://")
+  ) {
+    website = "https://" + website;
+  }
+
   const company = await prisma.company.create({
     data: {
       name: body.name,
       companyIdentificationNumber: body.companyIdentificationNumber,
       active: body.active,
       description: body.description,
-      website: body.website,
+      website,
       created: new Date(),
       creatorId: session.user.id,
       locationId: Number(body.locationId),

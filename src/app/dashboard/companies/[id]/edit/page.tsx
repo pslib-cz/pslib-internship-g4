@@ -44,6 +44,8 @@ const Page = ({ params }: { params: { id: string } }) => {
     },
     validate: {
       name: (value) => (value.trim() !== "" ? null : "Název je povinný"),
+      locationId: (value) =>
+        value !== "" ? null : "Vyberte adresu sídla firmy",
     },
   });
   const editor = useEditor({
@@ -147,7 +149,10 @@ const Page = ({ params }: { params: { id: string } }) => {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(values),
+              body: JSON.stringify({
+                ...values,
+                locationId: Number(values.locationId),
+              }),
             })
               .then((response) => {
                 if (!response.ok) {

@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { Table, Anchor, Alert, Loader } from "@mantine/core";
+import { Table, Anchor, Alert, Loader, ScrollArea } from "@mantine/core";
 
 type CompanySummary = {
   companyId: number;
@@ -48,38 +48,40 @@ const InternshipCompanyTable: FC<InternshipCompanyTableProps> = ({ setId }) => {
   }
 
   return (
-    <Table>
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Th>Firma</Table.Th>
-          <Table.Th>Studenti</Table.Th>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>
-        {data.map((row) => (
-          <Table.Tr key={row.companyId}>
-            <Table.Td>
-              <Anchor href={"/companies/" + row.companyId}>
-                {row.companyName}
-              </Anchor>
-            </Table.Td>
-            <Table.Td>
-              <Anchor href={"/inspections?company=" + row.companyId}>
-                {row.totalStudents}
-              </Anchor>
-            </Table.Td>
+    <ScrollArea type="auto">
+      <Table>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Firma</Table.Th>
+            <Table.Th>Studenti</Table.Th>
           </Table.Tr>
-        ))}
-      </Table.Tbody>
-      <Table.Tfoot>
-        <Table.Tr>
-          <Table.Th>Celkem</Table.Th>
-          <Table.Th>
-            {data.reduce((acc, row) => acc + row.totalStudents, 0)}
-          </Table.Th>
-        </Table.Tr>
-      </Table.Tfoot>
-    </Table>
+        </Table.Thead>
+        <Table.Tbody>
+          {data.map((row) => (
+            <Table.Tr key={row.companyId}>
+              <Table.Td>
+                <Anchor href={"/companies/" + row.companyId}>
+                  {row.companyName}
+                </Anchor>
+              </Table.Td>
+              <Table.Td>
+                <Anchor href={"/inspections?company=" + row.companyId}>
+                  {row.totalStudents}
+                </Anchor>
+              </Table.Td>
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+        <Table.Tfoot>
+          <Table.Tr>
+            <Table.Th>Celkem</Table.Th>
+            <Table.Th>
+              {data.reduce((acc, row) => acc + row.totalStudents, 0)}
+            </Table.Th>
+          </Table.Tr>
+        </Table.Tfoot>
+      </Table>
+    </ScrollArea>
   );
 };
 

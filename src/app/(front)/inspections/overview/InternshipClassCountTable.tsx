@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from "react";
-import { Table, Anchor, Alert, Loader } from "@mantine/core";
+import { Table, Anchor, Alert, Loader, ScrollArea } from "@mantine/core";
 
 type InternshipClassCountTableProps = {
   setId: number | null;
@@ -42,41 +42,43 @@ const InternshipClassCountTable: FC<InternshipClassCountTableProps> = ({
     return <Alert color="red">{error.message}</Alert>;
   }
   return (
-    <Table>
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Th>Třída</Table.Th>
-          {data.map((row) => (
-            <Table.Th key={row.classname}>{row.classname}</Table.Th>
-          ))}
-          <Table.Th>Celkem</Table.Th>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>
-        <Table.Tr>
-          <Table.Td>Praxe</Table.Td>
-          {data.map((row) => (
-            <Table.Td key={row.classname}>
-              <Anchor href={"/inspections?classname=" + row.classname}>
-                {row.totalInternships}
-              </Anchor>
+    <ScrollArea type="auto">
+      <Table highlightOnHover striped>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Třída</Table.Th>
+            {data.map((row) => (
+              <Table.Th key={row.classname}>{row.classname}</Table.Th>
+            ))}
+            <Table.Th>Celkem</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          <Table.Tr>
+            <Table.Td>Praxe</Table.Td>
+            {data.map((row) => (
+              <Table.Td key={row.classname}>
+                <Anchor href={"/inspections?classname=" + row.classname}>
+                  {row.totalInternships}
+                </Anchor>
+              </Table.Td>
+            ))}
+            <Table.Td>
+              {data.reduce((acc, row) => acc + row.totalInternships, 0)}
             </Table.Td>
-          ))}
-          <Table.Td>
-            {data.reduce((acc, row) => acc + row.totalInternships, 0)}
-          </Table.Td>
-        </Table.Tr>
-        <Table.Tr>
-          <Table.Td>Studenti</Table.Td>
-          {data.map((row) => (
-            <Table.Td key={row.classname}>{row.uniqueStudents}</Table.Td>
-          ))}
-          <Table.Td>
-            {data.reduce((acc, row) => acc + row.uniqueStudents, 0)}
-          </Table.Td>
-        </Table.Tr>
-      </Table.Tbody>
-    </Table>
+          </Table.Tr>
+          <Table.Tr>
+            <Table.Td>Studenti</Table.Td>
+            {data.map((row) => (
+              <Table.Td key={row.classname}>{row.uniqueStudents}</Table.Td>
+            ))}
+            <Table.Td>
+              {data.reduce((acc, row) => acc + row.uniqueStudents, 0)}
+            </Table.Td>
+          </Table.Tr>
+        </Table.Tbody>
+      </Table>
+    </ScrollArea>
   );
 };
 

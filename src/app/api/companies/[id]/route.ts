@@ -104,6 +104,15 @@ export async function PUT(
     });
   }
   const body = await request.json();
+  body.locationId = body.locationId ? Number(body.locationId) : null;
+  let website = body.website?.trim();
+  if (
+    website &&
+    !website.startsWith("http://") &&
+    !website.startsWith("https://")
+  ) {
+    website = "https://" + website;
+  }
   let company = await prisma.company.update({
     where: {
       id: Number(id),

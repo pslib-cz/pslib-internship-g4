@@ -75,7 +75,7 @@ const FrontLayout = ({ children }: LayoutProps) => {
                     Praxe
                   </Link>
                   <Link href="/inspections" className={styles.link}>
-                    Kontroly
+                    Aktuální praxe
                   </Link>
                 </>
               )}
@@ -181,10 +181,10 @@ const FrontLayout = ({ children }: LayoutProps) => {
               session?.user.role == Role.TEACHER) && (
               <>
                 <Link href="/internships" className={styles.link}>
-                  Praxe
+                  Archiv
                 </Link>
                 <Link href="/inspections" className={styles.link}>
-                  Kontroly
+                  Aktuální praxe
                 </Link>
               </>
             )}
