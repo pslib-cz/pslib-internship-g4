@@ -221,15 +221,28 @@ export async function PUT(
     jobDescription: body.jobDescription,
     appendixText: body.appendixText,
     additionalInfo: body.additionalInfo,
-    kind: isNaN(Number(body.kind)) ? internship!.kind : Number(body.kind),
-    state: isNaN(Number(body.state)) ? internship!.state : Number(body.state),
-    setId: isNaN(Number(body.setId)) ? internship!.setId : Number(body.setId),
-    companyId: isNaN(Number(body.companyId))
-      ? internship!.companyId
-      : Number(body.companyId),
-    locationId: body.locationId ?? internship!.locationId,
-    reservationUserId: body.reservationUserId,
-    highlighted: body.highlighted,
+    kind:
+      body.kind === "" || body.kind == null
+        ? internship!.kind
+        : Number(body.kind),
+    state:
+      body.state === "" || body.state == null
+        ? internship!.state
+        : Number(body.state),
+    setId:
+      body.setId === "" || body.setId == null
+        ? internship!.setId
+        : Number(body.setId),
+    companyId:
+      body.companyId === "" || body.companyId == null
+        ? internship!.companyId
+        : Number(body.companyId),
+    locationId:
+      body.locationId === "" || body.locationId == null
+        ? internship!.locationId
+        : Number(body.locationId),
+    reservationUserId: body.reservationUserId || null,
+    highlighted: body.highlighted === true || body.highlighted === "true",
     classname: body.classname,
     conclusion: body.conclusion,
     updated: new Date(),

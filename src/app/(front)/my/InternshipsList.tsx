@@ -48,7 +48,7 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
     useSessionStorage<TInternshipsListState>(STORAGE_ID);
   const [data, setData] =
     useState<ListResult<InternshipWithCompanyLocationSetUser> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
   const [state, setState] = useState<TInternshipsListState>({
     filterYear: searchParams.get("year")
       ? parseInt(searchParams.get("year") as string)
@@ -69,6 +69,7 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
   const [deleteOpened, { open, close }] = useDisclosure(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 50em)");
+  const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(
     (
@@ -81,6 +82,7 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
       page: number = 1,
       pageSize: number = 10,
     ) => {
+      setLoading(true);
       fetch(
         `/api/internships?user=${user}&year=${year !== undefined ? year : ""}&company=${company !== undefined ? company : ""}&companyName=${companyName}&class=${classname}&orderBy=${orderBy}&page=${page - 1}&size=${pageSize}`,
         {
@@ -93,7 +95,6 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
         .then((response) => {
           if (!response.ok) {
             setData(null);
-            setError("Došlo k chybě při získávání dat.");
             throw new Error("Došlo k chybě při získávání dat.");
           }
           return response.json();
@@ -104,7 +105,9 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
         .catch((error) => {
           setError(error.message);
         })
-        .finally(() => {});
+        .finally(() => {
+          setLoading(false);
+        });
     },
     [],
   );
@@ -243,6 +246,12 @@ const InternshipsList: FC = (TInternshipsTableProps) => {
         {data && data.total === 0 && (
           <Alert>Žádná praxe nevyhovuje podmínkám.</Alert>
         )}
+        {error && (
+          <Alert color="red">
+            <Text>{error.message}</Text>
+          </Alert>
+        )}
+        {loading && <Text>Načítám...</Text>}
         {data &&
           data.data.map((internship, index) => (
             <InternshipItem

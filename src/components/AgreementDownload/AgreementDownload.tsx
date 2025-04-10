@@ -31,7 +31,11 @@ const AgreementDownload: FC<AgreementDownloadProps> = ({ internshipId }) => {
   return (
     <>
       <Title order={3}>Smlouva o praxi</Title>
-      <Text>Pokud ve vygenerované smlouvě chybí některé Vaše osobní údaje, můžete si je nastavit ve svém profilu pod ikonkou na pravé straně záhlaví aplikace.</Text>
+      <Text>
+        Pokud ve vygenerované smlouvě chybí některé Vaše osobní údaje, můžete si
+        je nastavit ve svém profilu pod ikonkou na pravé straně záhlaví
+        aplikace.
+      </Text>
       {error && <Alert color="red">{error.message}</Alert>}
       <Box>
         <Group mt="1em">

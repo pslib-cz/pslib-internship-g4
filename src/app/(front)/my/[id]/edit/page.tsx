@@ -163,9 +163,8 @@ const Page = ({ params }: { params: { id: string } }) => {
       TipLink,
     ],
     content: "",
-    immediatelyRender: false,
-    onUpdate({ editor }) {
-      form.setValues({ jobDescription: editor.getHTML() });
+    onBlur({ editor }) {
+      form.setFieldValue("jobDescription", editor.getHTML());
     },
   });
   const editorInfo = useEditor({
@@ -177,8 +176,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       TipLink,
     ],
     content: "",
-    immediatelyRender: false,
-    onUpdate({ editor }) {
+    onBlur({ editor }) {
       form.setValues({ additionalInfo: editor.getHTML() });
     },
   });
@@ -191,21 +189,25 @@ const Page = ({ params }: { params: { id: string } }) => {
       TipLink,
     ],
     content: "",
-    immediatelyRender: false,
-    onUpdate({ editor }) {
+    onBlur({ editor }) {
       form.setValues({ appendixText: editor.getHTML() });
     },
   });
+  /*
   useEffect(() => {
     editorDescription?.chain().setContent(form.values.jobDescription).run();
   }, [editorDescription, form.values.jobDescription]);
+  */
+  /*
   useEffect(() => {
     editorInfo?.chain().setContent(form.values.additionalInfo).run();
   }, [editorInfo, form.values.additionalInfo]);
+  */
+  /*
   useEffect(() => {
     editorAppendix?.chain().setContent(form.values.appendixText).run();
   }, [editorAppendix, form.values.appendixText]);
-
+*/
   if (error) {
     return (
       <Alert color="red" title="Chyba při načítání nebo ukládání praxe">
@@ -228,12 +230,19 @@ const Page = ({ params }: { params: { id: string } }) => {
         <Title order={2}>Editace praxe</Title>
         <form
           onSubmit={form.onSubmit((values) => {
+            const payload = {
+              ...values,
+              companyId:
+                values.companyId === "" ? null : Number(values.companyId),
+              setId: values.setId === "" ? null : Number(values.setId),
+              kind: values.kind === "" ? null : Number(values.kind),
+            };
             fetch("/api/internships/" + id, {
               method: "PUT",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(values),
+              body: JSON.stringify(payload),
             })
               .then((response) => {
                 if (!response.ok) {

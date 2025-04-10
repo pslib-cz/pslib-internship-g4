@@ -23,6 +23,10 @@ import { AgreementDownload } from "@/components";
 import CompanyDisplay from "@/components/InternshipCards/CompanyDisplay/CompanyDisplay";
 import StudentDisplay from "@/components/InternshipCards/StudentDisplay/StudentDisplay";
 import ContactsDisplay from "@/components/InternshipCards/ContactsDisplay/ContactsDisplay";
+import SetDisplay from "@/components/InternshipCards/SetDisplay/SetDisplay";
+import LocationDisplay from "@/components/InternshipCards/LocationDisplay/LocationDisplay";
+import InspectionsDisplay from "@/components/InternshipCards/InspectionsDisplay/InspectionsDisplay";
+import DiaryDisplay from "@/components/InternshipCards/DiaryDisplay/DiaryDisplay";
 
 const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
@@ -76,41 +80,6 @@ const InternshipDisplay = ({ data }: { data: InternshipFullRecord }) => {
       <Text fw={700}>Dodatky ke smlouvě</Text>
       {data.appendixText ? (
         <Box dangerouslySetInnerHTML={{ __html: data.appendixText ?? "" }} />
-      ) : (
-        <Text>není</Text>
-      )}
-    </Card>
-  );
-};
-
-const LocationDisplay = ({ data }: { data: InternshipFullRecord }) => {
-  return (
-    <Card shadow="sm" padding="lg">
-      <Title order={3}>Místo</Title>
-      <Text fw={700}>Adresa</Text>
-      <Address
-        country={data.location.country ?? ""}
-        municipality={data.location.municipality ?? ""}
-        street={data.location.street}
-        postalCode={data.location.postalCode}
-        descNum={data.location.descNo}
-        orientNum={data.location.orientNo}
-      />
-    </Card>
-  );
-};
-
-const InspectionsDisplay = ({ data }: { data: InternshipFullRecord }) => {
-  return (
-    <Card shadow="sm" padding="lg">
-      <Title order={3}>Nastavení kontrol</Title>
-      <Text fw={700}>Důležitost provedení kontroly</Text>
-      <Text>{data.highlighted ? "nutná" : "normální"}</Text>
-      <Text fw={700}>Rezervováno</Text>
-      {data.reservationUserId ? (
-        <Text>
-          {data.reservationUser?.surname}, {data.reservationUser?.givenName}
-        </Text>
       ) : (
         <Text>není</Text>
       )}
@@ -213,7 +182,10 @@ const Page = ({ params }: { params: { id: string } }) => {
           <InternshipDisplay data={data} />
         </Suspense>
         <Suspense fallback={<LoadingOverlay />}>
-          <InspectionsDisplay data={data} />
+          <InspectionsDisplay
+            data={data}
+            linkToList={`/inspections/${data.id}/list`}
+          />
         </Suspense>
         <Suspense fallback={<LoadingOverlay />}>
           <LocationDisplay data={data} />
