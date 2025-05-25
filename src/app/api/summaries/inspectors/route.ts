@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     const inspectionsSummary = await prisma.inspection.groupBy({
       by: ["inspectionUserId"],
       _count: { id: true },
-      where: filters
+      where: filters,
     });
 
     // Získání všech uživatelů jedním dotazem

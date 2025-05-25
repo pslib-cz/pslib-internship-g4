@@ -62,16 +62,28 @@ const ReservationSummaryTable: FC<ReservationSummaryTableProps> = ({
             <Table.Th>Učitel</Table.Th>
             <Table.Th>Počet rezervací</Table.Th>
             <Table.Th>Zkontrolováno</Table.Th>
+            <Table.Th>%</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {data.map(({ reservationUserId, givenName, surname, count, inspected }) => (
-            <Table.Tr key={reservationUserId}>
-              <Table.Td>{`${surname}, ${givenName}`}</Table.Td>
-              <Table.Td>{count}</Table.Td>
-              <Table.Td>{inspected ?? "-"}</Table.Td>
-            </Table.Tr>
-          ))}
+          {data.map(
+            ({ reservationUserId, givenName, surname, count, inspected }) => (
+              <Table.Tr key={reservationUserId}>
+                <Table.Td>{`${surname}, ${givenName}`}</Table.Td>
+                <Table.Td>{count}</Table.Td>
+                <Table.Td>{inspected ?? "-"}</Table.Td>
+                <Table.Td>
+                  {inspected ? (
+                    <Text>
+                      {((Number(inspected) / count) * 100).toFixed(2)}%
+                    </Text>
+                  ) : (
+                    <Text>-</Text>
+                  )}
+                </Table.Td>
+              </Table.Tr>
+            ),
+          )}
         </Table.Tbody>
       </Table>
     </>

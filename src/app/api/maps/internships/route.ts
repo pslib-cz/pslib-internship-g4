@@ -56,6 +56,12 @@ export async function GET(request: NextRequest) {
       latitude: true,
       longitude: true,
       internships: {
+        where: {
+          set: {
+            active: active !== null ? active : undefined,
+            id: set !== null ? set : undefined,
+          },
+        },
         select: {
           id: true,
           classname: true,

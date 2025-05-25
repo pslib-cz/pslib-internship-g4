@@ -84,7 +84,9 @@ export async function GET(
     "Student.Name": `${internship.user.givenName} ${internship.user.surname}`,
     "Student.Email": internship.user.email,
     "Student.Classname": internship.classname,
-    "Student.BirthDate": internship.user.birthDate ? new Date(internship.user.birthDate).toLocaleDateString() : "",
+    "Student.BirthDate": internship.user.birthDate
+      ? new Date(internship.user.birthDate).toLocaleDateString()
+      : "",
     "Student.Municipality": internship.user.municipality,
     "Student.Street": internship.user.street,
     "Student.DescNumber": internship.user.descNo,
