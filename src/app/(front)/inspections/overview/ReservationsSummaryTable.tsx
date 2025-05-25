@@ -6,6 +6,7 @@ type ReservationSummary = {
   count: number;
   givenName: string;
   surname: string;
+  inspected?: string;
 };
 
 type ReservationSummaryTableProps = {
@@ -60,13 +61,15 @@ const ReservationSummaryTable: FC<ReservationSummaryTableProps> = ({
           <Table.Tr>
             <Table.Th>Učitel</Table.Th>
             <Table.Th>Počet rezervací</Table.Th>
+            <Table.Th>Zkontrolováno</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {data.map(({ reservationUserId, givenName, surname, count }) => (
+          {data.map(({ reservationUserId, givenName, surname, count, inspected }) => (
             <Table.Tr key={reservationUserId}>
               <Table.Td>{`${surname}, ${givenName}`}</Table.Td>
               <Table.Td>{count}</Table.Td>
+              <Table.Td>{inspected ?? "-"}</Table.Td>
             </Table.Tr>
           ))}
         </Table.Tbody>

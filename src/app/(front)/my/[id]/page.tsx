@@ -24,12 +24,12 @@ import {
   InternshipWithCompanyLocationSetUser,
   InternshipFullRecord,
 } from "@/types/entities";
+import { useSession } from "next-auth/react";
 import DateTime from "@/components/DateTime/DateTime";
 import Link from "next/link";
 import { getInternshipKindLabel } from "@/data/lists";
 import LocationPanel from "./LocationPanel";
 import DiarySection from "./DiarySection";
-import { useReactToPrint } from "react-to-print";
 import { AgreementDownload } from "@/components";
 import ConclusionPanel from "./ConclusionPanel";
 
@@ -137,6 +137,7 @@ const DownloadsDisplay: FC<
 
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
+  const { data: session, status } = useSession();
   const loadData = useCallback(() => {
     fetch(`/api/internships/${id}`, {
       method: "GET",
@@ -154,6 +155,14 @@ const Page = ({ params }: { params: { id: string } }) => {
       })
       .then((data) => {
         setData(data);
+        if (
+          session &&
+          session.user.role === "student" &&
+          data.user.id !== session.user.id
+        ) {
+          setError("Nemáte oprávnění k zobrazení této praxe.");
+          return;
+    }
       })
       .catch((error) => {
         setError(error.message);
@@ -165,8 +174,9 @@ const Page = ({ params }: { params: { id: string } }) => {
   );
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
+    if (!session || status !== "authenticated") return;
     loadData();
-  }, [loadData]);
+  }, [loadData, session, status]);
 
   if (error) {
     return <Alert color="red">{error}</Alert>;

@@ -9,16 +9,17 @@ export async function GET(request: NextRequest) {
   const active = searchParams.get("active") === "true";
 
   try {
+    const filters = {
+      internship: {
+        ...(setId !== null ? { setId: setId } : {}),
+        ...(active ? { set: { active: true } } : {}),
+      },
+    };
     // Fetch summary
     const inspectionsSummary = await prisma.inspection.groupBy({
       by: ["inspectionUserId"],
       _count: { id: true },
-      where: {
-        internship: {
-          ...(setId !== null ? { setId: setId } : {}),
-          ...(active ? { set: { active: true } } : {}),
-        },
-      },
+      where: filters
     });
 
     // Získání všech uživatelů jedním dotazem

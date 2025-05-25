@@ -8,7 +8,6 @@ import {
   Title,
   Container,
 } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import isAuthorized from "@/hocs/isAuthorized";
 import InternshipsList from "./InternshipsList";

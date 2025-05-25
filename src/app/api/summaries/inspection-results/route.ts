@@ -3,7 +3,24 @@ import prisma from "@/utils/db";
 import { InspectionResult } from "@/types/data";
 
 export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const setId = searchParams.get("set");
+  const active = searchParams.get("active");
+  const filters: any = {};
+  if (setId) {
+      filters.internship = {
+        setId: Number(setId),
+      };
+  }
   try {
+    if (active === "true" || active === "false") {
+      filters.internship = {
+        ...(filters.internship || {}),
+        set: {
+          active: active === "true",
+        },
+      };
+    }
     // Načtení dat s agregací podle result
     const results = await prisma.inspection.groupBy({
       by: ["result"],
