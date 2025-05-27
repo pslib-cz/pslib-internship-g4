@@ -41,7 +41,7 @@ const InternshipKindsTable: FC<InternshipKindsTableProps> = ({ setId }) => {
       }
     };
     fetchData();
-  }, []);
+  }, [setId]);
 
   if (loading) {
     return <Loader />;

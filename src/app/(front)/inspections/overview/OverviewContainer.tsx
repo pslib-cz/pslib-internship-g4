@@ -9,6 +9,7 @@ import { Paper, Title } from "@mantine/core";
 import ReservationSummaryTable from "./ReservationsSummaryTable";
 import InspectorSummaryTable from "./InspectorSummaryTable";
 import InspectionResultsSummary from "./InspectionResultsSummary";
+import InternshipStateGraph from "./InternshipsStateGraph";
 
 const OverviewContainer: FC = () => {
   const [activeSetId, setActiveSetId] = useState<number | null>(null);
@@ -37,6 +38,10 @@ const OverviewContainer: FC = () => {
       <Paper mt="lg" p="lg">
         <Title order={2}>Počty rezervovaných praxí</Title>
         <ReservationSummaryTable setId={activeSetId} />
+      </Paper>
+      <Paper mt="lg" p="lg">
+        <Title order={2}>Stav kontroly praxí</Title>
+        <InternshipStateGraph setId={activeSetId} />
       </Paper>
       <Paper mt="lg" p="lg">
         <Title order={2}>Počty kontrol podle učitelů</Title>

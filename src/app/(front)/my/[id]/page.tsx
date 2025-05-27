@@ -155,10 +155,14 @@ const Page = ({ params }: { params: { id: string } }) => {
       })
       .then((data) => {
         setData(data);
+        if (!session) {
+          setError("Nejste přihlášen.");
+          return;
+        }
         if (
           session &&
           session.user.role === "student" &&
-          data.user.id !== session.user.id
+          data.userId !== session.user.id
         ) {
           setError("Nemáte oprávnění k zobrazení této praxe.");
           return;

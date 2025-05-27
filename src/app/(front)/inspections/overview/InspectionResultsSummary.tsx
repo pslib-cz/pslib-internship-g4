@@ -64,7 +64,7 @@ const InspectionResultsSummary: FC<InspectionResultsSummaryProps> = ({
       }
     };
     fetchData();
-  }, []);
+  }, [setId]);
 
   if (loading) {
     return <Loader />;

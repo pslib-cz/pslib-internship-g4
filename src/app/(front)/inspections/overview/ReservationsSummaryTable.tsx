@@ -44,7 +44,7 @@ const ReservationSummaryTable: FC<ReservationSummaryTableProps> = ({
       }
     };
     fetchData();
-  }, []);
+  }, [setId]);
 
   if (loading) {
     return <Loader />;
