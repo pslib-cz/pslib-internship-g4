@@ -50,6 +50,7 @@ const InternshipStateGraph: FC<InternshipStateGraphProps> = ({ setId }) => {
   return (
     <>
       <Text>{setId}</Text>
+      <pre>{JSON.stringify(data)}</pre>
     </>
   );
 };

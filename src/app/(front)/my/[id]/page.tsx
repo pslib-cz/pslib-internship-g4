@@ -155,6 +155,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       })
       .then((data) => {
         setData(data);
+        /*
         if (!session) {
           setError("Nejste přihlášen.");
           return;
@@ -167,6 +168,7 @@ const Page = ({ params }: { params: { id: string } }) => {
           setError("Nemáte oprávnění k zobrazení této praxe.");
           return;
         }
+          */
       })
       .catch((error) => {
         setError(error.message);
