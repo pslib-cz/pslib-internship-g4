@@ -21,6 +21,7 @@ import {
   InternshipFullRecord,
   InternshipWithCompanyLocationSetUser,
 } from "@/types/entities";
+import ConclusionDownload from "@/components/ConclusionDownload/ConclusionDownload";
 
 enum DisplayMode {
   DISPLAY,
@@ -159,7 +160,13 @@ const ConclusionPanel: FC<ConclusionPanelProps> = ({
           reloadInternshipCallback={reloadInternshipCallback}
         />
       ) : (
-        <ConclusionDisplay text={internship.conclusion} setMode={switchMode} />
+        <>
+          <ConclusionDisplay
+            text={internship.conclusion}
+            setMode={switchMode}
+          />
+          <ConclusionDownload internshipId={internship.id} />
+        </>
       )}
     </Card>
   );

@@ -27,6 +27,7 @@ import SetDisplay from "@/components/InternshipCards/SetDisplay/SetDisplay";
 import LocationDisplay from "@/components/InternshipCards/LocationDisplay/LocationDisplay";
 import InspectionsDisplay from "@/components/InternshipCards/InspectionsDisplay/InspectionsDisplay";
 import DiaryDisplay from "@/components/InternshipCards/DiaryDisplay/DiaryDisplay";
+import ConclusionDownload from "@/components/ConclusionDownload/ConclusionDownload";
 
 const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
@@ -203,6 +204,7 @@ const Page = ({ params }: { params: { id: string } }) => {
         </Card>
         <Card shadow="sm" padding="lg">
           <ConclusionDisplay data={data} />
+          <ConclusionDownload internshipId={data.id} />
         </Card>
       </SimpleGrid>
     </>

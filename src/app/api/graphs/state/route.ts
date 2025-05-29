@@ -52,9 +52,7 @@ export async function GET(request: NextRequest) {
       where: {
         ...filters,
         inspections: {
-          some: {
-            result: { not: null }, // můžeme upravit na `id: { not: null }` pokud `result` není povinný
-          },
+          some: {}, // stačí ověřit přítomnost alespoň jedné inspekce
         },
       },
     });

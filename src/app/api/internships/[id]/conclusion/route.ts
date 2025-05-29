@@ -16,7 +16,7 @@ export async function GET(
 
   let internship = await prisma.internship.findFirst({
     where: { id: id },
-    select: { conclusion: true },
+    select: { conclusion: true, userId: true, state: true },
   });
 
   if (!internship) {
@@ -26,7 +26,7 @@ export async function GET(
   if (
     session.user.role !== Role.ADMIN &&
     session.user.role !== Role.TEACHER &&
-    session.user.id !== id
+    session.user.id !== internship.userId
   ) {
     return new Response("Forbidden", { status: 403 });
   }
@@ -57,8 +57,8 @@ export async function PUT(
   if (
     session.user.role !== Role.ADMIN &&
     session.user.role !== Role.TEACHER &&
-    (session.user.id !== internship.userId ||
-      internship.state !== InternshipState.IN_PROGRESS)
+    session.user.id !==
+      internship.userId /*|| internship.state !== InternshipState.IN_PROGRESS*/
   ) {
     return new Response("Forbidden", { status: 403 });
   }
@@ -73,7 +73,5 @@ export async function PUT(
     data: { conclusion: body.conclusion },
   });
 
-  return new Response(JSON.stringify({ message: "Conclusion updated" }), {
-    status: 200,
-  });
+  return Response.json({ success: true });
 }

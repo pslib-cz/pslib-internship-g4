@@ -13,6 +13,7 @@ import SetDisplay from "@/components/InternshipCards/SetDisplay/SetDisplay";
 import LocationDisplay from "@/components/InternshipCards/LocationDisplay/LocationDisplay";
 import InspectionsDisplay from "@/components/InternshipCards/InspectionsDisplay/InspectionsDisplay";
 import DiaryDisplay from "@/components/InternshipCards/DiaryDisplay/DiaryDisplay";
+import ConclusionDownload from "@/components/ConclusionDownload/ConclusionDownload";
 
 const StateDisplay = ({
   data,
@@ -120,6 +121,7 @@ const Page = ({ params }: { params: { id: string } }) => {
             __html: data.conclusion ?? "Žádná zpráva nebyla nastavena.",
           }}
         />
+        <ConclusionDownload internshipId={data.id} />
       </Card>
       <Card shadow="sm" padding="lg">
         <AgreementDownload internshipId={data.id} />
