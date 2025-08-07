@@ -31,7 +31,7 @@ import ConclusionDownload from "@/components/ConclusionDownload/ConclusionDownlo
 
 const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
-    <Card shadow="sm" padding="lg">
+    <>
       <Title order={3}>Základní údaje</Title>
       <Text fw={700}>Student</Text>
       <Text>
@@ -58,13 +58,13 @@ const DataDisplay = ({ data }: { data: InternshipFullRecord }) => {
       <Text>{data.set.continuous ? "Průběžná" : "Souvislá"}</Text>
       <Text fw={700}>Způsob</Text>
       <Text>{getInternshipKindLabel(String(data.kind))}</Text>
-    </Card>
+    </>
   );
 };
 
 const InternshipDisplay = ({ data }: { data: InternshipFullRecord }) => {
   return (
-    <Card shadow="sm" padding="lg">
+    <>
       <Title order={3}>Praxe</Title>
       <Text fw={700}>Popis</Text>
       {data.jobDescription ? (
@@ -84,7 +84,7 @@ const InternshipDisplay = ({ data }: { data: InternshipFullRecord }) => {
       ) : (
         <Text>není</Text>
       )}
-    </Card>
+    </>
   );
 };
 
@@ -96,10 +96,10 @@ const StateDisplay = ({
   reloadData: () => void;
 }) => {
   return (
-    <Card shadow="sm" padding="lg">
+    <>
       <Title order={3}>Stav</Title>
       <SwitchInternshipState internship={data} afterStateChange={reloadData} />
-    </Card>
+    </>
   );
 };
 
@@ -171,40 +171,52 @@ const Page = ({ params }: { params: { id: string } }) => {
           <StudentDisplay data={data} />
         </Card>
         <Card shadow="sm" padding="lg">
+          <SetDisplay data={data} />
+        </Card>
+        <Card shadow="sm" padding="lg">
           <CompanyDisplay data={data} />
         </Card>
         <Card shadow="sm" padding="lg">
           <ContactsDisplay data={data} />
         </Card>
-        <Suspense fallback={<LoadingOverlay />}>
+        <Card shadow="sm" padding="lg">
           <DataDisplay data={data} />
-        </Suspense>
-        <Suspense fallback={<LoadingOverlay />}>
+        </Card>
+        <Card shadow="sm" padding="lg">
           <InternshipDisplay data={data} />
-        </Suspense>
-        <Suspense fallback={<LoadingOverlay />}>
+        </Card>
+        <Card shadow="sm" padding="lg">
           <InspectionsDisplay
             data={data}
             linkToList={`/inspections/${data.id}/list`}
           />
-        </Suspense>
-        <Suspense fallback={<LoadingOverlay />}>
-          <LocationDisplay data={data} />
-        </Suspense>
-        <Suspense fallback={<LoadingOverlay />}>
+        </Card>
+        <Card shadow="sm" padding="lg">
+          <Suspense fallback={<LoadingOverlay />}>
+            <LocationDisplay data={data} />
+          </Suspense>
+        </Card>
+        <Card shadow="sm" padding="lg">
           <StateDisplay
             data={data}
             reloadData={() => {
               fetchData(id);
             }}
           />
-        </Suspense>
+        </Card>
         <Card shadow="sm" padding="lg">
           <AgreementDownload internshipId={data.id} />
         </Card>
         <Card shadow="sm" padding="lg">
           <ConclusionDisplay data={data} />
           <ConclusionDownload internshipId={data.id} />
+        </Card>
+        <Card shadow="sm" padding="lg">
+          <DiaryDisplay
+            data={data}
+            linkToList={`/inspections/${data.id}/diary`}
+            linkToPublicList={"/diary/" + data.id}
+          />
         </Card>
       </SimpleGrid>
     </>

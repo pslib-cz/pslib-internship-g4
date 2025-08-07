@@ -1,9 +1,10 @@
 "use client";
 
-import { FC, useCallback, useRef, useState } from "react";
+import { FC, useCallback, useRef, useState, useEffect } from "react";
 import { Title, Box, Alert, Button, Group, Text } from "@mantine/core";
-import { IconDownload, IconPrinter } from "@tabler/icons-react";
+import { IconDownload, IconPrinter, IconPdf } from "@tabler/icons-react";
 import { useReactToPrint } from "react-to-print";
+import html2pdf from "html2pdf.js";
 
 type AgreementDownloadProps = {
   internshipId: string;
@@ -12,6 +13,40 @@ type AgreementDownloadProps = {
 const AgreementDownload: FC<AgreementDownloadProps> = ({ internshipId }) => {
   const [content, setContent] = useState<string>("");
   const [error, setError] = useState<Error | null>(null);
+  const [shouldGeneratePdf, setShouldGeneratePdf] = useState(false);
+
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadPdf = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `/api/internships/${internshipId}/agreement`,
+      );
+      const data = await response.text();
+      setContent(data);
+      setShouldGeneratePdf(true); // signál pro useEffect
+    } catch (err) {
+      if (err instanceof Error) setError(err);
+    }
+  }, [internshipId]);
+
+  useEffect(() => {
+    if (shouldGeneratePdf && contentRef.current) {
+      const element = contentRef.current;
+
+      const opt = {
+        margin: 0.5,
+        filename: "smlouva-o-praxi.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "cm", format: "a4", orientation: "portrait" },
+      };
+
+      html2pdf().set(opt).from(element).save();
+      setShouldGeneratePdf(false);
+    }
+  }, [shouldGeneratePdf, content]);
+
   const handleOnBeforeGetContent = useCallback(() => {
     fetch(`/api/internships/${internshipId}/agreement`)
       .then((response) => response.text())
@@ -22,12 +57,13 @@ const AgreementDownload: FC<AgreementDownloadProps> = ({ internshipId }) => {
         setError(error);
       });
   }, [internshipId]);
-  const contentRef = useRef<HTMLDivElement>(null);
+
   const handlePrint = useReactToPrint({
     content: useCallback(() => contentRef.current, []),
     documentTitle: "Smlouva o praxi",
     removeAfterPrint: true,
   });
+
   return (
     <>
       <Title order={3}>Smlouva o praxi</Title>
@@ -50,6 +86,13 @@ const AgreementDownload: FC<AgreementDownloadProps> = ({ internshipId }) => {
             Tisk
           </Button>
           <Button
+            variant="default"
+            leftSection={<IconPdf />}
+            onClick={handleDownloadPdf}
+          >
+            .pdf
+          </Button>
+          <Button
             leftSection={<IconDownload />}
             onClick={(e) => {
               e.preventDefault();
@@ -64,13 +107,9 @@ const AgreementDownload: FC<AgreementDownloadProps> = ({ internshipId }) => {
           </Button>
         </Group>
       </Box>
+      {/* Skrytý obsah pro tisk a PDF */}
       <div style={{ height: 0, overflow: "hidden", width: 0 }}>
-        <div
-          ref={contentRef}
-          dangerouslySetInnerHTML={{
-            __html: content,
-          }}
-        />
+        <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />
       </div>
     </>
   );

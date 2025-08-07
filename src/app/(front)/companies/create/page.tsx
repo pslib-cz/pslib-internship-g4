@@ -21,29 +21,45 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import "@mantine/tiptap/styles.css";
 
+type FormValues = {
+  name: string;
+  companyIdentificationNumber?: number;
+  description: string;
+  website: string;
+  street: string;
+  descNum?: number;
+  orientNum: string;
+  municipality: string;
+  country: string;
+  postalCode?: number;
+};
+
 const Page = () => {
   const router = useRouter();
-  const form = useForm({
+  const form = useForm<FormValues>({
     initialValues: {
-      name: "",
-      companyIdentificationNumber: 0 || undefined,
-      description: "",
-      website: "",
-      street: "",
-      descNum: 0 || undefined,
-      orientNum: "",
-      municipality: "Liberec",
-      country: "Česká republika",
-      postalCode: 0 || undefined,
-    },
+    name: "",
+    companyIdentificationNumber: undefined,
+    description: "",
+    website: "",
+    street: "",
+    descNum: undefined,
+    orientNum: "",
+    municipality: "Liberec",
+    country: "Česká republika",
+    postalCode: undefined,
+  },
     validate: {
-      name: (value: String) =>
+      name: (value: string) =>
         value.trim() !== "" ? null : "Název je povinný",
-      country: (value: String) =>
+      country: (value: string) =>
         value.trim() !== "" ? null : "Stát je povinný",
-      municipality: (value: String) =>
+      municipality: (value: string) =>
         value.trim() !== "" ? null : "Obec je povinná",
-      postalCode: (value: number) => (value > 10000 ? null : "PSČ je povinné"),
+      postalCode: (value: number | undefined) => {
+      if (value == null || Number.isNaN(value)) return "PSČ je povinné";
+      return value >= 10000 && value <= 99999 ? null : "Neplatné PSČ";
+      },
     },
   });
   const editor = useEditor({

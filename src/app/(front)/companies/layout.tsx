@@ -50,7 +50,6 @@ const FilterDrawer = () => {
 
   useEffect(() => {
     fetchtags();
-    console.log("Tags fetched", tags);
   }, []);
   return (
     <Drawer

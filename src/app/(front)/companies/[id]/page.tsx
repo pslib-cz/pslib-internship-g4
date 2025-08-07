@@ -132,8 +132,9 @@ const DataDisplay = ({ id }: { id: number }) => {
   );
 };
 
-const Page = ({ params }: { params: { id: number } }) => {
+const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
+
   const mobile = useMediaQuery("(max-width: 640px)");
   const { data: session } = useSession();
   return (

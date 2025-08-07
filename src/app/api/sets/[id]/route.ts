@@ -84,6 +84,7 @@ export async function PUT(
   body.year = Number(body.year);
   body.hoursDaily = Number(body.hoursDaily);
   body.daysTotal = Number(body.daysTotal);
+  body.templateId = Number(body.templateId);
   if (body.start > body.end) {
     return new Response("Start date is after end date", {
       status: 400,

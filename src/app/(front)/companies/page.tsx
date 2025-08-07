@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import {
-  ScrollArea,
-  Container,
   Title,
   Loader,
   Box,
@@ -13,7 +11,7 @@ import {
   Breadcrumbs,
   Flex,
 } from "@mantine/core";
-import { useEffect, useState, useCallback, useContext, Suspense } from "react";
+import { useContext, Suspense } from "react";
 import { IconHomePlus } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { useRouter, useSearchParams } from "next/navigation";
