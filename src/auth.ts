@@ -3,7 +3,7 @@ import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 import { Role } from "@/types/auth";
 import PrismaSingleton from "@/utils/db";
 //import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 
 const PROFILE_PHOTO_SIZE = 48;
 
@@ -15,7 +15,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     MicrosoftEntraID({
       clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID,
       clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET,
-      issuer: process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID,
+      //issuer: process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID,
       authorization: {
         params: {
           scope: "openid email profile User.Read User.ReadBasic.All",

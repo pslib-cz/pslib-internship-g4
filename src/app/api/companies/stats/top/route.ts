@@ -18,6 +18,5 @@ export async function GET(request: NextRequest) {
     orderBy: [{ internships: { _count: "desc" } }, { name: "asc" }],
     take: amount,
   });
-  console.log(result);
   return Response.json(result);
 }
